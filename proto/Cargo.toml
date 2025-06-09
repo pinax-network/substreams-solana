@@ -1,0 +1,12 @@
+[package]
+name = "proto"
+description = { workspace = true }
+edition = { workspace = true }
+version = { workspace = true }
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+prost = { workspace = true }
+prost-types = { workspace = true }

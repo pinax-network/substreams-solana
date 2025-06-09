@@ -1,0 +1,17 @@
+target/
+*.spkg
+replay.log
+/.idea
+out/
+*state.yaml
+state.*.yaml
+.DS_Store
+build
+buf.gen.yaml
+substreams-sink-sql
+cluster*
+!dev/clickhouse-configs/config.d/clusters.xml
+data
+data1
+data2
+!__cache__/*.spkg

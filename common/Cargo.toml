@@ -1,0 +1,15 @@
+[package]
+name = "common"
+description = { workspace = true }
+edition = { workspace = true }
+version = { workspace = true }
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-ethereum = { workspace = true }
+substreams-database-change = "2.0"
+prost = { workspace = true }
+prost-types = { workspace = true }

@@ -1,0 +1,32 @@
+[workspace]
+members = [
+  # Tokens
+  "clickhouse-tokens",
+  "spl-balances-rpc",
+
+  # General
+  "clickhouse-transactions",
+  "clickhouse-contracts",
+
+  # Common
+  "proto",
+  "common",
+]
+resolver = "2"
+
+[workspace.package]
+description = "EVM Tokens"
+edition = "2021"
+version = "0.0.0"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+substreams = "0.6.1"
+substreams-abis = "0.4.5"
+substreams-solana = "0.14.1"
+substreams-database-change = "2.1"
+prost = "0.13"
+prost-types = "0.13"
+
+[profile.release]
+lto = true

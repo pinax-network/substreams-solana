@@ -1,0 +1,14 @@
+specVersion: v0.1.0
+package:
+  name: proto
+  version: v0.0.0
+
+imports:
+  solana-spl: https://github.com/streamingfast/substreams-spl-all-tokens/releases/download/v0.1.1/solana-spl-all-tokens-v0.1.1.spkg
+
+protobuf:
+  files:
+    - v1/spl-balances.proto
+  excludePaths:
+    - sf/substreams
+    - google
