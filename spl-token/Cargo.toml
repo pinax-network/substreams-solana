@@ -1,16 +1,18 @@
 [package]
-name = "spl-balances-rpc"
-description = "SPL Balances RPC"
+name = "spl-token"
+description = "SPL Token"
 edition = { workspace = true }
 version = { workspace = true }
-authors = ["Denis <denis@pinax.network>"]
+authors = ["Charles Billette <billettc>", "Denis <denis@pinax.network>"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+bs58 = { workspace = true }
 substreams = { workspace = true }
 substreams-solana = { workspace = true }
+substreams-solana-program-instructions = { workspace = true }
 substreams-abis = { workspace = true }
 proto = { path = "../proto" }
 common = { path = "../common" }

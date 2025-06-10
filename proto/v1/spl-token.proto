@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package solana.spl.token.v1;
+
+message Events {
+  // https://github.com/solana-program/token-2022
+  repeated Transfer transfers = 1;
+  repeated Transfer mints = 2;
+  repeated Transfer burns = 3;
+  repeated InitializeMint initialize_mints = 4;
+  repeated InitializeAccount initialize_accounts = 5;
+}
+
+enum Instructions {
+  INSTRUCTIONS_UNSPECIFIED = 0;
+  INSTRUCTIONS_TRANSFER_CHECKED = 1;
+  INSTRUCTIONS_TRANSFER = 2;
+  INSTRUCTIONS_BURN = 3;
+  INSTRUCTIONS_MINT_TO = 4;
+  INSTRUCTIONS_MINT_TO_CHECKED = 5;
+  INSTRUCTIONS_INITIALIZE_MINT = 6;
+  INSTRUCTIONS_INITIALIZE_MINT2 = 7;
+}
+
+message Transfer {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- indexes --
+  uint32 execution_index = 2;
+  uint32 instruction_index = 3;
+  uint32 inner_instruction_index = 4;
+
+  // -- instruction --
+  bytes program_id = 5; // instruction.program_id()
+  uint32 stack_height = 6; // instruction.stack_height()
+  Instructions instruction = 7; // enum
+
+  // -- data --
+  bytes source = 10;
+  bytes destination = 11;
+  repeated bytes authority = 12;
+  uint64 amount = 13;
+  optional uint32 decimals = 14; // uint8
+}
+
+message InitializeMint {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- indexes --
+  uint32 execution_index = 2;
+  uint32 instruction_index = 3;
+  uint32 inner_instruction_index = 4;
+
+  // -- instruction --
+  bytes program_id = 5; // instruction.program_id()
+  uint32 stack_height = 6; // instruction.stack_height()
+  Instructions instruction = 7; // enum
+
+  // -- data --
+  bytes mint = 10;
+  bytes mint_authority = 11;
+  optional bytes freeze_authority = 12;
+  uint32 decimals = 13; // uint8
+}
+
+message InitializeAccount {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- indexes --
+  uint32 execution_index = 2;
+  uint32 instruction_index = 3;
+  uint32 inner_instruction_index = 4;
+
+  // -- instruction --
+  bytes program_id = 5; // instruction.program_id()
+  uint32 stack_height = 6; // instruction.stack_height()
+
+  // -- data --
+  bytes account = 10;
+  bytes mint = 11;
+  bytes owner = 12;
+}

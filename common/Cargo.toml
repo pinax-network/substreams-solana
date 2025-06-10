@@ -9,7 +9,8 @@ crate-type = ["rlib"]
 
 [dependencies]
 substreams = { workspace = true }
-substreams-ethereum = { workspace = true }
-substreams-database-change = "2.0"
+substreams-solana = { workspace = true }
+substreams-database-change = { workspace = true }
 prost = { workspace = true }
 prost-types = { workspace = true }
+proto = { path = "../proto" }

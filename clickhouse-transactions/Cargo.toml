@@ -10,6 +10,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 substreams = { workspace = true }
-substreams-ethereum = { workspace = true }
+substreams-solana = { workspace = true }
 substreams-database-change = "2.0"
 common = { path = "../common" }

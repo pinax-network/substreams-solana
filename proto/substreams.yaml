@@ -4,11 +4,13 @@ package:
   version: v0.0.0
 
 imports:
-  solana-spl: https://github.com/streamingfast/substreams-spl-all-tokens/releases/download/v0.1.1/solana-spl-all-tokens-v0.1.1.spkg
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+  # solana_spl: https://github.com/streamingfast/substreams-spl-all-tokens/releases/download/v0.1.1/solana-spl-all-tokens-v0.1.1.spkg
 
 protobuf:
   files:
-    - v1/spl-balances.proto
+    - v1/spl-token.proto
   excludePaths:
     - sf/substreams
+    - sf/solana
     - google

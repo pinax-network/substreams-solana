@@ -1,5 +1,5 @@
 ENDPOINT ?= solana.substreams.pinax.network:443
-START_BLOCK ?= -100
+START_BLOCK ?= 345923179
 
 .PHONY: build
 build:
@@ -15,8 +15,8 @@ noop: build
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) https://github.com/streamingfast/substreams-spl-all-tokens/releases/download/v0.1.1/solana-spl-all-tokens-v0.1.1.spkg map_events -s $(START_BLOCK)
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) --network solana
 
 .PHONY: prod
 prod: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) --production-mode
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 0 -t 0 --limit-processed-blocks 0 --production-mode
