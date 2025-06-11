@@ -1,4 +1,4 @@
-# Solana Transfers
+# SPL Token program
 
 > Substreams for tracking SPL and SPL-2022 tokens.
 
