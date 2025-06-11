@@ -9,17 +9,26 @@ message Events {
   repeated Transfer burns = 3;
   repeated InitializeMint initialize_mints = 4;
   repeated InitializeAccount initialize_accounts = 5;
+  repeated Approve approves = 6;
+  repeated Revoke revokes = 7;
 }
 
 enum Instructions {
   INSTRUCTIONS_UNSPECIFIED = 0;
   INSTRUCTIONS_TRANSFER_CHECKED = 1;
   INSTRUCTIONS_TRANSFER = 2;
-  INSTRUCTIONS_BURN = 3;
+  INSTRUCTIONS_MINT_TO_CHECKED = 3;
   INSTRUCTIONS_MINT_TO = 4;
-  INSTRUCTIONS_MINT_TO_CHECKED = 5;
-  INSTRUCTIONS_INITIALIZE_MINT = 6;
-  INSTRUCTIONS_INITIALIZE_MINT2 = 7;
+  INSTRUCTIONS_BURN = 5;
+  INSTRUCTIONS_BURN_CHECKED = 6;
+  INSTRUCTIONS_INITIALIZE_MINT = 7;
+  INSTRUCTIONS_INITIALIZE_MINT_2 = 8;
+  INSTRUCTIONS_INITIALIZE_ACCOUNT = 9;
+  INSTRUCTIONS_INITIALIZE_ACCOUNT2 = 10;
+  INSTRUCTIONS_INITIALIZE_ACCOUNT3 = 11;
+  INSTRUCTIONS_APPROVE = 12;
+  INSTRUCTIONS_APPROVE_CHECKED = 13;
+  INSTRUCTIONS_REVOKE = 14;
 }
 
 message Transfer {
@@ -36,11 +45,15 @@ message Transfer {
   uint32 stack_height = 6; // instruction.stack_height()
   Instructions instruction = 7; // enum
 
+  // -- authority --
+  bytes authority = 8;
+  repeated bytes multisig_authority = 9;
+
   // -- data --
   bytes source = 10;
   bytes destination = 11;
-  repeated bytes authority = 12;
-  uint64 amount = 13;
+  uint64 amount = 12;
+  optional bytes mint = 13;
   optional uint32 decimals = 14; // uint8
 }
 
@@ -77,9 +90,60 @@ message InitializeAccount {
   // -- instruction --
   bytes program_id = 5; // instruction.program_id()
   uint32 stack_height = 6; // instruction.stack_height()
+  Instructions instruction = 7; // enum
 
   // -- data --
   bytes account = 10;
   bytes mint = 11;
   bytes owner = 12;
+}
+
+message Approve {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- indexes --
+  uint32 execution_index = 2;
+  uint32 instruction_index = 3;
+  uint32 inner_instruction_index = 4;
+
+  // -- instruction --
+  bytes program_id = 5; // instruction.program_id()
+  uint32 stack_height = 6; // instruction.stack_height()
+  Instructions instruction = 7; // enum
+
+  // -- authority --
+  bytes authority = 8;
+  repeated bytes multisig_authority = 9;
+
+  // -- data --
+  bytes source = 10;
+  optional bytes mint = 11;
+  bytes delegate = 12;
+  bytes owner = 13;
+  uint64 amount = 14;
+  optional uint32 decimals = 15; // uint8
+}
+
+message Revoke {
+  // -- transaction --
+  bytes tx_hash = 1;
+
+  // -- indexes --
+  uint32 execution_index = 2;
+  uint32 instruction_index = 3;
+  uint32 inner_instruction_index = 4;
+
+  // -- instruction --
+  bytes program_id = 5; // instruction.program_id()
+  uint32 stack_height = 6; // instruction.stack_height()
+  Instructions instruction = 7; // enum
+
+  // -- authority --
+  bytes authority = 8;
+  repeated bytes multisig_authority = 9;
+
+  // -- data --
+  bytes source = 10;
+  bytes owner = 13;
 }

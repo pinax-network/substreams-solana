@@ -1,14 +1,30 @@
 # Solana Transfers
 
-> Substreams for tracking SPL Token 2022 program.
+> Substreams for tracking SPL and SPL-2022 tokens.
 
 ## Includes
 
-- `Mints`
-- `Transfer`
-- `Burns`
-- `InitializeMint`
-- `InitializeAccount`
+- `transfers`
+  - **Transfer**
+  - **TransferChecked**
+- `mints` (Transfer)
+  - **MintTo**
+  - **MintToChecked**
+- `burns` (Transfer)
+  - **Burn**
+  - **BurnChecked**
+- `initialize_mints`
+  - **InitializeMint**
+  - **InitializeMint2**
+- `initialize_accounts`
+  - **InitializeAccount**
+  - **InitializeAccount2**
+  - **InitializeAccount3**
+- `approves`
+  - **Approve**
+  - **ApproveChecked**
+- `revokes`
+  - **Revoke**
 
 ## Ordering & Indexing
 

@@ -1,8 +1,8 @@
 use common::solana::is_confirmed_tx;
-use proto::pb::solana::spl::token::v1::{Events, InitializeAccount, InitializeMint, Instructions, Transfer};
+use proto::pb::solana::spl::token::v1::{Approve, Events, InitializeAccount, InitializeMint, Instructions, Revoke, Transfer};
 use substreams::{errors::Error, log};
 use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
-use substreams_solana_program_instructions::{option::COption, pubkey::Pubkey, token_instruction_2022::TokenInstruction};
+use substreams_solana_program_instructions::{option::COption, token_instruction_2022::TokenInstruction};
 
 pub const SOLANA_TOKEN_PROGRAM_KEG: &str = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 pub const SOLANA_TOKEN_PROGRAM_ZQB: &str = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
@@ -34,16 +34,19 @@ fn map_events(block: Block) -> Result<Events, Error> {
         // The iteration starts with the first compiled instruction and then goes through all its inner instructions, if any.
         // Then it moves to the next compiled instruction and so on recursively.
         for instruction in tx.walk_instructions() {
-            if !is_spl_token_program(&instruction) {
-                continue;
-            }
-
             // increment indexes
+            // apply to all instructions to ensure consistent indexing across the block.
             execution_index += 1;
             instruction_index += 1;
             if !instruction.is_root() {
                 inner_instruction_index += 1;
             }
+
+            // only include SPL-Token instructions
+            if !is_spl_token_program(&instruction) {
+                continue;
+            }
+
             let stack_height = instruction.maybe_stack_height().unwrap_or(instruction.stack_height());
             let tx_hash = tx.hash().to_vec();
             let program_id = instruction.program_id().0.to_vec();
@@ -58,9 +61,10 @@ fn map_events(block: Block) -> Result<Events, Error> {
                         if amount > 0 {
                             // accounts
                             let source = instruction.accounts()[0].0.to_vec();
+                            let mint = instruction.accounts()[1].0.to_vec();
                             let destination = instruction.accounts()[2].0.to_vec();
-                            let authority = [instruction.accounts()[3].0.to_vec()];
-                            // TO-DO: handle Multisig authority
+                            let authority = instruction.accounts()[3].0.to_vec();
+                            let multisig_authority = instruction.accounts()[4..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
 
                             events.transfers.push(Transfer {
                                 // transaction
@@ -74,25 +78,30 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 // instruction
                                 program_id,
                                 stack_height,
+                                instruction: Instructions::TransferChecked as i32,
+
+                                // authority
+                                authority,
+                                multisig_authority: multisig_authority.to_vec(),
 
                                 // event
-                                authority: authority.to_vec(),
                                 source,
                                 destination,
                                 amount,
+                                mint: Some(mint),
                                 decimals: Some(decimals as u32),
-                                instruction: Instructions::TransferChecked as i32,
                             })
                         }
                     }
                     // -- Transfer (DEPRECATED, but still active) --
+                    #[allow(deprecated)]
                     TokenInstruction::Transfer { amount } => {
                         if amount > 0 {
                             // accounts
                             let source = instruction.accounts()[0].0.to_vec();
                             let destination = instruction.accounts()[1].0.to_vec();
-                            let authority = [instruction.accounts()[2].0.to_vec()];
-                            // TO-DO: handle Multisig authority
+                            let authority = instruction.accounts()[2].0.to_vec();
+                            let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
 
                             events.transfers.push(Transfer {
                                 // transaction
@@ -106,14 +115,18 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 // instruction
                                 program_id,
                                 stack_height,
+                                instruction: Instructions::Transfer as i32,
+
+                                // authority
+                                authority,
+                                multisig_authority: multisig_authority.to_vec(),
 
                                 // event
                                 source,
                                 destination,
-                                authority: authority.to_vec(),
                                 amount,
                                 decimals: None,
-                                instruction: Instructions::Transfer as i32,
+                                mint: None,
                             })
                         }
                     }
@@ -124,8 +137,8 @@ fn map_events(block: Block) -> Result<Events, Error> {
                             // accounts
                             let mint = instruction.accounts()[0].0.to_vec();
                             let destination = instruction.accounts()[1].0.to_vec();
-                            let authority = [instruction.accounts()[2].0.to_vec()];
-                            // TO-DO: handle Multisig authority
+                            let authority = instruction.accounts()[2].0.to_vec();
+                            let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
 
                             events.mints.push(Transfer {
                                 // transaction
@@ -139,14 +152,18 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 // instruction
                                 program_id,
                                 stack_height,
+                                instruction: Instructions::MintTo as i32,
+
+                                // authority
+                                authority,
+                                multisig_authority: multisig_authority.to_vec(),
 
                                 // event
-                                source: mint,
+                                source: mint.to_vec(),
                                 destination,
-                                authority: authority.to_vec(),
                                 amount,
                                 decimals: None,
-                                instruction: Instructions::MintTo as i32,
+                                mint: Some(mint),
                             })
                         }
                     }
@@ -157,8 +174,8 @@ fn map_events(block: Block) -> Result<Events, Error> {
                             // accounts
                             let mint = instruction.accounts()[0].0.to_vec();
                             let destination = instruction.accounts()[1].0.to_vec();
-                            let authority = [instruction.accounts()[2].0.to_vec()];
-                            // TO-DO: handle Multisig authority
+                            let authority = instruction.accounts()[2].0.to_vec();
+                            let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
 
                             events.mints.push(Transfer {
                                 // transaction
@@ -172,14 +189,18 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 // instruction
                                 program_id,
                                 stack_height,
+                                instruction: Instructions::MintToChecked as i32,
+
+                                // authority
+                                authority,
+                                multisig_authority: multisig_authority.to_vec(),
 
                                 // event
-                                source: mint,
+                                source: mint.to_vec(),
                                 destination,
-                                authority: authority.to_vec(),
                                 amount,
                                 decimals: Some(decimals as u32),
-                                instruction: Instructions::MintToChecked as i32,
+                                mint: Some(mint),
                             })
                         }
                     }
@@ -190,8 +211,8 @@ fn map_events(block: Block) -> Result<Events, Error> {
                             // accounts
                             let source = instruction.accounts()[0].0.to_vec();
                             let mint = instruction.accounts()[1].0.to_vec();
-                            let authority = [instruction.accounts()[2].0.to_vec()];
-                            // TO-DO: handle Multisig authority
+                            let authority = instruction.accounts()[2].0.to_vec();
+                            let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
 
                             events.burns.push(Transfer {
                                 // transaction
@@ -205,14 +226,18 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 // instruction
                                 program_id,
                                 stack_height,
+                                instruction: Instructions::Burn as i32,
+
+                                // authority
+                                authority,
+                                multisig_authority: multisig_authority.to_vec(),
 
                                 // event
                                 source,
-                                destination: mint,
-                                authority: authority.to_vec(),
+                                destination: mint.to_vec(),
                                 amount,
                                 decimals: None,
-                                instruction: Instructions::Burn as i32,
+                                mint: Some(mint),
                             })
                         }
                     }
@@ -223,8 +248,8 @@ fn map_events(block: Block) -> Result<Events, Error> {
                             // accounts
                             let source = instruction.accounts()[0].0.to_vec();
                             let mint = instruction.accounts()[1].0.to_vec();
-                            let authority = [instruction.accounts()[2].0.to_vec()];
-                            // TO-DO: handle Multisig authority
+                            let authority = instruction.accounts()[2].0.to_vec();
+                            let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
 
                             events.burns.push(Transfer {
                                 // transaction
@@ -238,14 +263,18 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 // instruction
                                 program_id,
                                 stack_height,
+                                instruction: Instructions::BurnChecked as i32,
+
+                                // authority
+                                authority,
+                                multisig_authority: multisig_authority.to_vec(),
 
                                 // event
                                 source,
-                                destination: mint,
-                                authority: authority.to_vec(),
+                                destination: mint.to_vec(),
                                 amount,
                                 decimals: Some(decimals as u32),
-                                instruction: Instructions::Burn as i32,
+                                mint: Some(mint),
                             })
                         }
                     }
@@ -271,6 +300,7 @@ fn map_events(block: Block) -> Result<Events, Error> {
                             // instruction
                             program_id,
                             stack_height,
+                            instruction: Instructions::InitializeMint as i32,
 
                             // event
                             mint,
@@ -280,7 +310,6 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 COption::None => None,
                             },
                             decimals: decimals as u32,
-                            instruction: Instructions::InitializeMint as i32,
                         })
                     }
 
@@ -305,6 +334,7 @@ fn map_events(block: Block) -> Result<Events, Error> {
                             // instruction
                             program_id,
                             stack_height,
+                            instruction: Instructions::InitializeMint2 as i32,
 
                             // event
                             mint,
@@ -314,7 +344,6 @@ fn map_events(block: Block) -> Result<Events, Error> {
                                 COption::None => None,
                             },
                             decimals: decimals as u32,
-                            instruction: Instructions::InitializeMint2 as i32,
                         })
                     }
 
@@ -337,11 +366,166 @@ fn map_events(block: Block) -> Result<Events, Error> {
                             // instruction
                             program_id,
                             stack_height,
+                            instruction: Instructions::InitializeAccount as i32,
 
                             // event
                             account,
                             mint,
                             owner,
+                        })
+                    }
+                    // -- InitializeAccount2 --
+                    TokenInstruction::InitializeAccount2 { owner } => {
+                        // accounts
+                        let account: Vec<u8> = instruction.accounts()[0].0.to_vec(); // The account to initialize.
+                        let mint: Vec<u8> = instruction.accounts()[1].0.to_vec(); // The mint this account will be associated with.
+
+                        events.initialize_accounts.push(InitializeAccount {
+                            // transaction
+                            tx_hash,
+
+                            // indexes
+                            execution_index,
+                            instruction_index,
+                            inner_instruction_index,
+
+                            // instruction
+                            program_id,
+                            stack_height,
+                            instruction: Instructions::InitializeAccount2 as i32,
+
+                            // event
+                            account,
+                            mint,
+                            owner: owner.to_bytes().to_vec(),
+                        })
+                    }
+                    // -- InitializeAccount3 --
+                    TokenInstruction::InitializeAccount3 { owner } => {
+                        // accounts
+                        let account: Vec<u8> = instruction.accounts()[0].0.to_vec(); // The account to initialize.
+                        let mint: Vec<u8> = instruction.accounts()[1].0.to_vec(); // The mint this account will be associated with.
+
+                        events.initialize_accounts.push(InitializeAccount {
+                            // transaction
+                            tx_hash,
+
+                            // indexes
+                            execution_index,
+                            instruction_index,
+                            inner_instruction_index,
+
+                            // instruction
+                            program_id,
+                            stack_height,
+                            instruction: Instructions::InitializeAccount3 as i32,
+
+                            // event
+                            account,
+                            mint,
+                            owner: owner.to_bytes().to_vec(),
+                        })
+                    }
+                    // -- Approve --
+                    TokenInstruction::Approve { amount } => {
+                        // accounts
+                        let source = instruction.accounts()[0].0.to_vec();
+                        let delegate = instruction.accounts()[1].0.to_vec();
+                        let authority = instruction.accounts()[2].0.to_vec();
+                        let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+
+                        events.approves.push(Approve {
+                            // transaction
+                            tx_hash,
+
+                            // indexes
+                            execution_index,
+                            instruction_index,
+                            inner_instruction_index,
+
+                            // instruction
+                            program_id,
+                            stack_height,
+                            instruction: Instructions::Approve as i32,
+
+                            // authority
+                            authority: authority.to_vec(),
+                            multisig_authority: multisig_authority.to_vec(),
+
+                            // event
+                            source,
+                            mint: None,
+                            delegate,
+                            owner: authority,
+                            amount,
+                            decimals: None,
+                        })
+                    }
+                    // -- ApproveChecked --
+                    TokenInstruction::ApproveChecked { amount, decimals } => {
+                        // accounts
+                        let source = instruction.accounts()[0].0.to_vec();
+                        let mint = instruction.accounts()[1].0.to_vec();
+                        let delegate = instruction.accounts()[2].0.to_vec();
+                        let authority = instruction.accounts()[3].0.to_vec();
+                        let multisig_authority = instruction.accounts()[4..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+
+                        events.approves.push(Approve {
+                            // transaction
+                            tx_hash,
+
+                            // indexes
+                            execution_index,
+                            instruction_index,
+                            inner_instruction_index,
+
+                            // instruction
+                            program_id,
+                            stack_height,
+                            instruction: Instructions::ApproveChecked as i32,
+
+                            // authority
+                            authority: authority.to_vec(),
+                            multisig_authority: multisig_authority.to_vec(),
+
+                            // event
+                            source,
+                            mint: Some(mint),
+                            delegate,
+                            owner: authority,
+                            amount,
+                            decimals: Some(decimals as u32),
+                        })
+                    }
+
+                    // -- Revoke --
+                    TokenInstruction::Revoke {} => {
+                        // accounts
+                        let source = instruction.accounts()[0].0.to_vec();
+                        let authority = instruction.accounts()[1].0.to_vec();
+                        let multisig_authority = instruction.accounts()[2..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+
+                        events.revokes.push(Revoke {
+                            // transaction
+                            tx_hash,
+
+                            // indexes
+                            execution_index,
+                            instruction_index,
+                            inner_instruction_index,
+
+                            // instruction
+                            program_id,
+                            stack_height,
+                            instruction: Instructions::Revoke as i32,
+
+                            // authority
+                            authority: authority.to_vec(),
+                            multisig_authority: multisig_authority.to_vec(),
+
+                            // event
+                            source,
+                            owner: authority,
                         })
                     }
                     _ => {}

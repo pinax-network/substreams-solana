@@ -1,8 +1,6 @@
 # Solana: `Substreams`
 
-`SPL` & `Native` tokens for Solana blockchains.
-
-> Ethereum, Base, BSC, Polygon, ArbitrumOne, Optimism, etc..
+Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 
 ## Supported by Sinks
 
@@ -11,5 +9,5 @@
 
 ## Substreams Packages
 
-- [x] SPL Balances & Transfers & Metadata
-- [x] Native Balances & Transfers
+- [x] SPL and SPL-2022 tokens
+- [x] Native tokens
