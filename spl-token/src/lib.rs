@@ -1,4 +1,3 @@
-use common::solana::is_confirmed_tx;
 use proto::pb::solana::spl::token::v1::{Approve, Events, InitializeAccount, InitializeMint, Instructions, Revoke, Transfer};
 use substreams::{errors::Error, log};
 use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
@@ -20,10 +19,7 @@ fn map_events(block: Block) -> Result<Events, Error> {
     let mut execution_index = 0;
 
     // transactions
-    for tx in block.transactions {
-        if is_confirmed_tx(&tx) == false {
-            continue;
-        }
+    for tx in block.transactions() {
         // position of the current instruction inside its transaction (root + inner), counted from the start of that transaction.
         let mut instruction_index = 0;
         // position of the instruction among inner (non-root) instructions within the same transaction; stays 0 for root instructions and increments only for nested ones.

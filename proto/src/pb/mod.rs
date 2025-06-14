@@ -1,11 +1,36 @@
 // @generated
 pub mod sf {
+    pub mod firehose {
+        // @@protoc_insertion_point(attribute:sf.firehose.v2)
+        pub mod v2 {
+            include!("sf.firehose.v2.rs");
+            // @@protoc_insertion_point(sf.firehose.v2)
+        }
+    }
     pub mod solana {
         pub mod r#type {
             // @@protoc_insertion_point(attribute:sf.solana.type.v1)
             pub mod v1 {
                 include!("sf.solana.type.v1.rs");
                 // @@protoc_insertion_point(sf.solana.type.v1)
+            }
+        }
+    }
+    pub mod substreams {
+        pub mod index {
+            // @@protoc_insertion_point(attribute:sf.substreams.index.v1)
+            pub mod v1 {
+                include!("sf.substreams.index.v1.rs");
+                // @@protoc_insertion_point(sf.substreams.index.v1)
+            }
+        }
+        pub mod solana {
+            pub mod r#type {
+                // @@protoc_insertion_point(attribute:sf.substreams.solana.type.v1)
+                pub mod v1 {
+                    include!("sf.substreams.solana.type.v1.rs");
+                    // @@protoc_insertion_point(sf.substreams.solana.type.v1)
+                }
             }
         }
     }

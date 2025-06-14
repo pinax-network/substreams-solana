@@ -1,0 +1,33 @@
+specVersion: v0.1.0
+package:
+  name: spl_token_balances
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: SPL Token Balances
+  image: ../image.png
+
+imports:
+  solana_accounts: https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-accounts-v0.1.0/solana-accounts-foundational-v0.1.0.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/spl_token_balances.wasm
+
+protobuf:
+  files:
+    - v1/spl-token.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    doc: SPL Tokens Balances
+    inputs:
+      - source: sf.solana.type.v1.AccountBlock
+      - map: solana_accounts:filtered_accounts
+    output:
+      type: proto:solana.spl.token.v1.Events
+
+network: solana

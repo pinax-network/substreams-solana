@@ -254,4 +254,32 @@ impl RewardType {
         }
     }
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AccountBlock {
+    #[prost(uint64, tag="1")]
+    pub slot: u64,
+    #[prost(string, tag="2")]
+    pub hash: ::prost::alloc::string::String,
+    #[prost(uint64, tag="3")]
+    pub parent_slot: u64,
+    #[prost(string, tag="4")]
+    pub parent_hash: ::prost::alloc::string::String,
+    #[prost(message, optional, tag="6")]
+    pub timestamp: ::core::option::Option<::prost_types::Timestamp>,
+    #[prost(message, repeated, tag="7")]
+    pub accounts: ::prost::alloc::vec::Vec<Account>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Account {
+    #[prost(bytes="vec", tag="1")]
+    pub address: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="2")]
+    pub owner: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="3")]
+    pub data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bool, tag="7")]
+    pub deleted: bool,
+}
 // @@protoc_insertion_point(module)
