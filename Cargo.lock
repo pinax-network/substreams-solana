@@ -1666,16 +1666,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "spl-token"
+name = "solana-tokens"
 version = "0.0.0"
 dependencies = [
- "bs58 0.5.1",
  "common",
  "proto",
  "substreams",
- "substreams-abis",
- "substreams-solana",
- "substreams-solana-program-instructions",
+ "substreams-database-change",
 ]
 
 [[package]]
@@ -1713,10 +1710,23 @@ dependencies = [
  "bs58 0.5.1",
  "common",
  "proto",
- "spl-token 8.0.0",
+ "spl-token",
  "substreams",
  "substreams-abis",
  "substreams-solana",
+]
+
+[[package]]
+name = "spl-token-transfers"
+version = "0.0.0"
+dependencies = [
+ "bs58 0.5.1",
+ "common",
+ "proto",
+ "substreams",
+ "substreams-abis",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
 ]
 
 [[package]]

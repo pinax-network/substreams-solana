@@ -1,6 +1,6 @@
 [package]
-name = "spl-token"
-description = "SPL Token"
+name = "spl-token-transfers"
+description = "SPL Token transfers"
 edition = { workspace = true }
 version = { workspace = true }
 authors = ["Charles Billette <billettc>", "Denis <denis@pinax.network>"]

@@ -22,6 +22,11 @@ fn map_events(block: Block) -> Result<Events, Error> {
         match &tx.meta {
             Some(meta) => {
                 for balance in meta.post_token_balances.iter() {
+                    balance.mint
+                    balance.program_id
+                    balance.ui_token_amount.unwrap().amount
+                    balance.ui_token_amount.unwrap().decimals
+                    balance.owner
                     let account = tx.account_at(balance.account_index as u8);
                     log::info!("Post token balance: {:?}, account = {}", balance, account);
                 }

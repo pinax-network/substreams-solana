@@ -1,8 +1,8 @@
 [workspace]
 members = [
   # Tokens
-  # "clickhouse-tokens",
-  "spl-token",
+  "clickhouse-solana-tokens",
+  "spl-token-transfers",
   "spl-token-balances",
 
   # # General

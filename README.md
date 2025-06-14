@@ -10,4 +10,6 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 ## Substreams Packages
 
 - [x] SPL and SPL-2022 tokens
+  - [x] Transfers (Mints, Burns, Approves, Revokes)
+  - [ ] Balances
 - [x] Native tokens

@@ -9,7 +9,8 @@ imports:
 
 protobuf:
   files:
-    - v1/spl-token.proto
+    - v1/spl-token-transfers.proto
+    - v1/spl-token-balances.proto
   excludePaths:
     - sf/substreams
     - sf/solana

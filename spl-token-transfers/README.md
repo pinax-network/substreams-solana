@@ -1,6 +1,6 @@
-# SPL Token program
+# SPL Token transfers
 
-> Substreams for tracking SPL and SPL-2022 tokens.
+> Substreams for tracking SPL and SPL-2022 tokens transfers.
 
 ## Includes
 

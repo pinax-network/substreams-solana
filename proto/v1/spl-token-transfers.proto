@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package solana.spl.token.v1;
+package solana.spl.token.transfers.v1;
 
 message Events {
   // https://github.com/solana-program/token-2022

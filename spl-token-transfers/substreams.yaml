@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
-  name: spl_token
+  name: spl_token_transfers
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-solana
-  description: SPL Token
+  description: SPL Token transfers
   image: ../image.png
 
 imports:
@@ -12,21 +12,21 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/spl_token.wasm
+    file: ../target/wasm32-unknown-unknown/release/spl_token_transfers.wasm
 
 protobuf:
   files:
-    - v1/spl-token.proto
+    - v1/spl-token-transfers.proto
   importPaths:
     - ../proto
 
 modules:
   - name: map_events
     kind: map
-    doc: SPL Tokens
+    doc: SPL Tokens transfers
     inputs:
       - map: solana_common:blocks_without_votes
     output:
-      type: proto:solana.spl.token.v1.Events
+      type: proto:solana.spl.token.transfers.v1.Events
 
 network: solana
