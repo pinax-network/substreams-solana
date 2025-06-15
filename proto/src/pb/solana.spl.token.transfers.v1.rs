@@ -25,21 +25,21 @@ pub struct Transfer {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
     pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- indexes --
+    /// -- ordering --
     #[prost(uint32, tag="2")]
     pub execution_index: u32,
     #[prost(uint32, tag="3")]
     pub instruction_index: u32,
     #[prost(uint32, tag="4")]
     pub inner_instruction_index: u32,
+    /// instruction.stack_height()
+    #[prost(uint32, tag="5")]
+    pub stack_height: u32,
     /// -- instruction --
     ///
     /// instruction.program_id()
-    #[prost(bytes="vec", tag="5")]
+    #[prost(bytes="vec", tag="6")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="6")]
-    pub stack_height: u32,
     /// enum
     #[prost(enumeration="Instructions", tag="7")]
     pub instruction: i32,
@@ -67,21 +67,21 @@ pub struct InitializeMint {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
     pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- indexes --
+    /// -- ordering --
     #[prost(uint32, tag="2")]
     pub execution_index: u32,
     #[prost(uint32, tag="3")]
     pub instruction_index: u32,
     #[prost(uint32, tag="4")]
     pub inner_instruction_index: u32,
+    /// instruction.stack_height()
+    #[prost(uint32, tag="5")]
+    pub stack_height: u32,
     /// -- instruction --
     ///
     /// instruction.program_id()
-    #[prost(bytes="vec", tag="5")]
+    #[prost(bytes="vec", tag="6")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="6")]
-    pub stack_height: u32,
     /// enum
     #[prost(enumeration="Instructions", tag="7")]
     pub instruction: i32,
@@ -102,21 +102,21 @@ pub struct InitializeAccount {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
     pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- indexes --
+    /// -- ordering --
     #[prost(uint32, tag="2")]
     pub execution_index: u32,
     #[prost(uint32, tag="3")]
     pub instruction_index: u32,
     #[prost(uint32, tag="4")]
     pub inner_instruction_index: u32,
+    /// instruction.stack_height()
+    #[prost(uint32, tag="5")]
+    pub stack_height: u32,
     /// -- instruction --
     ///
     /// instruction.program_id()
-    #[prost(bytes="vec", tag="5")]
+    #[prost(bytes="vec", tag="6")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="6")]
-    pub stack_height: u32,
     /// enum
     #[prost(enumeration="Instructions", tag="7")]
     pub instruction: i32,
@@ -134,21 +134,21 @@ pub struct Approve {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
     pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- indexes --
+    /// -- ordering --
     #[prost(uint32, tag="2")]
     pub execution_index: u32,
     #[prost(uint32, tag="3")]
     pub instruction_index: u32,
     #[prost(uint32, tag="4")]
     pub inner_instruction_index: u32,
+    /// instruction.stack_height()
+    #[prost(uint32, tag="5")]
+    pub stack_height: u32,
     /// -- instruction --
     ///
     /// instruction.program_id()
-    #[prost(bytes="vec", tag="5")]
+    #[prost(bytes="vec", tag="6")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="6")]
-    pub stack_height: u32,
     /// enum
     #[prost(enumeration="Instructions", tag="7")]
     pub instruction: i32,
@@ -178,21 +178,21 @@ pub struct Revoke {
     /// -- transaction --
     #[prost(bytes="vec", tag="1")]
     pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- indexes --
+    /// -- ordering --
     #[prost(uint32, tag="2")]
     pub execution_index: u32,
     #[prost(uint32, tag="3")]
     pub instruction_index: u32,
     #[prost(uint32, tag="4")]
     pub inner_instruction_index: u32,
+    /// instruction.stack_height()
+    #[prost(uint32, tag="5")]
+    pub stack_height: u32,
     /// -- instruction --
     ///
     /// instruction.program_id()
-    #[prost(bytes="vec", tag="5")]
+    #[prost(bytes="vec", tag="6")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="6")]
-    pub stack_height: u32,
     /// enum
     #[prost(enumeration="Instructions", tag="7")]
     pub instruction: i32,

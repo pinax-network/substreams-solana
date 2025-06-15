@@ -1,6 +1,6 @@
 -- SPL Total Suppy changes --
 -- There can only be a single SPL supply change per block per contract  --
-CREATE TABLE IF NOT EXISTS spl_total_supply_changes  (
+CREATE TABLE IF NOT EXISTS spl_token_total_supply_changes  (
     -- block --
     block_num               UInt32,
     block_hash              FixedString(66),

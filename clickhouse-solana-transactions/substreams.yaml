@@ -33,4 +33,4 @@ sink:
     postgraphile_frontend:
       enabled: false
 
-network: mainnet
+network: solana

@@ -1,5 +1,5 @@
 -- latest SPL Metadata --
-CREATE TABLE IF NOT EXISTS spl_metadata  (
+CREATE TABLE IF NOT EXISTS spl_token_metadata  (
     -- block --
     block_num            SimpleAggregateFunction(max, UInt32) COMMENT 'block number',
     timestamp            SimpleAggregateFunction(max, DateTime(0, 'UTC')),
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS spl_metadata  (
 ENGINE = AggregatingMergeTree
 ORDER BY address;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_metadata_initialize
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_token_metadata_initialize
 TO spl_metadata AS
 SELECT
     -- block --
@@ -27,9 +27,9 @@ SELECT
     -- replace empty strings with NULLs --
     IF (name = '', Null, name) AS name,
     IF (symbol = '', Null, symbol) AS symbol
-FROM spl_metadata_initialize;
+FROM spl_token_metadata_initialize;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_metadata_changes
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_token_metadata_changes
 TO spl_metadata AS
 SELECT
     -- block --
@@ -42,25 +42,25 @@ SELECT
     -- replace empty strings with NULLs --
     IF (c.name = '', Null, c.name) AS name,
     IF (c.symbol = '', Null, c.symbol) AS symbol
-FROM spl_metadata_changes AS c
-JOIN spl_metadata_initialize USING (address); -- address must already be initialized
+FROM spl_token_metadata_changes AS c
+JOIN spl_token_metadata_initialize USING (address); -- address must already be initialized
 
--- one time INSERT to populate Native contract --
-INSERT INTO spl_metadata (
-    -- block --
-    block_num,
-    timestamp,
-    -- event --
-    address,
-    name,
-    symbol,
-    decimals
-)
-VALUES (
-    0,
-    toDateTime(0, 'UTC'),
-    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    'Native',
-    'Native',
-    18
-);
+-- -- one time INSERT to populate Native contract --
+-- INSERT INTO spl_token_metadata (
+--     -- block --
+--     block_num,
+--     timestamp,
+--     -- event --
+--     address,
+--     name,
+--     symbol,
+--     decimals
+-- )
+-- VALUES (
+--     0,
+--     toDateTime(0, 'UTC'),
+--     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+--     'Native',
+--     'Native',
+--     18
+-- );

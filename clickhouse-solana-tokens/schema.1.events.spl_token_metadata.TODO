@@ -1,5 +1,5 @@
 -- SPL Metadata Initialize --
-CREATE TABLE IF NOT EXISTS spl_metadata_initialize (
+CREATE TABLE IF NOT EXISTS spl_token_metadata_initialize (
     -- block --
     block_num            UInt32,
     block_hash           FixedString(66),
@@ -15,7 +15,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (address);
 
 -- SPL Metadata Changes --
-CREATE TABLE IF NOT EXISTS spl_metadata_changes (
+CREATE TABLE IF NOT EXISTS spl_token_metadata_changes (
     -- block --
     block_num            UInt32,
     block_hash           FixedString(66),

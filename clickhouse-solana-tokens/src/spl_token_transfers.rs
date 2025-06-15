@@ -1,55 +1,50 @@
-use common::{
-    bytes_to_hex,
-    clickhouse::{common_key, set_log},
-};
+use common::clickhouse::{common_key, set_clock, set_instruction, set_ordering};
 use proto::pb::solana::spl;
 use substreams::pb::substreams::Clock;
+use substreams_solana::base58;
 
 pub fn process_spl_token_transfers(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: spl::token::transfers::v1::Events) {
-    let mut index = 0; // relative index for events
-
-    // ERC721 Transfers
+    // -- Transfers --
     for event in events.transfers {
-        let key = common_key(&clock, index);
-        let row = tables
-            .create_row("spl_transfers", key)
-            .set("token_id", &event.token_id)
-            .set("from", bytes_to_hex(&event.from))
-            .set("to", bytes_to_hex(&event.to))
-            // to be compatible with ERC1155 table schema
-            .set("operator", "".to_string())
-            .set("amount", 1)
-            .set("transfer_type", TransferType::Single.to_string()) // Enum8('Single' = 1, 'Batch' = 2)
-            .set("token_standard", TokenStandard::ERC721.to_string()); // Enum8('ERC721' = 1, 'ERC1155' = 2)
-
-        set_log(&clock, index, event.tx_hash, event.contract, event.ordinal, event.caller, row);
-        index += 1;
+        handle_transfer(tables, clock, event);
     }
-
-    // ERC721 Approvals
-    for event in events.approvals {
-        let key = common_key(&clock, index);
-        let row = tables
-            .create_row("erc721_approvals", key)
-            .set("owner", bytes_to_hex(&event.owner))
-            .set("approved", bytes_to_hex(&event.approved))
-            .set("token_id", &event.token_id);
-
-        set_log(&clock, index, event.tx_hash, event.contract, event.ordinal, event.caller, row);
-        index += 1;
+    for event in events.mints {
+        handle_transfer(tables, clock, event);
     }
-
-    // ERC721 Approvals For All
-    for event in events.approvals_for_all {
-        let key = common_key(&clock, index);
-        let row = tables
-            .create_row("erc721_approvals_for_all", key)
-            .set("owner", bytes_to_hex(&event.owner))
-            .set("operator", bytes_to_hex(&event.operator))
-            .set("approved", &event.approved.to_string())
-            .set("token_standard", TokenStandard::ERC721.to_string()); // Enum8('ERC721' = 1, 'ERC1155' = 2);
-
-        set_log(&clock, index, event.tx_hash, event.contract, event.ordinal, event.caller, row);
-        index += 1;
+    for event in events.burns {
+        handle_transfer(tables, clock, event);
     }
+}
+
+fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::Transfer) {
+    let key = common_key(&clock, event.execution_index as u64);
+    let instruction = event.instruction().as_str_name();
+
+    // TO-DO: handle empty `mint` values
+    let mint = match event.mint {
+        Some(mint) => base58::encode(mint),
+        None => return, // skip for now
+    };
+    let decimals = match event.decimals {
+        Some(decimals) => decimals,
+        None => return, // skip for now
+    };
+    let row = tables
+        .create_row("spl_token_transfers", key)
+        .set("source", base58::encode(event.source))
+        .set("destination", base58::encode(event.destination))
+        .set("mint", mint)
+        .set("amount", event.amount.to_string())
+        .set("decimals", decimals.to_string());
+
+    set_instruction(event.tx_hash, event.program_id, instruction, event.authority, event.multisig_authority, row);
+    set_ordering(
+        event.execution_index,
+        event.instruction_index,
+        event.inner_instruction_index,
+        event.stack_height,
+        clock,
+        row,
+    );
+    set_clock(clock, row);
 }

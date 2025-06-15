@@ -1,6 +1,6 @@
 -- SPL balance by account --
 -- There can only be a single SPL balance change per block for a given address / contract pair --
-CREATE TABLE IF NOT EXISTS spl_balance_changes  (
+CREATE TABLE IF NOT EXISTS spl_token_balance_changes  (
     -- block --
     block_num            UInt32,
     block_hash           FixedString(66),

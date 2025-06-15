@@ -1,5 +1,5 @@
 ENDPOINT ?= solana.substreams.pinax.network:443
-START_BLOCK ?= 345923179
+START_BLOCK ?= 300000000
 
 .PHONY: build
 build:
@@ -11,7 +11,7 @@ pack: build
 
 .PHONY: noop
 noop: build
-	substreams-sink-noop $(ENDPOINT) substreams.yaml map_events -H "X-Sf-Substreams-Parallel-Jobs: 600"
+	substreams-sink-noop $(ENDPOINT) substreams.yaml map_events -H "X-Sf-Substreams-Parallel-Jobs: 500" $(START_BLOCK):
 
 .PHONY: gui
 gui: build
@@ -19,4 +19,4 @@ gui: build
 
 .PHONY: prod
 prod: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s 0 -t 0 --limit-processed-blocks 0 --production-mode
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) -t 0 --limit-processed-blocks 0 --production-mode  -H "X-Sf-Substreams-Parallel-Jobs: 500"

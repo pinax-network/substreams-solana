@@ -3,7 +3,7 @@ package:
   name: solana_tokens
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-solana
-  description: SPL & Native transfers & balances for Solana blockchains.
+  description: SPL, SPL-20222 & Native transfers and balances for Solana blockchains.
   image: ../image.png
 
 imports:
@@ -11,13 +11,14 @@ imports:
   database_changes: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
-  # SPL
-  spl_transfers: https://github.com/streamingfast/substreams-spl-all-tokens/releases/download/v0.1.1/solana-spl-all-tokens-v0.1.1.spkg
+  # SPL Token
+  spl_token_balances: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-balances-v0.1.0.spkg
+  spl_token_transfers: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-transfers-v0.1.0.spkg
 
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/evm_clickhouse_tokens.wasm
+    file: ../target/wasm32-unknown-unknown/release/clickhouse_solana_tokens.wasm
 
 modules:
   - name: db_out
@@ -25,8 +26,9 @@ modules:
     inputs:
       - source: sf.substreams.v1.Clock
 
-      # SPL
-      - map: spl_transfers:map_events
+      # SPL Token
+      - map: spl_token_transfers:map_events
+      - map: spl_token_balances:map_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
@@ -40,4 +42,4 @@ sink:
     postgraphile_frontend:
       enabled: false
 
-network: mainnet
+network: solana
