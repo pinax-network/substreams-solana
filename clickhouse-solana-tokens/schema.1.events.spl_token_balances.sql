@@ -1,9 +1,9 @@
--- SPL balance by account --
--- There can only be a single SPL balance change per block for a given address / contract pair --
-CREATE TABLE IF NOT EXISTS spl_token_balance_changes  (
+-- SPL Token-2022 & Classic balance changes by mint/owner --
+-- Only keep last balance change per account per block, use `execution_index` to resolve conflicts
+CREATE TABLE IF NOT EXISTS balance_changes  (
     -- block --
     block_num           UInt32,
-    block_hash          FixedString(66),
+    block_hash          FixedString(44),
     timestamp           DateTime(0, 'UTC'),
 
     -- transaction --
@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS spl_token_balance_changes  (
 
     -- ordering --
     execution_index     UInt32, -- relative index
-    global_sequence     UInt64, -- latest global sequence (block_num << 32 + execution_index)
 
     -- account --
     program_id          FixedString(32),
@@ -22,6 +21,9 @@ CREATE TABLE IF NOT EXISTS spl_token_balance_changes  (
     amount              UInt64,
     decimals            UInt8,
 
+    -- classification --
+    token_standard              Enum8('Native' = 3, 'SPL Token' = 4),
+
     -- indexes --
     INDEX idx_block_num          (block_num)           TYPE minmax GRANULARITY 4,
     INDEX idx_timestamp          (timestamp)           TYPE minmax GRANULARITY 4,
@@ -31,7 +33,8 @@ CREATE TABLE IF NOT EXISTS spl_token_balance_changes  (
     INDEX idx_mint               (mint)                TYPE set(128) GRANULARITY 4,
     INDEX idx_owner              (owner)               TYPE bloom_filter GRANULARITY 4,
     INDEX idx_amount             (amount)              TYPE minmax GRANULARITY 4,
-    INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4
+    INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4,
+    INDEX idx_token_standard     (token_standard)      TYPE set(2) GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
-ORDER BY (mint, owner, block_hash, execution_index);
+ENGINE = ReplacingMergeTree(execution_index)
+ORDER BY (mint, owner, block_hash);

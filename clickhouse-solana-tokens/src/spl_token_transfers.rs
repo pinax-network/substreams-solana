@@ -38,9 +38,7 @@ fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, cloc
         Some(_) => TokenStandard::SplToken2022,
         None => TokenStandard::ClassicSplToken,
     };
-
-    // TO-DO: handle empty `mint` values
-    let mint = match event.mint {
+    let mint_raw = match event.mint {
         Some(mint) => base58::encode(mint),
         None => "".to_string(),
     };
@@ -52,8 +50,9 @@ fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, cloc
         .create_row("transfers", key)
         .set("source", base58::encode(event.source))
         .set("destination", base58::encode(event.destination))
-        .set("mint", mint)
         .set("amount", event.amount.to_string())
+        // -- SPL Token-2022 --
+        .set("mint_raw", mint_raw)
         .set("decimals_raw", decimals_raw.to_string())
         .set("token_standard", token_standard.to_string()); // Enum8('Native' = 1, 'SPL Token' = 2, 'SPL Token-2022' = 3)
 
@@ -122,23 +121,28 @@ fn handle_approve(tables: &mut substreams_database_change::tables::Tables, clock
     let key = common_key(&clock, event.execution_index as u64);
     let instruction = event.instruction().as_str_name();
 
-    // TO-DO: handle empty `mint` values
-    let mint = match event.mint {
-        Some(mint) => base58::encode(mint),
-        None => return, // skip for now
+    let token_standard = match event.mint.clone() {
+        Some(_) => TokenStandard::SplToken2022,
+        None => TokenStandard::ClassicSplToken,
     };
-    let decimals = match event.decimals {
-        Some(decimals) => decimals,
-        None => return, // skip for now
+    let mint_raw = match event.mint {
+        Some(mint) => base58::encode(mint),
+        None => "".to_string(),
+    };
+    let decimals_raw = match event.decimals {
+        Some(decimals) => decimals.to_string(),
+        None => "".to_string(),
     };
     let row = tables
         .create_row("approve", key)
         .set("source", base58::encode(event.source))
-        .set("mint", mint)
         .set("delegate", base58::encode(event.delegate))
         .set("owner", base58::encode(event.owner))
         .set("amount", event.amount.to_string())
-        .set("decimals", decimals.to_string());
+        // -- SPL Token-2022 --
+        .set("mint_raw", mint_raw)
+        .set("decimals_raw", decimals_raw.to_string())
+        .set("token_standard", token_standard.to_string()); // Enum8('Native' = 1, 'SPL Token' = 2, 'SPL Token-2022 = 3)
 
     set_instruction(event.tx_hash, event.program_id, instruction, row);
     set_authority(event.authority, event.multisig_authority, row);

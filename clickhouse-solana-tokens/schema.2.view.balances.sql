@@ -1,22 +1,21 @@
 -- latest balances by owner/contract --
 CREATE TABLE IF NOT EXISTS balances  (
     -- block --
-    block_num            UInt32,
-    block_hash           FixedString(66),
-    timestamp            DateTime(0, 'UTC'),
-
-    -- ordering --
-    execution_index     UInt32, -- relative index
-    global_sequence     UInt64, -- latest global sequence (block_num << 32 + execution_index)
+    block_num               UInt32,
+    block_hash              FixedString(66),
+    timestamp               DateTime(0, 'UTC'),
 
     -- account --
-    program_id          FixedString(32),
+    program_id              FixedString(32),
 
     -- event --
-    owner               FixedString(44),
-    mint                FixedString(44),
-    amount              UInt64,
-    decimals            UInt8,
+    owner                   FixedString(44),
+    mint                    FixedString(44),
+    amount                  UInt64,
+    decimals                UInt8,
+
+    -- classification --
+    token_standard              Enum8('Classic SPL Token' = 1, 'SPL Token-2022' = 2, 'Native' = 3),
 
     -- indexes --
     INDEX idx_block_num          (block_num)           TYPE minmax GRANULARITY 4,
@@ -27,29 +26,26 @@ CREATE TABLE IF NOT EXISTS balances  (
     INDEX idx_mint               (mint)                TYPE set(128) GRANULARITY 4,
     INDEX idx_owner              (owner)               TYPE bloom_filter GRANULARITY 4,
     INDEX idx_amount             (amount)              TYPE minmax GRANULARITY 4,
-    INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4
+    INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4,
+    INDEX idx_token_standard     (token_standard)      TYPE set(2) GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (address, contract);
+ORDER BY (owner, mint);
 
 -- insert SPL Token balance changes --
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_token_balance_changes
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_balances
 TO balances AS
 SELECT
     -- block --
-    b.block_num AS block_num,
-    b.block_hash AS block_hash,
-    b.timestamp AS timestamp,
-
-    -- ordering --
-    b.execution_index AS execution_index,
-    b.global_sequence AS global_sequence,
+    block_num,
+    block_hash,
+    timestamp,
 
     -- event --
-    b.program_id AS program_id,
-    b.owner AS owner,
-    b.mint AS mint,
-    b.amount AS amount,
-    b.decimals AS decimals
+    program_id,
+    owner,
+    mint,
+    amount,
+    decimals
 
-FROM spl_token_balance_changes AS b;
+FROM balance_changes;
