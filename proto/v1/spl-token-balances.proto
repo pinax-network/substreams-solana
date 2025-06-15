@@ -13,15 +13,11 @@ message Balance {
 
   // -- indexes --
   uint32 execution_index = 2;
-  uint32 instruction_index = 3;
-  uint32 inner_instruction_index = 4;
 
-  // -- authority --
-  bytes authority = 8;
-  repeated bytes multisig_authority = 9;
+  // -- account --
+  bytes program_id = 10;
 
   // -- data --
-  bytes program_id = 10;
   bytes owner = 11;
   bytes mint = 12;
   uint64 amount = 13;

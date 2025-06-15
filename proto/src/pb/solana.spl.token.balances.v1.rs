@@ -16,18 +16,10 @@ pub struct Balance {
     /// -- indexes --
     #[prost(uint32, tag="2")]
     pub execution_index: u32,
-    #[prost(uint32, tag="3")]
-    pub instruction_index: u32,
-    #[prost(uint32, tag="4")]
-    pub inner_instruction_index: u32,
-    /// -- authority --
-    #[prost(bytes="vec", tag="8")]
-    pub authority: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", repeated, tag="9")]
-    pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
-    /// -- data --
+    /// -- account --
     #[prost(bytes="vec", tag="10")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
+    /// -- data --
     #[prost(bytes="vec", tag="11")]
     pub owner: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="12")]

@@ -1,4 +1,4 @@
-use proto::pb::solana::spl::token::v1::{Approve, Events, InitializeAccount, InitializeMint, Instructions, Revoke, Transfer};
+use proto::pb::solana::spl::token::transfers::v1::{Approve, Events, InitializeAccount, InitializeMint, Instructions, Revoke, Transfer};
 use substreams::{errors::Error, log};
 use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
 use substreams_solana_program_instructions::{option::COption, token_instruction_2022::TokenInstruction};
