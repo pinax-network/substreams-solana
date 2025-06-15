@@ -22,11 +22,17 @@ pub fn set_clock(clock: &Clock, row: &mut Row) {
 }
 
 // TO-DO: handle multisig authority
-pub fn set_instruction(tx_hash: Hash, program_id: Address, instruction: &str, authority: Address, _multisig_authority: Vec<Address>, row: &mut Row) {
+pub fn set_instruction(tx_hash: Hash, program_id: Address, instruction: &str, row: &mut Row) {
     row.set("tx_hash", base58::encode(tx_hash))
         .set("program_id", base58::encode(program_id))
-        .set("instruction", instruction)
-        .set("authority", base58::encode(authority));
+        .set("instruction", instruction);
+}
+
+pub fn set_authority(authority: Address, multisig_authority: Vec<Address>, row: &mut Row) {
+    row.set("authority", base58::encode(authority)).set(
+        "multisig_authority_raw",
+        multisig_authority.iter().map(base58::encode).collect::<Vec<_>>().join(","),
+    );
 }
 
 pub fn set_ordering(execution_index: u32, instruction_index: u32, inner_instruction_index: u32, stack_height: u32, clock: &Clock, row: &mut Row) {

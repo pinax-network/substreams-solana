@@ -1,13 +1,9 @@
--- SPL balance by account --
--- There can only be a single SPL balance change per block for a given address / contract pair --
-CREATE TABLE IF NOT EXISTS spl_token_balance_changes  (
+-- latest balances by owner/contract --
+CREATE TABLE IF NOT EXISTS balances  (
     -- block --
-    block_num           UInt32,
-    block_hash          FixedString(66),
-    timestamp           DateTime(0, 'UTC'),
-
-    -- transaction --
-    tx_hash             FixedString(88),
+    block_num            UInt32,
+    block_hash           FixedString(66),
+    timestamp            DateTime(0, 'UTC'),
 
     -- ordering --
     execution_index     UInt32, -- relative index
@@ -33,5 +29,27 @@ CREATE TABLE IF NOT EXISTS spl_token_balance_changes  (
     INDEX idx_amount             (amount)              TYPE minmax GRANULARITY 4,
     INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4
 )
-ENGINE = ReplacingMergeTree
-ORDER BY (mint, owner, block_hash, execution_index);
+ENGINE = ReplacingMergeTree(block_num)
+ORDER BY (address, contract);
+
+-- insert SPL Token balance changes --
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_token_balance_changes
+TO balances AS
+SELECT
+    -- block --
+    b.block_num AS block_num,
+    b.block_hash AS block_hash,
+    b.timestamp AS timestamp,
+
+    -- ordering --
+    b.execution_index AS execution_index,
+    b.global_sequence AS global_sequence,
+
+    -- event --
+    b.program_id AS program_id,
+    b.owner AS owner,
+    b.mint AS mint,
+    b.amount AS amount,
+    b.decimals AS decimals
+
+FROM spl_token_balance_changes AS b;

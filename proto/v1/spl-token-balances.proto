@@ -17,7 +17,7 @@ message Balance {
   // -- account --
   bytes program_id = 10;
 
-  // -- data --
+  // -- event --
   bytes owner = 11;
   bytes mint = 12;
   uint64 amount = 13;

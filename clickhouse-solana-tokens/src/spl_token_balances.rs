@@ -1,4 +1,4 @@
-use common::clickhouse::{common_key, set_clock, set_instruction, set_ordering};
+use common::clickhouse::{common_key, set_clock};
 use proto::pb::solana::spl;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
@@ -11,23 +11,26 @@ pub fn process_spl_token_balances(tables: &mut substreams_database_change::table
 }
 
 fn handle_balance(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::balances::v1::Balance) {
-    let key = common_key(&clock, event.execution_index as u64);
+    let mint = base58::encode(event.mint);
+    let owner = base58::encode(event.owner);
+    let key = [
+        ("mint", mint.to_string()),
+        ("owner", owner.to_string()),
+        ("block_hash", clock.id.to_string()),
+        ("execution_index", event.execution_index.to_string()),
+    ];
     let row = tables
         .create_row("spl_token_balance_changes", key)
-        .set("owner", base58::encode(event.owner))
-        .set("destination", base58::encode(event.destination))
+        // -- Ordering --
+        .set("execution_index", event.execution_index)
+        // -- Transaction --
+        .set("tx_hash", base58::encode(event.tx_hash))
+        .set("program_id", base58::encode(event.program_id))
+        // -- Data --
+        .set("owner", owner)
         .set("mint", mint)
         .set("amount", event.amount.to_string())
-        .set("decimals", decimals.to_string());
+        .set("decimals", event.decimals.to_string());
 
-    set_instruction(event.tx_hash, event.program_id, instruction, event.authority, event.multisig_authority, row);
-    set_ordering(
-        event.execution_index,
-        event.instruction_index,
-        event.inner_instruction_index,
-        event.stack_height,
-        clock,
-        row,
-    );
     set_clock(clock, row);
 }

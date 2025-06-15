@@ -1,3 +1,4 @@
+mod enums;
 mod spl_token_balances;
 mod spl_token_transfers;
 use proto::pb::solana::spl;
@@ -15,7 +16,7 @@ pub fn db_out(
     let mut tables = substreams_database_change::tables::Tables::new();
 
     spl_token_transfers::process_spl_token_transfers(&mut tables, &clock, spl_transfers);
-    // spl_token_balances::process_spl_token_balances(&mut tables, &clock, spl_balances);
+    spl_token_balances::process_spl_token_balances(&mut tables, &clock, spl_balances);
 
     Ok(tables.to_database_changes())
 }
