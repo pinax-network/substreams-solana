@@ -1,0 +1,41 @@
+specVersion: v0.1.0
+package:
+  name: solana_clock
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: Solana Clock
+  image: ../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/solana_clock.wasm
+
+
+protobuf:
+  files:
+    - v1/solana-clock.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_clock
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+      - store: store_solana_clock
+        mode: get
+    output:
+      type: proto:solana.clock.v1.SolanaClock
+
+  - name: store_solana_clock
+    kind: store
+    updatePolicy: set
+    valueType: bigint
+    inputs:
+      - map: solana_common:blocks_without_votes
+
+network: solana

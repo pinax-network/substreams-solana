@@ -1275,6 +1275,17 @@ dependencies = [
 
 [[package]]
 name = "solana-clock"
+version = "0.0.0"
+dependencies = [
+ "bs58 0.5.1",
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
+name = "solana-clock"
 version = "2.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1bb482ab70fced82ad3d7d3d87be33d466a3498eb8aa856434ff3c0dfc2e2e31"
@@ -1605,7 +1616,7 @@ dependencies = [
  "num-traits",
  "serde",
  "serde_derive",
- "solana-clock",
+ "solana-clock 2.2.2",
  "solana-cpi",
  "solana-decode-error",
  "solana-instruction",
@@ -1643,7 +1654,7 @@ dependencies = [
  "serde",
  "serde_derive",
  "solana-account-info",
- "solana-clock",
+ "solana-clock 2.2.2",
  "solana-define-syscall",
  "solana-epoch-rewards",
  "solana-epoch-schedule",

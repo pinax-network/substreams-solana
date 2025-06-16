@@ -19,7 +19,7 @@ pub struct Balance {
     /// -- account --
     #[prost(bytes="vec", tag="10")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// -- data --
+    /// -- event --
     #[prost(bytes="vec", tag="11")]
     pub owner: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="12")]

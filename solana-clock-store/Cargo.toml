@@ -1,0 +1,16 @@
+[package]
+name = "solana-clock"
+description = "Solana clock"
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+bs58 = { workspace = true }
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+proto = { path = "../proto" }
+common = { path = "../common" }

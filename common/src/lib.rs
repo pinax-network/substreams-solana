@@ -1,4 +1,5 @@
 pub mod clickhouse;
+pub mod solana;
 use substreams::{hex, log, pb::substreams::Clock, scalar::BigInt};
 
 pub type Address = Vec<u8>;
