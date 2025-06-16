@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS initialize_accounts (
     INDEX idx_owner              (owner)              TYPE bloom_filter GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (account, mint);
+ORDER BY (account, mint, program_id);
 
 -- SPL Token-2022 & Classic Initialize Mints --
 CREATE TABLE IF NOT EXISTS initialize_mints (
@@ -209,9 +209,10 @@ CREATE TABLE IF NOT EXISTS initialize_mints (
     instruction                 LowCardinality(String),
 
     -- event --
-    account                     FixedString(44),
     mint                        FixedString(44),
-    owner                       FixedString(44),
+    mint_authority              FixedString(44),
+    freeze_authority            FixedString(44),
+    decimals                    UInt8,
 
     -- indexes --
     INDEX idx_block_num          (block_num)          TYPE minmax GRANULARITY 4,
@@ -220,7 +221,9 @@ CREATE TABLE IF NOT EXISTS initialize_mints (
 
     -- indexes (event) --
     INDEX idx_mint               (mint)               TYPE set(128) GRANULARITY 4,
-    INDEX idx_owner              (owner)              TYPE bloom_filter GRANULARITY 4
+    INDEX idx_mint_authority     (mint_authority)     TYPE set(128) GRANULARITY 4,
+    INDEX idx_freeze_authority   (freeze_authority)   TYPE set(128) GRANULARITY 4,
+    INDEX idx_decimals           (decimals)           TYPE minmax GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (account, mint);
+ORDER BY (mint, program_id);

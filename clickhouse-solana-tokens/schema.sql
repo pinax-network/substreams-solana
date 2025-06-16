@@ -238,7 +238,7 @@ CREATE TABLE IF NOT EXISTS initialize_accounts (
     INDEX idx_owner              (owner)              TYPE bloom_filter GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (account, mint);
+ORDER BY (account, mint, program_id);
 
 -- SPL Token-2022 & Classic Initialize Mints --
 CREATE TABLE IF NOT EXISTS initialize_mints (
@@ -262,9 +262,10 @@ CREATE TABLE IF NOT EXISTS initialize_mints (
     instruction                 LowCardinality(String),
 
     -- event --
-    account                     FixedString(44),
     mint                        FixedString(44),
-    owner                       FixedString(44),
+    mint_authority              FixedString(44),
+    freeze_authority            FixedString(44),
+    decimals                    UInt8,
 
     -- indexes --
     INDEX idx_block_num          (block_num)          TYPE minmax GRANULARITY 4,
@@ -273,57 +274,28 @@ CREATE TABLE IF NOT EXISTS initialize_mints (
 
     -- indexes (event) --
     INDEX idx_mint               (mint)               TYPE set(128) GRANULARITY 4,
-    INDEX idx_owner              (owner)              TYPE bloom_filter GRANULARITY 4
+    INDEX idx_mint_authority     (mint_authority)     TYPE set(128) GRANULARITY 4,
+    INDEX idx_freeze_authority   (freeze_authority)   TYPE set(128) GRANULARITY 4,
+    INDEX idx_decimals           (decimals)           TYPE minmax GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (account, mint);
+ORDER BY (mint, program_id);
 
--- latest balances by owner/contract --
-CREATE TABLE IF NOT EXISTS balances  (
-    -- block --
-    block_num               UInt32,
-    block_hash              FixedString(44),
-    timestamp               DateTime(0, 'UTC'),
-
-    -- account --
-    program_id              LowCardinality(FixedString(44)),
-
-    -- event --
-    owner                   FixedString(44),
-    mint                    FixedString(44),
-    amount                  UInt64,
-    decimals                UInt8,
-
-    -- indexes --
-    INDEX idx_block_num          (block_num)           TYPE minmax GRANULARITY 4,
-    INDEX idx_timestamp          (timestamp)           TYPE minmax GRANULARITY 4,
-
-    -- indexes (event) --
-    INDEX idx_program_id         (program_id)          TYPE set(8) GRANULARITY 4,
-    INDEX idx_mint               (mint)                TYPE set(128) GRANULARITY 4,
-    INDEX idx_owner              (owner)               TYPE bloom_filter GRANULARITY 4,
-    INDEX idx_amount             (amount)              TYPE minmax GRANULARITY 4,
-    INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4
-)
+-- latest balances by owner/mint --
+CREATE TABLE IF NOT EXISTS balances AS balance_changes
 ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (owner, mint);
 
--- insert SPL Token balance changes --
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_balances
 TO balances AS
-SELECT
-    -- block --
-    block_num,
-    block_hash,
-    timestamp,
+SELECT * FROM balance_changes;
 
-    -- event --
-    program_id,
-    owner,
-    mint,
-    amount,
-    decimals
+-- latest balances by mint/owner --
+CREATE TABLE IF NOT EXISTS balances_by_mint AS balance_changes
+ENGINE = ReplacingMergeTree(block_num)
+ORDER BY (mint, owner);
 
-FROM balance_changes;
-
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_balances_by_mint
+TO balances AS
+SELECT * FROM balance_changes;
 

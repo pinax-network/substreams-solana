@@ -63,13 +63,22 @@ fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, cloc
 }
 
 fn handle_initialize_account(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::InitializeAccount) {
-    let key = common_key(&clock, event.execution_index as u64);
     let instruction = event.instruction().as_str_name();
+
+    // -- key --
+    let mint = base58::encode(event.mint);
+    let account = base58::encode(event.account);
+    let program_id: String = base58::encode(event.program_id.clone());
+    let key = [
+        ("account", account.to_string()),
+        ("mint", mint.to_string()),
+        ("program_id", program_id.to_string()),
+    ];
 
     let row = tables
         .create_row("initialize_accounts", key)
-        .set("account", base58::encode(event.account))
-        .set("mint", base58::encode(event.mint))
+        .set("account", account)
+        .set("mint", mint)
         .set("owner", base58::encode(event.owner));
 
     set_instruction(event.tx_hash, event.program_id, instruction, row);
@@ -85,12 +94,16 @@ fn handle_initialize_account(tables: &mut substreams_database_change::tables::Ta
 }
 
 fn handle_initialize_mint(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::InitializeMint) {
-    let key = common_key(&clock, event.execution_index as u64);
     let instruction = event.instruction().as_str_name();
+
+    // -- key --
+    let mint = base58::encode(event.mint);
+    let program_id: String = base58::encode(event.program_id.clone());
+    let key = [("mint", mint.to_string()), ("program_id", program_id.to_string())];
 
     let row = tables
         .create_row("initialize_mints", key)
-        .set("mint", base58::encode(event.mint))
+        .set("mint", mint)
         .set("mint_authority", base58::encode(event.mint_authority))
         .set(
             "freeze_authority",
