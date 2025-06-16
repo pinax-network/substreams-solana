@@ -2,20 +2,17 @@
 CREATE TABLE IF NOT EXISTS balances  (
     -- block --
     block_num               UInt32,
-    block_hash              FixedString(66),
+    block_hash              FixedString(44),
     timestamp               DateTime(0, 'UTC'),
 
     -- account --
-    program_id              FixedString(32),
+    program_id              LowCardinality(FixedString(44)),
 
     -- event --
     owner                   FixedString(44),
     mint                    FixedString(44),
     amount                  UInt64,
     decimals                UInt8,
-
-    -- classification --
-    token_standard              Enum8('Classic SPL Token' = 1, 'SPL Token-2022' = 2, 'Native' = 3),
 
     -- indexes --
     INDEX idx_block_num          (block_num)           TYPE minmax GRANULARITY 4,
@@ -26,8 +23,7 @@ CREATE TABLE IF NOT EXISTS balances  (
     INDEX idx_mint               (mint)                TYPE set(128) GRANULARITY 4,
     INDEX idx_owner              (owner)               TYPE bloom_filter GRANULARITY 4,
     INDEX idx_amount             (amount)              TYPE minmax GRANULARITY 4,
-    INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4,
-    INDEX idx_token_standard     (token_standard)      TYPE set(2) GRANULARITY 1
+    INDEX idx_decimals           (decimals)            TYPE minmax GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (owner, mint);

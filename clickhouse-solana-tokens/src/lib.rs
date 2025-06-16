@@ -1,4 +1,3 @@
-mod enums;
 mod spl_token_balances;
 mod spl_token_transfers;
 use common::clickhouse::set_clock;

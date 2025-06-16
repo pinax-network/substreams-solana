@@ -3,8 +3,6 @@ use proto::pb::solana::spl;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
 
-use crate::enums::TokenStandard;
-
 pub fn process_spl_token_transfers(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: spl::token::transfers::v1::Events) {
     // -- Transfers --
     for event in events.transfers {
@@ -34,10 +32,6 @@ fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, cloc
     let key = common_key(&clock, event.execution_index as u64);
     let instruction = event.instruction().as_str_name();
 
-    let token_standard = match event.mint.clone() {
-        Some(_) => TokenStandard::SplToken2022,
-        None => TokenStandard::ClassicSplToken,
-    };
     let mint_raw = match event.mint {
         Some(mint) => base58::encode(mint),
         None => "".to_string(),
@@ -53,8 +47,7 @@ fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, cloc
         .set("amount", event.amount.to_string())
         // -- SPL Token-2022 --
         .set("mint_raw", mint_raw)
-        .set("decimals_raw", decimals_raw.to_string())
-        .set("token_standard", token_standard.to_string()); // Enum8('Native' = 1, 'SPL Token' = 2, 'SPL Token-2022' = 3)
+        .set("decimals_raw", decimals_raw.to_string());
 
     set_instruction(event.tx_hash, event.program_id, instruction, row);
     set_authority(event.authority, event.multisig_authority, row);
@@ -74,7 +67,7 @@ fn handle_initialize_account(tables: &mut substreams_database_change::tables::Ta
     let instruction = event.instruction().as_str_name();
 
     let row = tables
-        .create_row("initialize_account", key)
+        .create_row("initialize_accounts", key)
         .set("account", base58::encode(event.account))
         .set("mint", base58::encode(event.mint))
         .set("owner", base58::encode(event.owner));
@@ -96,7 +89,7 @@ fn handle_initialize_mint(tables: &mut substreams_database_change::tables::Table
     let instruction = event.instruction().as_str_name();
 
     let row = tables
-        .create_row("initialize_mint", key)
+        .create_row("initialize_mints", key)
         .set("mint", base58::encode(event.mint))
         .set("mint_authority", base58::encode(event.mint_authority))
         .set(
@@ -121,10 +114,6 @@ fn handle_approve(tables: &mut substreams_database_change::tables::Tables, clock
     let key = common_key(&clock, event.execution_index as u64);
     let instruction = event.instruction().as_str_name();
 
-    let token_standard = match event.mint.clone() {
-        Some(_) => TokenStandard::SplToken2022,
-        None => TokenStandard::ClassicSplToken,
-    };
     let mint_raw = match event.mint {
         Some(mint) => base58::encode(mint),
         None => "".to_string(),
@@ -134,15 +123,14 @@ fn handle_approve(tables: &mut substreams_database_change::tables::Tables, clock
         None => "".to_string(),
     };
     let row = tables
-        .create_row("approve", key)
+        .create_row("approves", key)
         .set("source", base58::encode(event.source))
         .set("delegate", base58::encode(event.delegate))
         .set("owner", base58::encode(event.owner))
         .set("amount", event.amount.to_string())
         // -- SPL Token-2022 --
         .set("mint_raw", mint_raw)
-        .set("decimals_raw", decimals_raw.to_string())
-        .set("token_standard", token_standard.to_string()); // Enum8('Native' = 1, 'SPL Token' = 2, 'SPL Token-2022 = 3)
+        .set("decimals_raw", decimals_raw.to_string());
 
     set_instruction(event.tx_hash, event.program_id, instruction, row);
     set_authority(event.authority, event.multisig_authority, row);
@@ -162,7 +150,7 @@ fn handle_revoke(tables: &mut substreams_database_change::tables::Tables, clock:
     let instruction = event.instruction().as_str_name();
 
     let row = tables
-        .create_row("revoke", key)
+        .create_row("revokes", key)
         .set("source", base58::encode(event.source))
         .set("owner", base58::encode(event.owner));
 

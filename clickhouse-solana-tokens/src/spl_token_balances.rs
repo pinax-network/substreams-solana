@@ -3,8 +3,6 @@ use proto::pb::solana::spl;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
 
-use crate::enums::TokenStandard;
-
 pub fn process_spl_token_balances(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: spl::token::balances::v1::Events) {
     // -- Balances --
     for event in events.balances {
@@ -27,8 +25,7 @@ fn handle_balance(tables: &mut substreams_database_change::tables::Tables, clock
         .set("owner", owner)
         .set("mint", mint)
         .set("amount", event.amount.to_string())
-        .set("decimals", event.decimals.to_string())
-        .set("token_standard", TokenStandard::SplToken.to_string()); // Enum8('Native' = 1, 'SPL Token' = 2, 'SPL Token-2022' = 3)
+        .set("decimals", event.decimals.to_string());
 
     set_clock(clock, row);
 }
