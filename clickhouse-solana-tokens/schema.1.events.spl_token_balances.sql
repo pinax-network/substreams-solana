@@ -5,6 +5,12 @@ CREATE TABLE IF NOT EXISTS balance_changes  (
     block_num           UInt32,
     block_hash          FixedString(44),
     timestamp           DateTime(0, 'UTC'),
+    timestamp_since_genesis     DateTime(0, 'UTC')
+        MATERIALIZED if (
+            timestamp = 0,
+            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
+            timestamp
+        ),
 
     -- transaction --
     tx_hash             FixedString(88),
@@ -24,6 +30,7 @@ CREATE TABLE IF NOT EXISTS balance_changes  (
     -- indexes --
     INDEX idx_block_num          (block_num)           TYPE minmax GRANULARITY 4,
     INDEX idx_timestamp          (timestamp)           TYPE minmax GRANULARITY 4,
+    INDEX idx_timestamp_since_genesis    (timestamp_since_genesis)  TYPE minmax GRANULARITY 4
 
     -- indexes (event) --
     INDEX idx_program_id         (program_id)          TYPE set(8) GRANULARITY 4,

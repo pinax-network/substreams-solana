@@ -10,7 +10,6 @@ members = [
   # "clickhouse-contracts",
 
   # Common
-  "solana-clock-store",
   "proto",
   "common",
 ]
