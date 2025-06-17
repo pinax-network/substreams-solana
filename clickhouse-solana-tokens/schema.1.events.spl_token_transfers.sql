@@ -4,6 +4,12 @@ CREATE TABLE IF NOT EXISTS transfers (
     block_num                   UInt32,
     block_hash                  FixedString(44),
     timestamp                   DateTime(0, 'UTC'),
+    timestamp_since_genesis     DateTime(0, 'UTC')
+        MATERIALIZED if (
+            timestamp = 0,
+            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
+            timestamp
+        ),
 
     -- ordering --
     execution_index             UInt32, -- relative index
@@ -40,6 +46,7 @@ CREATE TABLE IF NOT EXISTS transfers (
     INDEX idx_tx_hash            (tx_hash)            TYPE bloom_filter GRANULARITY 4,
     INDEX idx_program_id         (program_id)         TYPE set(2) GRANULARITY 1,
     INDEX idx_authority          (authority)          TYPE bloom_filter GRANULARITY 4,
+    INDEX idx_timestamp_since_genesis    (timestamp_since_genesis)  TYPE minmax GRANULARITY 4,
 
     -- indexes (event) --
     INDEX idx_source             (source)             TYPE bloom_filter GRANULARITY 4,
@@ -57,6 +64,12 @@ CREATE TABLE IF NOT EXISTS approves (
     block_num                   UInt32,
     block_hash                  FixedString(44),
     timestamp                   DateTime(0, 'UTC'),
+    timestamp_since_genesis     DateTime(0, 'UTC')
+        MATERIALIZED if (
+            timestamp = 0,
+            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
+            timestamp
+        ),
 
     -- ordering --
     execution_index             UInt32, -- relative index
@@ -112,6 +125,12 @@ CREATE TABLE IF NOT EXISTS revokes (
     block_num                   UInt32,
     block_hash                  FixedString(44),
     timestamp                   DateTime(0, 'UTC'),
+    timestamp_since_genesis     DateTime(0, 'UTC')
+        MATERIALIZED if (
+            timestamp = 0,
+            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
+            timestamp
+        ),
 
     -- ordering --
     execution_index             UInt32, -- relative index
@@ -155,6 +174,12 @@ CREATE TABLE IF NOT EXISTS initialize_accounts (
     block_num                   UInt32,
     block_hash                  FixedString(44),
     timestamp                   DateTime(0, 'UTC'),
+    timestamp_since_genesis     DateTime(0, 'UTC')
+        MATERIALIZED if (
+            timestamp = 0,
+            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
+            timestamp
+        ),
 
     -- ordering --
     execution_index             UInt32, -- relative index
@@ -193,6 +218,12 @@ CREATE TABLE IF NOT EXISTS initialize_mints (
     block_num                   UInt32,
     block_hash                  FixedString(44),
     timestamp                   DateTime(0, 'UTC'),
+    timestamp_since_genesis     DateTime(0, 'UTC')
+        MATERIALIZED if (
+            timestamp = 0,
+            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
+            timestamp
+        ),
 
     -- ordering --
     execution_index             UInt32, -- relative index

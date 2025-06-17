@@ -15,3 +15,5 @@ data
 data1
 data2
 !__cache__/*.spkg
+
+schema.sql

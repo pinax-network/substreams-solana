@@ -48,7 +48,7 @@ pub struct Transfer {
     pub authority: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", repeated, tag="9")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
-    /// -- data --
+    /// -- event --
     #[prost(bytes="vec", tag="10")]
     pub source: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="11")]
@@ -85,7 +85,7 @@ pub struct InitializeMint {
     /// enum
     #[prost(enumeration="Instructions", tag="7")]
     pub instruction: i32,
-    /// -- data --
+    /// -- event --
     #[prost(bytes="vec", tag="10")]
     pub mint: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="11")]
@@ -120,7 +120,7 @@ pub struct InitializeAccount {
     /// enum
     #[prost(enumeration="Instructions", tag="7")]
     pub instruction: i32,
-    /// -- data --
+    /// -- event --
     #[prost(bytes="vec", tag="10")]
     pub account: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="11")]
@@ -157,7 +157,7 @@ pub struct Approve {
     pub authority: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", repeated, tag="9")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
-    /// -- data --
+    /// -- event --
     #[prost(bytes="vec", tag="10")]
     pub source: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", optional, tag="11")]
@@ -201,7 +201,7 @@ pub struct Revoke {
     pub authority: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", repeated, tag="9")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
-    /// -- data --
+    /// -- event --
     #[prost(bytes="vec", tag="10")]
     pub source: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="13")]

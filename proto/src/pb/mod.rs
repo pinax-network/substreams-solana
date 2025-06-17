@@ -52,6 +52,13 @@ pub mod sol {
     }
 }
 pub mod solana {
+    pub mod clock {
+        // @@protoc_insertion_point(attribute:solana.clock.v1)
+        pub mod v1 {
+            include!("solana.clock.v1.rs");
+            // @@protoc_insertion_point(solana.clock.v1)
+        }
+    }
     pub mod spl {
         pub mod token {
             pub mod balances {
