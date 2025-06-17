@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS balance_changes  (
     -- indexes --
     INDEX idx_block_num          (block_num)           TYPE minmax GRANULARITY 4,
     INDEX idx_timestamp          (timestamp)           TYPE minmax GRANULARITY 4,
-    INDEX idx_timestamp_since_genesis    (timestamp_since_genesis)  TYPE minmax GRANULARITY 4
+    INDEX idx_timestamp_since_genesis    (timestamp_since_genesis)  TYPE minmax GRANULARITY 4,
 
     -- indexes (event) --
     INDEX idx_program_id         (program_id)          TYPE set(8) GRANULARITY 4,
