@@ -5,6 +5,9 @@ members = [
   "spl-token-transfers",
   "spl-token-balances",
 
+  # DEXs
+  "clickhouse-solana-dexs",
+
   # # General
   # "clickhouse-transactions",
   # "clickhouse-contracts",

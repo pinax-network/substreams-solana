@@ -1,4 +1,14 @@
 // @generated
+// @@protoc_insertion_point(attribute:pumpfun)
+pub mod pumpfun {
+    include!("pumpfun.rs");
+    // @@protoc_insertion_point(pumpfun)
+}
+// @@protoc_insertion_point(attribute:raydium_amm)
+pub mod raydium_amm {
+    include!("raydium_amm.rs");
+    // @@protoc_insertion_point(raydium_amm)
+}
 pub mod sf {
     pub mod firehose {
         // @@protoc_insertion_point(attribute:sf.firehose.v2)
@@ -52,13 +62,6 @@ pub mod sol {
     }
 }
 pub mod solana {
-    pub mod clock {
-        // @@protoc_insertion_point(attribute:solana.clock.v1)
-        pub mod v1 {
-            include!("solana.clock.v1.rs");
-            // @@protoc_insertion_point(solana.clock.v1)
-        }
-    }
     pub mod spl {
         pub mod token {
             pub mod balances {

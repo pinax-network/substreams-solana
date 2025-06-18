@@ -1,0 +1,45 @@
+specVersion: v0.1.0
+package:
+  name: solana_dexs
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: Raydium, Pump.fun DEXs for Solana.
+  image: ../image.png
+
+imports:
+  # SQL Sink Substreams
+  database_changes: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
+  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
+
+  # DEXs
+  pumpfun: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/pumpfun-events-v0.1.4.spkg
+  raydium: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/raydium-amm-events-v0.1.4.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../target/wasm32-unknown-unknown/release/clickhouse_solana_dexs.wasm
+
+modules:
+  - name: db_out
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+
+      # DEXs
+      - map: raydium:raydium_amm_events
+      - map: pumpfun:pumpfun_events
+
+    output:
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+
+sink:
+  module: db_out
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    schema: "./schema.sql"
+    engine: clickhouse
+    postgraphile_frontend:
+      enabled: false
+
+network: solana
