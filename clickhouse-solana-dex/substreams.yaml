@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: solana_dexs
+  name: solana_dex
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-solana
   description: Raydium, Pump.fun DEXs for Solana.
@@ -18,7 +18,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/clickhouse_solana_dexs.wasm
+    file: ../target/wasm32-unknown-unknown/release/clickhouse_solana_dex.wasm
 
 modules:
   - name: db_out

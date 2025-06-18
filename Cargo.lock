@@ -161,7 +161,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9555578bc9e57714c812a1f84e4fc5b4d21fcb063490c624de019f7464c91268"
 
 [[package]]
-name = "clickhouse-solana-dexs"
+name = "clickhouse-solana-dex"
 version = "0.0.0"
 dependencies = [
  "common",
