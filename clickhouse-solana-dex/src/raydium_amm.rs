@@ -107,6 +107,8 @@ fn handle_swap(
         .set("direction", &event.direction)
         .set("pool_pc_amount", event.pool_pc_amount())
         .set("pool_coin_amount", event.pool_coin_amount())
+        .set("pc_mint", &event.pc_mint)
+        .set("coin_mint", &event.coin_mint)
         .set("user_pre_balance_in", event.user_pre_balance_in())
         .set("user_pre_balance_out", event.user_pre_balance_out());
 
