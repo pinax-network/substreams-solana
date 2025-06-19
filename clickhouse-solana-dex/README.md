@@ -2,5 +2,6 @@
 
 ## Includes
 
-- `Raydium`
-- `Pump.fun`
+- [x] `Raydium AMM`
+- [x] `Pump.fun`
+- [ ] `Pump.fun AMM`

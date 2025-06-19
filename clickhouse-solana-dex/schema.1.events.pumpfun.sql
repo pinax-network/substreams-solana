@@ -1,67 +1,7 @@
 -- ──────────────────────────────────────────────────────────────────────────
--- Raydium AMM Swaps  (updated to latest protobuf)
+-- Pump.fun Create
 -- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_swap (
-    -- block ---------------------------------------------------------------
-    block_num                   UInt32,
-    block_hash                  FixedString(44),
-    timestamp                   DateTime(0, 'UTC'),
-
-    -- ordering ------------------------------------------------------------
-    execution_index             UInt32,
-    transaction_index           UInt32,
-    instruction_index           UInt32,
-    global_sequence             UInt64,
-
-    -- transaction ---------------------------------------------------------
-    tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
-    program_id                  LowCardinality(FixedString(44)),
-
-    -- event ---------------------------------------------------------------
-    amm                         FixedString(44),
-    user                        FixedString(44),
-    mint_in                     FixedString(44),
-    mint_out                    FixedString(44),
-    amount_in                   UInt64,
-    amount_out                  UInt64,
-    direction                   LowCardinality(String),   -- 'in' | 'out'
-    pool_pc_amount              UInt64              DEFAULT 0,
-    pool_coin_amount            UInt64              DEFAULT 0,
-    pc_mint                     FixedString(44),
-    coin_mint                   FixedString(44),
-    user_pre_balance_in         UInt64              DEFAULT 0,
-    user_pre_balance_out        UInt64              DEFAULT 0,
-
-    -- indexes -------------------------------------------------------------
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
-    INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
-
-    INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
-    INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
-    INDEX idx_mint_in           (mint_in)            TYPE set(128)         GRANULARITY 4,
-    INDEX idx_mint_out          (mint_out)           TYPE set(128)         GRANULARITY 4,
-    INDEX idx_pc_mint           (pc_mint)            TYPE set(128)         GRANULARITY 4,
-    INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
-    INDEX idx_amounts           (amount_in,
-                                 amount_out)         TYPE minmax           GRANULARITY 4,
-    INDEX idx_direction         (direction)          TYPE set(1)           GRANULARITY 1,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_mint_in  (SELECT * ORDER BY mint_in,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_mint_out (SELECT * ORDER BY mint_out, timestamp, block_num, execution_index, block_hash)
-)
-ENGINE = MergeTree
-ORDER BY (timestamp, block_num, execution_index, block_hash);
-
--- ──────────────────────────────────────────────────────────────────────────
--- Raydium AMM Initialize
--- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_initialize (
+CREATE TABLE IF NOT EXISTS pumpfun_create (
     -- block ---------------------------------------------------------------
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -80,46 +20,36 @@ CREATE TABLE IF NOT EXISTS raydium_amm_initialize (
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
-    amm                         FixedString(44),
     user                        FixedString(44),
-    pc_init_amount              UInt64,
-    coin_init_amount            UInt64,
-    lp_init_amount              UInt64,
-    pc_mint                     FixedString(44),
-    coin_mint                   FixedString(44),
-    lp_mint                     FixedString(44),
-    nonce                       UInt32,
-    market                      FixedString(44)      DEFAULT '',
-    user_pc_pre_balance         UInt64               DEFAULT 0,
-    user_coin_pre_balance       UInt64               DEFAULT 0,
+    name                        LowCardinality(String),
+    symbol                      LowCardinality(String),
+    uri                         String,
+    mint                        FixedString(44),
+    bonding_curve               FixedString(44),
+    associated_bonding_curve    FixedString(44),
+    metadata                    String,
 
     -- indexes -------------------------------------------------------------
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
     INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
 
-    INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
     INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
-    INDEX idx_pc_mint           (pc_mint)            TYPE set(128)         GRANULARITY 4,
-    INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
-    INDEX idx_amounts           (pc_init_amount,
-                                 coin_init_amount,
-                                 lp_init_amount)     TYPE minmax           GRANULARITY 4,
+    INDEX idx_mint              (mint)               TYPE set(128)         GRANULARITY 4,
+    INDEX idx_bonding_curve     (bonding_curve)      TYPE set(128)         GRANULARITY 4,
 
     -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
     PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint, timestamp, block_num, execution_index, block_hash)
+    PROJECTION projection_mint  (SELECT * ORDER BY mint, timestamp, block_num, execution_index, block_hash),
+    PROJECTION projection_bonding_curve (SELECT * ORDER BY bonding_curve, timestamp, block_num, execution_index, block_hash)
 )
 ENGINE = MergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash);
 
-
 -- ──────────────────────────────────────────────────────────────────────────
--- Raydium AMM Deposit
+-- Pump.fun Initialize
 -- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_deposit (
+CREATE TABLE IF NOT EXISTS pumpfun_initialize (
     -- block ---------------------------------------------------------------
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -138,144 +68,156 @@ CREATE TABLE IF NOT EXISTS raydium_amm_deposit (
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
-    amm                         FixedString(44),
     user                        FixedString(44),
-    pc_amount                   UInt64,
-    coin_amount                 UInt64,
-    lp_amount                   UInt64,
-    pc_mint                     FixedString(44),
-    coin_mint                   FixedString(44),
-    lp_mint                     FixedString(44),
-    pool_pc_amount              UInt64              DEFAULT 0,
-    pool_coin_amount            UInt64              DEFAULT 0,
-    pool_lp_amount              UInt64              DEFAULT 0,
-    user_pc_pre_balance         UInt64              DEFAULT 0,
-    user_coin_pre_balance       UInt64              DEFAULT 0,
 
     -- indexes -------------------------------------------------------------
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
     INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
-
-    INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
     INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
-    INDEX idx_pc_mint           (pc_mint)            TYPE set(128)         GRANULARITY 4,
-    INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
-    INDEX idx_amounts           (pc_amount,
-                                 coin_amount,
-                                 lp_amount)          TYPE minmax           GRANULARITY 4,
 
     -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint, timestamp, block_num, execution_index, block_hash)
-)
-ENGINE = MergeTree
-ORDER BY (timestamp, block_num, execution_index, block_hash);
-
--- ──────────────────────────────────────────────────────────────────────────
--- Raydium AMM Withdraw
--- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_withdraw (
-    -- block ---------------------------------------------------------------
-    block_num                   UInt32,
-    block_hash                  FixedString(44),
-    timestamp                   DateTime(0, 'UTC'),
-
-    -- ordering ------------------------------------------------------------
-    execution_index             UInt32,
-    transaction_index           UInt32,
-    instruction_index           UInt32,
-    global_sequence             UInt64,
-
-    -- transaction ---------------------------------------------------------
-    tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
-    program_id                  LowCardinality(FixedString(44)),
-
-    -- event ---------------------------------------------------------------
-    amm                         FixedString(44),
-    user                        FixedString(44),
-    pc_amount                   UInt64,
-    coin_amount                 UInt64,
-    lp_amount                   UInt64,
-    pc_mint                     FixedString(44),
-    coin_mint                   FixedString(44),
-    lp_mint                     FixedString(44),
-    pool_pc_amount              UInt64              DEFAULT 0,
-    pool_coin_amount            UInt64              DEFAULT 0,
-    pool_lp_amount              UInt64              DEFAULT 0,
-    user_pc_pre_balance         UInt64              DEFAULT 0,
-    user_coin_pre_balance       UInt64              DEFAULT 0,
-
-    -- indexes -------------------------------------------------------------
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
-    INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
-
-    INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
-    INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
-    INDEX idx_pc_mint           (pc_mint)            TYPE set(128)         GRANULARITY 4,
-    INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
-    INDEX idx_amounts           (pc_amount,
-                                 coin_amount,
-                                 lp_amount)          TYPE minmax           GRANULARITY 4,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint, timestamp, block_num, execution_index, block_hash)
-)
-ENGINE = MergeTree
-ORDER BY (timestamp, block_num, execution_index, block_hash);
-
--- ──────────────────────────────────────────────────────────────────────────
--- Raydium AMM Withdraw PnL
--- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_withdraw_pnl (
-    -- block ---------------------------------------------------------------
-    block_num                   UInt32,
-    block_hash                  FixedString(44),
-    timestamp                   DateTime(0, 'UTC'),
-
-    -- ordering ------------------------------------------------------------
-    execution_index             UInt32,
-    transaction_index           UInt32,
-    instruction_index           UInt32,
-    global_sequence             UInt64,
-
-    -- transaction ---------------------------------------------------------
-    tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
-    program_id                  LowCardinality(FixedString(44)),
-
-    -- event ---------------------------------------------------------------
-    amm                         FixedString(44),
-    user                        FixedString(44),
-    pc_amount                   UInt64              DEFAULT 0,
-    coin_amount                 UInt64              DEFAULT 0,
-    pc_mint                     FixedString(44)     DEFAULT '',
-    coin_mint                   FixedString(44)     DEFAULT '',
-
-    -- indexes -------------------------------------------------------------
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
-    INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
-
-    INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
-    INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
-    INDEX idx_pc_mint           (pc_mint)            TYPE set(128)         GRANULARITY 4,
-    INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
-    INDEX idx_amounts           (pc_amount,
-                                 coin_amount)        TYPE minmax           GRANULARITY 4,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
     PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash)
+)
+ENGINE = MergeTree
+ORDER BY (timestamp, block_num, execution_index, block_hash);
+
+-- ──────────────────────────────────────────────────────────────────────────
+-- Pump.fun Set-Params
+-- ──────────────────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS pumpfun_set_params (
+    -- block ---------------------------------------------------------------
+    block_num                   UInt32,
+    block_hash                  FixedString(44),
+    timestamp                   DateTime(0, 'UTC'),
+
+    -- ordering ------------------------------------------------------------
+    execution_index             UInt32,
+    transaction_index           UInt32,
+    instruction_index           UInt32,
+    global_sequence             UInt64,
+
+    -- transaction ---------------------------------------------------------
+    tx_hash                     FixedString(88),
+
+    -- instruction ---------------------------------------------------------
+    program_id                  LowCardinality(FixedString(44)),
+
+    -- event ---------------------------------------------------------------
+    user                                FixedString(44),
+    fee_recipient                       FixedString(44),
+    initial_virtual_token_reserves      UInt64,
+    initial_virtual_sol_reserves        UInt64,
+    initial_real_token_reserves         UInt64,
+    token_total_supply                  UInt64,
+    fee_basis_points                    UInt64,
+
+    -- indexes -------------------------------------------------------------
+    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
+    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
+
+    INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
+    INDEX idx_fee_recipient     (fee_recipient)      TYPE set(128)         GRANULARITY 4,
+    INDEX idx_amounts           (initial_virtual_token_reserves,
+                                 initial_virtual_sol_reserves,
+                                 initial_real_token_reserves,
+                                 token_total_supply,
+                                 fee_basis_points)   TYPE minmax           GRANULARITY 4,
+
+    -- projections ---------------------------------------------------------
+    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
+    PROJECTION projection_fee_recipient (SELECT * ORDER BY fee_recipient, timestamp, block_num, execution_index, block_hash)
+)
+ENGINE = MergeTree
+ORDER BY (timestamp, block_num, execution_index, block_hash);
+
+-- ──────────────────────────────────────────────────────────────────────────
+-- Pump.fun Swap
+-- ──────────────────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS pumpfun_swap (
+    -- block ---------------------------------------------------------------
+    block_num                   UInt32,
+    block_hash                  FixedString(44),
+    timestamp                   DateTime(0, 'UTC'),
+
+    -- ordering ------------------------------------------------------------
+    execution_index             UInt32,
+    transaction_index           UInt32,
+    instruction_index           UInt32,
+    global_sequence             UInt64,
+
+    -- transaction ---------------------------------------------------------
+    tx_hash                     FixedString(88),
+
+    -- instruction ---------------------------------------------------------
+    program_id                  LowCardinality(FixedString(44)),
+
+    -- event ---------------------------------------------------------------
+    user                        FixedString(44),
+    mint                        FixedString(44),
+    bonding_curve               FixedString(44),
+    sol_amount                  UInt64              DEFAULT 0,
+    token_amount                UInt64,
+    direction                   LowCardinality(String),   -- 'buy' | 'sell'
+    virtual_sol_reserves        UInt64              DEFAULT 0,
+    virtual_token_reserves      UInt64              DEFAULT 0,
+    real_sol_reserves           UInt64              DEFAULT 0,
+    real_token_reserves         UInt64              DEFAULT 0,
+    user_token_pre_balance      UInt64              DEFAULT 0,
+
+    -- indexes -------------------------------------------------------------
+    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
+    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
+
+    INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
+    INDEX idx_mint              (mint)               TYPE set(128)         GRANULARITY 4,
+    INDEX idx_bonding_curve     (bonding_curve)      TYPE set(128)         GRANULARITY 4,
+    INDEX idx_amounts           (sol_amount,
+                                 token_amount)       TYPE minmax           GRANULARITY 4,
+    INDEX idx_direction         (direction)          TYPE set(1)           GRANULARITY 1,
+
+    -- projections ---------------------------------------------------------
+    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
+    PROJECTION projection_mint  (SELECT * ORDER BY mint, timestamp, block_num, execution_index, block_hash),
+    PROJECTION projection_bonding_curve (SELECT * ORDER BY bonding_curve, timestamp, block_num, execution_index, block_hash)
+)
+ENGINE = MergeTree
+ORDER BY (timestamp, block_num, execution_index, block_hash);
+
+-- ──────────────────────────────────────────────────────────────────────────
+-- Pump.fun Withdraw
+-- ──────────────────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS pumpfun_withdraw (
+    -- block ---------------------------------------------------------------
+    block_num                   UInt32,
+    block_hash                  FixedString(44),
+    timestamp                   DateTime(0, 'UTC'),
+
+    -- ordering ------------------------------------------------------------
+    execution_index             UInt32,
+    transaction_index           UInt32,
+    instruction_index           UInt32,
+    global_sequence             UInt64,
+
+    -- transaction ---------------------------------------------------------
+    tx_hash                     FixedString(88),
+
+    -- instruction ---------------------------------------------------------
+    program_id                  LowCardinality(FixedString(44)),
+
+    -- event ---------------------------------------------------------------
+    mint                        FixedString(44),
+
+    -- indexes -------------------------------------------------------------
+    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
+    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
+    INDEX idx_mint              (mint)               TYPE set(128)         GRANULARITY 4,
+
+    -- projections ---------------------------------------------------------
+    PROJECTION projection_mint  (SELECT * ORDER BY mint, timestamp, block_num, execution_index, block_hash)
 )
 ENGINE = MergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash);

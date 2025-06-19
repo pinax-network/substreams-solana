@@ -1,3 +1,4 @@
+mod pumpfun;
 mod raydium_amm;
 use common::clickhouse::set_clock;
 use proto::pb;
@@ -13,7 +14,9 @@ pub fn db_out(
 ) -> Result<DatabaseChanges, Error> {
     let mut tables = substreams_database_change::tables::Tables::new();
 
+    // Process Events
     raydium_amm::process_events(&mut tables, &clock, &raydium_events);
+    pumpfun::process_events(&mut tables, &clock, &pumpfun_events);
 
     // ONLY include blocks if events are present
     if tables.tables.len() > 0 {
