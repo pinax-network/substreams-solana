@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap (
     global_sequence             UInt64,
 
     -- transaction --
-    tx_hash                     FixedString(88),
+    signature                     FixedString(88),
     program_id                  LowCardinality(FixedString(44)),
 
     -- event --
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap (
 
     -- indexes --
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
 
     INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_initialize (
     global_sequence             UInt64,           -- (block_num << 32) | execution_index
 
     -- transaction ---------------------------------------------------------
-    tx_hash                     FixedString(88),
+    signature                   FixedString(88),
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_initialize (
 
     -- indexes -------------------------------------------------------------
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_signature           (signature)            TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
 
     INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_deposit (
     global_sequence             UInt64,
 
     -- transaction ---------------------------------------------------------
-    tx_hash                     FixedString(88),
+    signature                     FixedString(88),
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_deposit (
 
     -- indexes -------------------------------------------------------------
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_signature           (signature)            TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
 
     INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw (
     global_sequence             UInt64,
 
     -- transaction ---------------------------------------------------------
-    tx_hash                     FixedString(88),
+    signature                     FixedString(88),
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw (
 
     -- indexes -------------------------------------------------------------
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_signature           (signature)            TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
 
     INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
@@ -240,7 +240,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw_pnl (
     global_sequence             UInt64,
 
     -- transaction ---------------------------------------------------------
-    tx_hash                     FixedString(88),
+    signature                     FixedString(88),
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -253,7 +253,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw_pnl (
 
     -- indexes -------------------------------------------------------------
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
+    INDEX idx_signature           (signature)            TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
 
     INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,

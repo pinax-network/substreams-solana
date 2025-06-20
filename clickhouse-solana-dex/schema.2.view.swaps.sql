@@ -25,14 +25,18 @@ CREATE TABLE IF NOT EXISTS swaps (
     output_mint             FixedString(44),                    -- EVM aka `token1`
     output_amount           UInt64,                             -- EVM aka `amount1`
     price                   Float64,
-    protocol                LowCardinality(String), -- 'raydium-amm' | 'pump.fun'
+    protocol                LowCardinality(String), -- 'raydium_amm_v4' | 'pumpfun'
 
     -- indexes --
-    INDEX idx_signature     (signature)                 TYPE bloom_filter   GRANULARITY 4,
-    INDEX idx_user          (user)                      TYPE bloom_filter   GRANULARITY 4,
-    INDEX idx_amm           (amm)                       TYPE set(128)       GRANULARITY 4,
-    INDEX idx_mints         (mint_in, mint_out)         TYPE set(128)       GRANULARITY 4,
-    INDEX idx_amounts       (amount_in, amount_out)     TYPE minmax         GRANULARITY 4
+    INDEX idx_signature     (signature)                         TYPE bloom_filter   GRANULARITY 4,
+    INDEX idx_user          (user)                              TYPE bloom_filter   GRANULARITY 4,
+    INDEX idx_amm           (amm)                               TYPE set(128)       GRANULARITY 4,
+    INDEX idx_input_mint    (input_mint)                        TYPE set(128)       GRANULARITY 4,
+    INDEX idx_input_amount  (input_amount)                      TYPE minmax         GRANULARITY 4,
+    INDEX idx_output_mint   (output_mint)                       TYPE set(128)       GRANULARITY 4,
+    INDEX idx_output_amount (output_amount)                     TYPE minmax         GRANULARITY 4,
+    INDEX idx_mints         (input_mint, output_mint)           TYPE set(128)       GRANULARITY 4,
+    INDEX idx_amounts       (input_amount, output_amount)       TYPE minmax         GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash, protocol);
@@ -51,42 +55,16 @@ SELECT
     transaction_index,
     instruction_index,
     global_sequence,
-    tx_hash,
+    signature,
     program_id,
 
     /* mapping */
     amm,
     user,
-    mint_in,
-    mint_out,
-    amount_in,
-    amount_out,
-    toFloat64(amount_in) / amount_out AS price
+    mint_in as input_mint,
+    mint_out as output_mint,
+    amount_in as input_amount,
+    amount_out as output_amount,
+    toFloat64(amount_in) / amount_out AS price,
+    'raydium_amm_v4' AS protocol
 FROM raydium_amm_v4_swap;
-
--- /* ──────────────────────────────────────────────────────────────────────────
---    2.  Pump.fun → swaps
---    ────────────────────────────────────────────────────────────────────────── */
--- CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pumpfun_swap
--- TO swaps AS
--- SELECT
---     /* passthrough */
---     block_num,
---     block_hash,
---     timestamp,
---     execution_index,
---     transaction_index,
---     instruction_index,
---     global_sequence,
---     tx_hash,
---     program_id,
-
---     /* mapping */
---     bonding_curve AS pool,
---     user as sender,
---     mint    AS mint_in,          -- single-mint pumpfun swap
---     ''      AS mint_out,
---     sol_amount   AS amount_in,
---     token_amount AS amount_out,
---     toFloat64(sol_amount) / token_amount AS price
--- FROM pumpfun_swap;

@@ -3,7 +3,7 @@ package:
   name: solana_dex
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-solana
-  description: Raydium, Pump.fun DEXs for Solana.
+  description: DEXs for Solana.
   image: ../image.png
 
 imports:
@@ -28,7 +28,7 @@ modules:
 
       # DEXs
       - map: raydium:raydium_amm_events
-      - map: pumpfun:pumpfun_events
+      # - map: pumpfun:pumpfun_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges

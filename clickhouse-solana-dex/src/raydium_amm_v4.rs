@@ -83,14 +83,14 @@ fn handle_swap(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(&clock, execution_index as u64);
 
     let row = tables
         .create_row("raydium_amm_v4_swap", key)
         // -- transaction --
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         // -- ordering --
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
@@ -123,14 +123,14 @@ fn handle_initialize(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("raydium_amm_v4_initialize", key)
         // ── transaction info ──────────────────────────────────────────────
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         // ── ordering  ─────────────────────────────────────────────────────
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
@@ -170,14 +170,14 @@ fn handle_withdraw(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("raydium_amm_v4_withdraw", key)
         // ── transaction info ──────────────────────────────────────────────
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         // ── ordering ──────────────────────────────────────────────────────
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
@@ -210,14 +210,14 @@ fn handle_deposit(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("raydium_amm_v4_deposit", key)
         // ── transaction info ──────────────────────────────────────────────
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         // ── ordering ──────────────────────────────────────────────────────
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
@@ -250,14 +250,14 @@ fn handle_withdraw_pnl(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("raydium_amm_v4_withdraw_pnl", key)
         // ── transaction info ──────────────────────────────────────────────
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         // ── ordering ──────────────────────────────────────────────────────
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)

@@ -86,14 +86,14 @@ fn handle_create(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("pumpfun_create", key)
         // transaction / ordering
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
         .set("instruction_index", instruction_index)
@@ -123,14 +123,14 @@ fn handle_initialize(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("pumpfun_initialize", key)
         // transaction / ordering
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
         .set("instruction_index", instruction_index)
@@ -153,14 +153,14 @@ fn handle_set_params(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("pumpfun_set_params", key)
         // transaction / ordering
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
         .set("instruction_index", instruction_index)
@@ -189,14 +189,14 @@ fn handle_swap(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("pumpfun_swap", key)
         // transaction / ordering
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
         .set("instruction_index", instruction_index)
@@ -229,14 +229,14 @@ fn handle_withdraw(
     transaction_index: u32,
     instruction_index: u32,
     execution_index: u32,
-    tx_hash: &str,
+    signature: &str,
 ) {
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
         .create_row("pumpfun_withdraw", key)
         // transaction / ordering
-        .set("tx_hash", tx_hash)
+        .set("signature", signature)
         .set("execution_index", execution_index)
         .set("transaction_index", transaction_index)
         .set("instruction_index", instruction_index)
