@@ -15,6 +15,8 @@
 | ❌       | Jupiter | DCA | `DCA265Vj8a9CEuX1eb1LWRnDT7uK6q1xMipnNyatn23M` |
 | ❌       | Jupiter | Legacy Swap Routers V4/V5 | `JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB` |
 | ❌       | Jupiter | Legacy Swap Routers ≤V3 | `JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph` |
+| ❌       | Orca | Whirlpool AMM (CLMM v3-style) |  `whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc` |
+| ❌       | Orca | Token Swap V2 ("Classic" pools) - AMM V2 | `9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP` |
 
 ## Status
 
