@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     -- INDEX idx_fee               (fee)                       TYPE minmax         GRANULARITY 4,
     INDEX idx_token0            (token0)                    TYPE set(64)        GRANULARITY 4,
     INDEX idx_token1            (token1)                    TYPE set(64)        GRANULARITY 4,
+    INDEX idx_token_pair        (token0, token1)            TYPE set(64)        GRANULARITY 4,
 
     -- indexes (volume) --
     INDEX idx_gross_volume0     (gross_volume0)             TYPE minmax         GRANULARITY 4,
@@ -53,10 +54,10 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 4,
     INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 4,
 
-    -- indexes (canonical pair) --
-    INDEX idx_canonical_pair    (canonical0, canonical1)    TYPE set(64)        GRANULARITY 4,
-    INDEX idx_canonical_pair0   (canonical0)                TYPE set(64)        GRANULARITY 4,
-    INDEX idx_canonical_pair1   (canonical1)                TYPE set(64)        GRANULARITY 4
+    -- -- indexes (canonical pair) --
+    -- INDEX idx_canonical_pair    (canonical0, canonical1)    TYPE set(64)        GRANULARITY 4,
+    -- INDEX idx_canonical_pair0   (canonical0)                TYPE set(64)        GRANULARITY 4,
+    -- INDEX idx_canonical_pair1   (canonical1)                TYPE set(64)        GRANULARITY 4
 )
 ENGINE = AggregatingMergeTree
 ORDER BY (pool, timestamp);
@@ -88,9 +89,9 @@ SELECT
     -- anyLast(m1.symbol)      AS symbol1,
     -- anyLast(m1.name)        AS name1,
 
-    -- canonical pair --
-    if(t0 < t1, t0, t1) AS canonical0,
-    if(t0 < t1, t1, t0) AS canonical1,
+    -- -- canonical pair --
+    -- if(t0 < t1, t0, t1) AS canonical0,
+    -- if(t0 < t1, t1, t0) AS canonical1,
 
     -- swaps --
     argMinState(s.price * scale0 / scale1, s.global_sequence)                AS open0,

@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS swaps (
     pool                    LowCardinality(FixedString(44)),    -- Solana aka `amm`
     sender                  FixedString(44),                    -- Solana aka `user`
     token0                  FixedString(44),                    -- Solana aka `input_mint`
-    amount0                 UInt64,                             -- Solana aka `input_amount`
+    amount0                 Int128,                             -- Solana aka `input_amount`
     token1                  FixedString(44),                    -- Solana aka `output_mint`
-    amount1                 UInt64,                             -- Solana aka `output_amount`
+    amount1                 Int128,                             -- Solana aka `output_amount`
     price                   Float64,
     protocol                LowCardinality(String), -- 'raydium_amm_v4' | 'pumpfun'
 
@@ -42,7 +42,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash, protocol);
 
 /* ──────────────────────────────────────────────────────────────────────────
-   1.  Raydium-AMM → swaps
+   1.  Raydium-AMM → swaps  (canonical ordering)
    ────────────────────────────────────────────────────────────────────────── */
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_amm_v4_swap
 TO swaps AS
@@ -58,13 +58,26 @@ SELECT
     signature,
     program_id,
 
-    /* mapping */
-    amm as pool,
-    user as sender,
-    mint_in as token0,
-    mint_out as token1,
-    amount_in as amount0,
-    amount_out as amount1,
-    toFloat64(amount_in) / amount_out AS price,
-    'raydium_amm_v4' AS protocol
-FROM raydium_amm_v4_swap;
+    /* mapping – canonicalised */
+    amm                                               AS pool,
+    user                                              AS sender,
+
+    /* canonical token addresses */
+    if(mint_in < mint_out, mint_in,  mint_out)        AS token0,
+    if(mint_in < mint_out, mint_out, mint_in)         AS token1,
+
+    /* amounts follow the same ordering */
+    if(mint_in < mint_out, -toInt128(s.amount_in),  s.amount_out)    AS amount0,
+    if(mint_in < mint_out, s.amount_out, -toInt128(s.amount_in))     AS amount1,
+
+    /* price must be inverted when the tokens were swapped */
+    if (mint_in < mint_out,
+       toFloat64(s.amount_in) / s.amount_out,             -- original direction
+       toFloat64(s.amount_out) / s.amount_in              -- inverted direction
+    )                                                 AS price,
+
+    /* constant */
+    'raydium_amm_v4'                                  AS protocol
+FROM raydium_amm_v4_swap AS s
+-- ignore dust swaps (typically trying to disort the price)
+WHERE s.amount_in > 1 AND s.amount_out > 1;
