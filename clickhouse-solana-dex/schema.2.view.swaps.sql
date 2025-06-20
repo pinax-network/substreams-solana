@@ -18,25 +18,25 @@ CREATE TABLE IF NOT EXISTS swaps (
     program_id              LowCardinality(FixedString(44)),    -- EVM aka `contract`
 
     -- common fields --
-    amm                     LowCardinality(FixedString(44)),    -- EVM aka `pool`
-    user                    FixedString(44),                    -- EVM aka `sender`
-    input_mint              FixedString(44),                    -- EVM aka `token0`
-    input_amount            UInt64,                             -- EVM aka `amount0`
-    output_mint             FixedString(44),                    -- EVM aka `token1`
-    output_amount           UInt64,                             -- EVM aka `amount1`
+    pool                    LowCardinality(FixedString(44)),    -- Solana aka `amm`
+    sender                  FixedString(44),                    -- Solana aka `user`
+    token0                  FixedString(44),                    -- Solana aka `input_mint`
+    amount0                 UInt64,                             -- Solana aka `input_amount`
+    token1                  FixedString(44),                    -- Solana aka `output_mint`
+    amount1                 UInt64,                             -- Solana aka `output_amount`
     price                   Float64,
     protocol                LowCardinality(String), -- 'raydium_amm_v4' | 'pumpfun'
 
     -- indexes --
-    INDEX idx_signature     (signature)                         TYPE bloom_filter   GRANULARITY 4,
-    INDEX idx_user          (user)                              TYPE bloom_filter   GRANULARITY 4,
-    INDEX idx_amm           (amm)                               TYPE set(128)       GRANULARITY 4,
-    INDEX idx_input_mint    (input_mint)                        TYPE set(128)       GRANULARITY 4,
-    INDEX idx_input_amount  (input_amount)                      TYPE minmax         GRANULARITY 4,
-    INDEX idx_output_mint   (output_mint)                       TYPE set(128)       GRANULARITY 4,
-    INDEX idx_output_amount (output_amount)                     TYPE minmax         GRANULARITY 4,
-    INDEX idx_mints         (input_mint, output_mint)           TYPE set(128)       GRANULARITY 4,
-    INDEX idx_amounts       (input_amount, output_amount)       TYPE minmax         GRANULARITY 4
+    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4,
+    INDEX idx_pool              (pool)              TYPE set(128)       GRANULARITY 4,
+    INDEX idx_sender            (sender)            TYPE bloom_filter   GRANULARITY 4,
+    INDEX idx_token0            (token0)            TYPE set(128)       GRANULARITY 4,
+    INDEX idx_amount0           (amount0)           TYPE minmax         GRANULARITY 4,
+    INDEX idx_token1            (token1)            TYPE set(128)       GRANULARITY 4,
+    INDEX idx_amount1           (amount1)           TYPE minmax         GRANULARITY 4,
+    INDEX idx_price             (price)             TYPE minmax         GRANULARITY 4,
+    INDEX idx_protocol          (protocol)          TYPE set(4)         GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash, protocol);
@@ -59,12 +59,12 @@ SELECT
     program_id,
 
     /* mapping */
-    amm,
-    user,
-    mint_in as input_mint,
-    mint_out as output_mint,
-    amount_in as input_amount,
-    amount_out as output_amount,
+    amm as pool,
+    user as sender,
+    mint_in as token0,
+    mint_out as token1,
+    amount_in as amount0,
+    amount_out as amount1,
     toFloat64(amount_in) / amount_out AS price,
     'raydium_amm_v4' AS protocol
 FROM raydium_amm_v4_swap;

@@ -15,6 +15,9 @@ imports:
   pumpfun: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/pumpfun-events-v0.1.4.spkg
   raydium: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/raydium-amm-events-v0.1.4.spkg
 
+  # SPL Token
+  spl_token_transfers: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-transfers-v0.1.0.spkg
+
 binaries:
   default:
     type: wasm/rust-v1
@@ -28,6 +31,7 @@ modules:
 
       # DEXs
       - map: raydium:raydium_amm_events
+      - map: spl_token_transfers:map_events
       # - map: pumpfun:pumpfun_events
 
     output:
