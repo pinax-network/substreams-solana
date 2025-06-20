@@ -5,6 +5,7 @@ use common::{
 use proto::pb::raydium_amm;
 use substreams::pb::substreams::Clock;
 
+// Raydium Liquidity Pool V4
 const PROGRAM_ID: &str = "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8";
 
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &raydium_amm::RaydiumAmmBlockEvents) {
@@ -87,7 +88,7 @@ fn handle_swap(
     let key = common_key(&clock, execution_index as u64);
 
     let row = tables
-        .create_row("raydium_amm_swap", key)
+        .create_row("raydium_amm_v4_swap", key)
         // -- transaction --
         .set("tx_hash", tx_hash)
         // -- ordering --
@@ -127,7 +128,7 @@ fn handle_initialize(
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
-        .create_row("raydium_amm_initialize", key)
+        .create_row("raydium_amm_v4_initialize", key)
         // ── transaction info ──────────────────────────────────────────────
         .set("tx_hash", tx_hash)
         // ── ordering  ─────────────────────────────────────────────────────
@@ -174,7 +175,7 @@ fn handle_withdraw(
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
-        .create_row("raydium_amm_withdraw", key)
+        .create_row("raydium_amm_v4_withdraw", key)
         // ── transaction info ──────────────────────────────────────────────
         .set("tx_hash", tx_hash)
         // ── ordering ──────────────────────────────────────────────────────
@@ -214,7 +215,7 @@ fn handle_deposit(
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
-        .create_row("raydium_amm_deposit", key)
+        .create_row("raydium_amm_v4_deposit", key)
         // ── transaction info ──────────────────────────────────────────────
         .set("tx_hash", tx_hash)
         // ── ordering ──────────────────────────────────────────────────────
@@ -254,7 +255,7 @@ fn handle_withdraw_pnl(
     let key = common_key(clock, execution_index as u64);
 
     let row = tables
-        .create_row("raydium_amm_withdraw_pnl", key)
+        .create_row("raydium_amm_v4_withdraw_pnl", key)
         // ── transaction info ──────────────────────────────────────────────
         .set("tx_hash", tx_hash)
         // ── ordering ──────────────────────────────────────────────────────

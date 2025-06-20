@@ -15,8 +15,6 @@ CREATE TABLE IF NOT EXISTS pumpfun_create (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -63,8 +61,6 @@ CREATE TABLE IF NOT EXISTS pumpfun_initialize (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -99,8 +95,6 @@ CREATE TABLE IF NOT EXISTS pumpfun_set_params (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -149,8 +143,6 @@ CREATE TABLE IF NOT EXISTS pumpfun_swap (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -203,8 +195,6 @@ CREATE TABLE IF NOT EXISTS pumpfun_withdraw (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------

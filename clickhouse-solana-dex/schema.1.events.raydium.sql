@@ -1,25 +1,23 @@
 -- ──────────────────────────────────────────────────────────────────────────
 -- Raydium AMM Swaps  (updated to latest protobuf)
 -- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_swap (
-    -- block ---------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap (
+    -- block --
     block_num                   UInt32,
     block_hash                  FixedString(44),
     timestamp                   DateTime(0, 'UTC'),
 
-    -- ordering ------------------------------------------------------------
+    -- ordering --
     execution_index             UInt32,
     transaction_index           UInt32,
     instruction_index           UInt32,
     global_sequence             UInt64,
 
-    -- transaction ---------------------------------------------------------
+    -- transaction --
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
-    -- event ---------------------------------------------------------------
+    -- event --
     amm                         FixedString(44),
     user                        FixedString(44),
     mint_in                     FixedString(44),
@@ -34,7 +32,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_swap (
     user_pre_balance_in         UInt64              DEFAULT 0,
     user_pre_balance_out        UInt64              DEFAULT 0,
 
-    -- indexes -------------------------------------------------------------
+    -- indexes --
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
     INDEX idx_tx_hash           (tx_hash)            TYPE bloom_filter     GRANULARITY 4,
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
@@ -61,7 +59,7 @@ ORDER BY (timestamp, block_num, execution_index, block_hash);
 -- ──────────────────────────────────────────────────────────────────────────
 -- Raydium AMM Initialize
 -- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_initialize (
+CREATE TABLE IF NOT EXISTS raydium_amm_v4_initialize (
     -- block ---------------------------------------------------------------
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -75,8 +73,6 @@ CREATE TABLE IF NOT EXISTS raydium_amm_initialize (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -119,7 +115,7 @@ ORDER BY (timestamp, block_num, execution_index, block_hash);
 -- ──────────────────────────────────────────────────────────────────────────
 -- Raydium AMM Deposit
 -- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_deposit (
+CREATE TABLE IF NOT EXISTS raydium_amm_v4_deposit (
     -- block ---------------------------------------------------------------
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -133,8 +129,6 @@ CREATE TABLE IF NOT EXISTS raydium_amm_deposit (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -177,7 +171,7 @@ ORDER BY (timestamp, block_num, execution_index, block_hash);
 -- ──────────────────────────────────────────────────────────────────────────
 -- Raydium AMM Withdraw
 -- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_withdraw (
+CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw (
     -- block ---------------------------------------------------------------
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -191,8 +185,6 @@ CREATE TABLE IF NOT EXISTS raydium_amm_withdraw (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
@@ -235,7 +227,7 @@ ORDER BY (timestamp, block_num, execution_index, block_hash);
 -- ──────────────────────────────────────────────────────────────────────────
 -- Raydium AMM Withdraw PnL
 -- ──────────────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS raydium_amm_withdraw_pnl (
+CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw_pnl (
     -- block ---------------------------------------------------------------
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -249,8 +241,6 @@ CREATE TABLE IF NOT EXISTS raydium_amm_withdraw_pnl (
 
     -- transaction ---------------------------------------------------------
     tx_hash                     FixedString(88),
-
-    -- instruction ---------------------------------------------------------
     program_id                  LowCardinality(FixedString(44)),
 
     -- event ---------------------------------------------------------------
