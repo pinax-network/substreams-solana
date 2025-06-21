@@ -17,3 +17,5 @@ data2
 !__cache__/*.spkg
 
 schema.sql
+
+!**/external/*.spkg
