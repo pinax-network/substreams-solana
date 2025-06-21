@@ -67,8 +67,8 @@ SELECT
     if(mint_in < mint_out, mint_out, mint_in)         AS token1,
 
     /* amounts follow the same ordering */
-    if(mint_in < mint_out, -toInt128(s.amount_in),  s.amount_out)    AS amount0,
-    if(mint_in < mint_out, s.amount_out, -toInt128(s.amount_in))     AS amount1,
+    if(mint_in < mint_out, s.amount_in, -toInt128(s.amount_out))    AS amount0,
+    if(mint_in < mint_out, -toInt128(s.amount_out), s.amount_in)     AS amount1,
 
     /* price must be inverted when the tokens were swapped */
     if (mint_in < mint_out,
