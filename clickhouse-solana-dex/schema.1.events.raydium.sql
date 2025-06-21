@@ -38,22 +38,17 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap (
     INDEX idx_program_id        (program_id)         TYPE set(2)           GRANULARITY 1,
 
     INDEX idx_amm               (amm)                TYPE set(128)         GRANULARITY 4,
-    INDEX idx_user              (user)               TYPE set(128)         GRANULARITY 4,
+    INDEX idx_user              (user)               TYPE bloom_filter         GRANULARITY 4,
     INDEX idx_mint_in           (mint_in)            TYPE set(128)         GRANULARITY 4,
     INDEX idx_mint_out          (mint_out)           TYPE set(128)         GRANULARITY 4,
     INDEX idx_pc_mint           (pc_mint)            TYPE set(128)         GRANULARITY 4,
     INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
-    INDEX idx_amounts           (amount_in,
-                                 amount_out)         TYPE minmax           GRANULARITY 4,
+    INDEX idx_amount_in         (amount_in)          TYPE minmax           GRANULARITY 4,
+    INDEX idx_amount_out        (amount_out)         TYPE minmax           GRANULARITY 4,
+    INDEX idx_amounts           (amount_in, amount_out)     TYPE minmax    GRANULARITY 4,
     INDEX idx_direction         (direction)          TYPE set(1)           GRANULARITY 1,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_mint_in  (SELECT * ORDER BY mint_in,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_mint_out (SELECT * ORDER BY mint_out, timestamp, block_num, execution_index, block_hash)
 )
-ENGINE = MergeTree
+ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash);
 
 -- ──────────────────────────────────────────────────────────────────────────
@@ -100,15 +95,9 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_initialize (
     INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
     INDEX idx_amounts           (pc_init_amount,
                                  coin_init_amount,
-                                 lp_init_amount)     TYPE minmax           GRANULARITY 4,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint, timestamp, block_num, execution_index, block_hash)
+                                 lp_init_amount)     TYPE minmax           GRANULARITY 4
 )
-ENGINE = MergeTree
+ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash);
 
 
@@ -157,15 +146,9 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_deposit (
     INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
     INDEX idx_amounts           (pc_amount,
                                  coin_amount,
-                                 lp_amount)          TYPE minmax           GRANULARITY 4,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint, timestamp, block_num, execution_index, block_hash)
+                                 lp_amount)          TYPE minmax           GRANULARITY 4
 )
-ENGINE = MergeTree
+ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash);
 
 -- ──────────────────────────────────────────────────────────────────────────
@@ -213,15 +196,9 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw (
     INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
     INDEX idx_amounts           (pc_amount,
                                  coin_amount,
-                                 lp_amount)          TYPE minmax           GRANULARITY 4,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint, timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint, timestamp, block_num, execution_index, block_hash)
+                                 lp_amount)          TYPE minmax           GRANULARITY 4
 )
-ENGINE = MergeTree
+ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash);
 
 -- ──────────────────────────────────────────────────────────────────────────
@@ -261,11 +238,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_withdraw_pnl (
     INDEX idx_pc_mint           (pc_mint)            TYPE set(128)         GRANULARITY 4,
     INDEX idx_coin_mint         (coin_mint)          TYPE set(128)         GRANULARITY 4,
     INDEX idx_amounts           (pc_amount,
-                                 coin_amount)        TYPE minmax           GRANULARITY 4,
-
-    -- projections ---------------------------------------------------------
-    PROJECTION projection_amm   (SELECT * ORDER BY amm,  timestamp, block_num, execution_index, block_hash),
-    PROJECTION projection_user  (SELECT * ORDER BY user, timestamp, block_num, execution_index, block_hash)
+                                 coin_amount)        TYPE minmax           GRANULARITY 4
 )
-ENGINE = MergeTree
+ENGINE = ReplacingMergeTree
 ORDER BY (timestamp, block_num, execution_index, block_hash);
