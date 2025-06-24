@@ -1,0 +1,31 @@
+specVersion: v0.1.0
+package:
+  name: pumpfun
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: Pump.fun bonding curve events for Solana.
+  image: ../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../target/wasm32-unknown-unknown/release/pumpfun.wasm
+
+protobuf:
+  files:
+    - v1/pumpfun.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+    output:
+      type: proto:pumpfun.v1.Events
+
+network: solana

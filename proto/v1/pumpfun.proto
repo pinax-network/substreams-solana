@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package pumpfun.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    repeated Instruction instructions = 2;
+}
+
+message Instruction {
+    oneof instruction {
+        BuyInstruction buy = 1;
+        SellInstruction sell = 2;
+        TradeEvent trade = 3;
+    }
+}
+
+message BuyInstruction {
+    uint64 amount = 1;
+    uint64 max_sol_cost = 2;
+}
+
+message SellInstruction {
+    uint64 amount = 1;
+    uint64 min_sol_output = 2;
+}
+
+// One emitted trade (buy or sell) on a Pump.fun bonding curve.
+message TradeEvent {
+  // 32-byte SPL-Token mint address.
+  bytes  mint                       = 1;
+
+  // Lamports moved (positive on buys, negative on sells).
+  uint64 sol_amount                 = 2;
+
+  // Token amount moved (positive on buys, negative on sells).
+  uint64 token_amount               = 3;
+
+  // true = buy (SOL→SPL), false = sell.
+  bool   is_buy                     = 4;
+
+  // Trader’s wallet (32 bytes).
+  bytes  user                       = 5;
+
+  // Unix-epoch seconds.
+  int64  timestamp                  = 6;
+
+  uint64 virtual_sol_reserves       = 7;
+  uint64 virtual_token_reserves     = 8;
+  uint64 real_sol_reserves          = 9;
+  uint64 real_token_reserves        = 10;
+
+  // Protocol-fee recipient (32 bytes).
+  bytes  fee_recipient              = 11;
+  uint64 fee_basis_points           = 12; // basis-points, 1 bp = 0.01 %
+  uint64 fee                        = 13; // lamports
+
+  // Pool creator wallet (32 bytes).
+  bytes  creator                    = 14;
+  uint64 creator_fee_basis_points   = 15;
+  uint64 creator_fee                = 16; // lamports
+}
