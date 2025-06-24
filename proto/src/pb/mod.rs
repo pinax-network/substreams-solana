@@ -1,8 +1,10 @@
 // @generated
-// @@protoc_insertion_point(attribute:pumpfun)
 pub mod pumpfun {
-    include!("pumpfun.rs");
-    // @@protoc_insertion_point(pumpfun)
+    // @@protoc_insertion_point(attribute:pumpfun.v1)
+    pub mod v1 {
+        include!("pumpfun.v1.rs");
+        // @@protoc_insertion_point(pumpfun.v1)
+    }
 }
 // @@protoc_insertion_point(attribute:raydium_amm)
 pub mod raydium_amm {
