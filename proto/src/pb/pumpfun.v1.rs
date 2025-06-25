@@ -17,7 +17,14 @@ pub struct Transaction {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Instruction {
-    #[prost(oneof="instruction::Instruction", tags="1, 2, 3")]
+    #[prost(bytes="vec", tag="1")]
+    pub program_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag="2")]
+    pub stack_height: u32,
+    /// Lamports paid for this instruction.
+    #[prost(uint64, tag="3")]
+    pub fee: u64,
+    #[prost(oneof="instruction::Instruction", tags="4, 5, 6")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -25,11 +32,11 @@ pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
-        #[prost(message, tag="1")]
+        #[prost(message, tag="4")]
         Buy(super::BuyInstruction),
-        #[prost(message, tag="2")]
+        #[prost(message, tag="5")]
         Sell(super::SellInstruction),
-        #[prost(message, tag="3")]
+        #[prost(message, tag="6")]
         Trade(super::TradeEvent),
     }
 }
@@ -80,21 +87,21 @@ pub struct TradeEvent {
     #[prost(uint64, tag="10")]
     pub real_token_reserves: u64,
     /// Protocol-fee recipient (32 bytes).
-    #[prost(bytes="vec", tag="11")]
-    pub fee_recipient: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", optional, tag="11")]
+    pub fee_recipient: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// basis-points, 1 bp = 0.01 %
-    #[prost(uint64, tag="12")]
-    pub fee_basis_points: u64,
+    #[prost(uint64, optional, tag="12")]
+    pub fee_basis_points: ::core::option::Option<u64>,
     /// lamports
-    #[prost(uint64, tag="13")]
-    pub fee: u64,
+    #[prost(uint64, optional, tag="13")]
+    pub fee: ::core::option::Option<u64>,
     /// Pool creator wallet (32 bytes).
-    #[prost(bytes="vec", tag="14")]
-    pub creator: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag="15")]
-    pub creator_fee_basis_points: u64,
+    #[prost(bytes="vec", optional, tag="14")]
+    pub creator: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    #[prost(uint64, optional, tag="15")]
+    pub creator_fee_basis_points: ::core::option::Option<u64>,
     /// lamports
-    #[prost(uint64, tag="16")]
-    pub creator_fee: u64,
+    #[prost(uint64, optional, tag="16")]
+    pub creator_fee: ::core::option::Option<u64>,
 }
 // @@protoc_insertion_point(module)

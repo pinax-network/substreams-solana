@@ -12,10 +12,13 @@ message Transaction {
 }
 
 message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    uint64 fee = 3; // Lamports paid for this instruction.
     oneof instruction {
-        BuyInstruction buy = 1;
-        SellInstruction sell = 2;
-        TradeEvent trade = 3;
+        BuyInstruction buy = 4;
+        SellInstruction sell = 5;
+        TradeEvent trade = 6;
     }
 }
 
@@ -55,12 +58,12 @@ message TradeEvent {
   uint64 real_token_reserves        = 10;
 
   // Protocol-fee recipient (32 bytes).
-  bytes  fee_recipient              = 11;
-  uint64 fee_basis_points           = 12; // basis-points, 1 bp = 0.01 %
-  uint64 fee                        = 13; // lamports
+  optional bytes  fee_recipient              = 11;
+  optional uint64 fee_basis_points           = 12; // basis-points, 1 bp = 0.01 %
+  optional uint64 fee                        = 13; // lamports
 
   // Pool creator wallet (32 bytes).
-  bytes  creator                    = 14;
-  uint64 creator_fee_basis_points   = 15;
-  uint64 creator_fee                = 16; // lamports
+  optional bytes  creator                    = 14;
+  optional uint64 creator_fee_basis_points   = 15;
+  optional uint64 creator_fee                = 16; // lamports
 }
