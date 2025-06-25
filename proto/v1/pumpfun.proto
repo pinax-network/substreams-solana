@@ -31,13 +31,30 @@ message InitializeInstruction {}
 message WithdrawInstruction {}
 
 message BuyInstruction {
-    uint64 amount = 1;
-    uint64 max_sol_cost = 2;
+    TradeAccounts accounts = 1;
+    uint64 amount = 2;
+    uint64 max_sol_cost = 3;
 }
 
 message SellInstruction {
-    uint64 amount = 1;
-    uint64 min_sol_output = 2;
+    TradeAccounts accounts = 1;
+    uint64 amount = 2;
+    uint64 min_sol_output = 3;
+}
+
+message TradeAccounts {
+    bytes global = 1; // Global state account.
+    bytes fee_recipient = 2; // Account that will collect protocol fees.
+    bytes mint = 3; // SPL-Token mint address.
+    bytes bonding_curve = 4; // Bonding-curve configuration account.
+    bytes associated_bonding_curve = 5; // Vault holding the curve’s token reserve.
+    bytes associated_user = 6; // User state (per-user data).
+    bytes user = 7; // Buyer wallet (fee payer).
+    // bytes system_program = 8; // System program ID.
+    // bytes token_program = 9; // SPL-Token program ID.
+    bytes creator_vault = 10; // Vault for creator fees.
+    // bytes event_authority = 11; // Event authority account.
+    // bytes program = 12; // Pump.fun program ID.
 }
 
 message CreateInstruction {

@@ -1,6 +1,6 @@
 use proto::pb::pumpfun::v1 as pb;
 use substreams::errors::Error;
-use substreams_solana::pb::sf::solana::r#type::v1::Block;
+use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
 use substreams_solana_idls::pumpfun;
 
 #[substreams::handlers::map]
@@ -34,6 +34,7 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                 // -- Buy --
                 Ok(pumpfun::instructions::PumpFunInstruction::Buy(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::Buy(pb::BuyInstruction {
+                        accounts: Some(get_trade_accounts(&instruction)),
                         amount: event.amount,
                         max_sol_cost: event.max_sol_cost,
                     }));
@@ -42,6 +43,7 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                 // -- Sell --
                 Ok(pumpfun::instructions::PumpFunInstruction::Sell(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::Sell(pb::SellInstruction {
+                        accounts: Some(get_trade_accounts(&instruction)),
                         amount: event.amount,
                         min_sol_output: event.min_sol_output,
                     }));
@@ -135,4 +137,17 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
         }
     }
     Ok(events)
+}
+
+pub fn get_trade_accounts(instruction: &InstructionView) -> pb::TradeAccounts {
+    pb::TradeAccounts {
+        global: instruction.accounts()[0].0.to_vec(),
+        fee_recipient: instruction.accounts()[1].0.to_vec(),
+        mint: instruction.accounts()[2].0.to_vec(),
+        bonding_curve: instruction.accounts()[3].0.to_vec(),
+        associated_bonding_curve: instruction.accounts()[4].0.to_vec(),
+        associated_user: instruction.accounts()[5].0.to_vec(),
+        user: instruction.accounts()[6].0.to_vec(),
+        creator_vault: instruction.accounts()[9].0.to_vec(),
+    }
 }

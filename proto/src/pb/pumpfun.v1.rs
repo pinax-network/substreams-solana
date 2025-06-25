@@ -60,20 +60,55 @@ pub struct InitializeInstruction {
 pub struct WithdrawInstruction {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BuyInstruction {
-    #[prost(uint64, tag="1")]
-    pub amount: u64,
+    #[prost(message, optional, tag="1")]
+    pub accounts: ::core::option::Option<TradeAccounts>,
     #[prost(uint64, tag="2")]
+    pub amount: u64,
+    #[prost(uint64, tag="3")]
     pub max_sol_cost: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SellInstruction {
-    #[prost(uint64, tag="1")]
-    pub amount: u64,
+    #[prost(message, optional, tag="1")]
+    pub accounts: ::core::option::Option<TradeAccounts>,
     #[prost(uint64, tag="2")]
+    pub amount: u64,
+    #[prost(uint64, tag="3")]
     pub min_sol_output: u64,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TradeAccounts {
+    /// Global state account.
+    #[prost(bytes="vec", tag="1")]
+    pub global: ::prost::alloc::vec::Vec<u8>,
+    /// Account that will collect protocol fees.
+    #[prost(bytes="vec", tag="2")]
+    pub fee_recipient: ::prost::alloc::vec::Vec<u8>,
+    /// SPL-Token mint address.
+    #[prost(bytes="vec", tag="3")]
+    pub mint: ::prost::alloc::vec::Vec<u8>,
+    /// Bonding-curve configuration account.
+    #[prost(bytes="vec", tag="4")]
+    pub bonding_curve: ::prost::alloc::vec::Vec<u8>,
+    /// Vault holding the curve’s token reserve.
+    #[prost(bytes="vec", tag="5")]
+    pub associated_bonding_curve: ::prost::alloc::vec::Vec<u8>,
+    /// User state (per-user data).
+    #[prost(bytes="vec", tag="6")]
+    pub associated_user: ::prost::alloc::vec::Vec<u8>,
+    /// Buyer wallet (fee payer).
+    #[prost(bytes="vec", tag="7")]
+    pub user: ::prost::alloc::vec::Vec<u8>,
+    /// bytes system_program = 8; // System program ID.
+    /// bytes token_program = 9; // SPL-Token program ID.
+    ///
+    /// Vault for creator fees.
+    #[prost(bytes="vec", tag="10")]
+    pub creator_vault: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -113,21 +148,6 @@ pub struct SetParamsInstruction {
     #[prost(uint64, tag="6")]
     pub fee_basis_points: u64,
 }
-// pub struct SetParamsInstruction {
-//      /// Account that will collect protocol fees going forward.
-//      pub fee_recipient: Pubkey,
-//      /// Virtual token reserve used in price calculation.
-//      pub initial_virtual_token_reserves: u64,
-//      /// Virtual SOL reserve used in price calculation.
-//      pub initial_virtual_sol_reserves: u64,
-//      /// Real SPL-Token balance present at pool creation (for reference).
-//      pub initial_real_token_reserves: u64,
-//      /// Total supply of the SPL-Token.
-//      pub token_total_supply: u64,
-//      /// Protocol fee charged on each trade (basis points, i.e. 1 bp = 0.01 %).
-//      pub fee_basis_points: u64,
-// }
-
 /// One emitted trade (buy or sell) on a Pump.fun bonding curve.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
