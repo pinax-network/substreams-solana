@@ -15,12 +15,20 @@ message Instruction {
     bytes program_id = 1;
     uint32 stack_height = 2;
     uint64 fee = 3; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 4; // Compute units consumed by this instruction.
     oneof instruction {
-        BuyInstruction buy = 4;
-        SellInstruction sell = 5;
-        TradeEvent trade = 6;
+        BuyInstruction buy = 10;
+        SellInstruction sell = 11;
+        CreateInstruction create = 12;
+        SetParamsInstruction set_params = 13;
+        InitializeInstruction initialize = 14;
+        WithdrawInstruction withdraw = 15;
+        TradeEvent trade = 16;
     }
 }
+
+message InitializeInstruction {}
+message WithdrawInstruction {}
 
 message BuyInstruction {
     uint64 amount = 1;
@@ -30,6 +38,22 @@ message BuyInstruction {
 message SellInstruction {
     uint64 amount = 1;
     uint64 min_sol_output = 2;
+}
+
+message CreateInstruction {
+     string name = 1; // UTF-8 name of the token pool.
+     string symbol = 2; // Ticker symbol (≤ 10 UTF-8 bytes).
+     string uri = 3; // URI pointing to off-chain JSON metadata.
+     bytes creator = 4; // Pool creator (receives creator fees).
+}
+
+message SetParamsInstruction {
+    bytes fee_recipient = 1; // Account that will collect protocol fees going forward.
+    uint64 initial_virtual_token_reserves = 2; // Virtual token reserve used in price calculation.
+    uint64 initial_virtual_sol_reserves = 3; // Virtual SOL reserve used in price calculation.
+    uint64 initial_real_token_reserves = 4; // Real SPL-Token balance present at pool creation (for reference).
+    uint64 token_total_supply = 5; // Total supply of the SPL-Token.
+    uint64 fee_basis_points = 6; // Protocol fee charged on each trade (basis points, i.e. 1 bp = 0.01 %).
 }
 
 // One emitted trade (buy or sell) on a Pump.fun bonding curve.

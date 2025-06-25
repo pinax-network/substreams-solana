@@ -1,15 +1,15 @@
-use proto::pb::pumpfun::v1::{instruction, BuyInstruction, Events, Instruction, SellInstruction, TradeEvent, Transaction};
+use proto::pb::pumpfun::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 use substreams_solana_idls::pumpfun;
 
 #[substreams::handlers::map]
-fn map_events(block: Block) -> Result<Events, Error> {
-    let mut events: Events = Events::default();
+fn map_events(block: Block) -> Result<pb::Events, Error> {
+    let mut events = pb::Events::default();
 
     // transactions
     for tx in block.transactions() {
-        let mut transaction = Transaction::default();
+        let mut transaction = pb::Transaction::default();
         transaction.signature = tx.hash().to_vec();
 
         // Include instructions and events
@@ -21,10 +21,11 @@ fn map_events(block: Block) -> Result<Events, Error> {
                 continue;
             }
             let meta = instruction.meta();
-            let base_instruction = Instruction {
+            let mut base = pb::Instruction {
                 program_id: program_id.to_vec(),
                 fee: meta.fee,
                 stack_height: instruction.stack_height(),
+                compute_units_consumed: meta.compute_units_consumed(),
                 instruction: None,
             };
 
@@ -32,31 +33,59 @@ fn map_events(block: Block) -> Result<Events, Error> {
             match pumpfun::instructions::unpack(instruction.data()) {
                 // -- Buy --
                 Ok(pumpfun::instructions::PumpFunInstruction::Buy(event)) => {
-                    let mut inst = base_instruction.clone();
-                    inst.instruction = Some(instruction::Instruction::Buy(BuyInstruction {
+                    base.instruction = Some(pb::instruction::Instruction::Buy(pb::BuyInstruction {
                         amount: event.amount,
                         max_sol_cost: event.max_sol_cost,
                     }));
-                    transaction.instructions.push(inst);
+                    transaction.instructions.push(base.clone());
                 }
                 // -- Sell --
                 Ok(pumpfun::instructions::PumpFunInstruction::Sell(event)) => {
-                    let mut inst = base_instruction.clone();
-                    inst.instruction = Some(instruction::Instruction::Sell(SellInstruction {
+                    base.instruction = Some(pb::instruction::Instruction::Sell(pb::SellInstruction {
                         amount: event.amount,
                         min_sol_output: event.min_sol_output,
                     }));
-                    transaction.instructions.push(inst);
+                    transaction.instructions.push(base.clone());
+                }
+                // -- Create --
+                Ok(pumpfun::instructions::PumpFunInstruction::Create(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::Create(pb::CreateInstruction {
+                        name: event.name,
+                        symbol: event.symbol,
+                        uri: event.uri,
+                        creator: event.creator.to_bytes().to_vec(),
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- Initialize --
+                Ok(pumpfun::instructions::PumpFunInstruction::Initialize) => {
+                    base.instruction = Some(pb::instruction::Instruction::Initialize(pb::InitializeInstruction {}));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- Withdraw --
+                Ok(pumpfun::instructions::PumpFunInstruction::Withdraw) => {
+                    base.instruction = Some(pb::instruction::Instruction::Withdraw(pb::WithdrawInstruction {}));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- SetParams --
+                Ok(pumpfun::instructions::PumpFunInstruction::SetParams(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::SetParams(pb::SetParamsInstruction {
+                        fee_recipient: event.fee_recipient.to_bytes().to_vec(),
+                        initial_virtual_token_reserves: event.initial_virtual_token_reserves,
+                        initial_virtual_sol_reserves: event.initial_virtual_sol_reserves,
+                        initial_real_token_reserves: event.initial_real_token_reserves,
+                        token_total_supply: event.token_total_supply,
+                        fee_basis_points: event.fee_basis_points,
+                    }));
+                    transaction.instructions.push(base.clone());
                 }
                 _ => {}
             }
-
             // -- Events --
             match pumpfun::events::unpack(instruction.data()) {
                 // -- TradeV1 --
                 Ok(pumpfun::events::PumpFunEvent::TradeV1(event)) => {
-                    let mut inst = base_instruction.clone();
-                    inst.instruction = Some(instruction::Instruction::Trade(TradeEvent {
+                    base.instruction = Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
                         mint: event.mint.to_bytes().to_vec(),
                         sol_amount: event.sol_amount,
                         token_amount: event.token_amount,
@@ -74,12 +103,11 @@ fn map_events(block: Block) -> Result<Events, Error> {
                         creator_fee_basis_points: None,
                         creator_fee: None,
                     }));
-                    transaction.instructions.push(inst);
+                    transaction.instructions.push(base.clone());
                 }
                 // -- TradeV2 --
                 Ok(pumpfun::events::PumpFunEvent::TradeV2(event)) => {
-                    let mut inst = base_instruction.clone();
-                    inst.instruction = Some(instruction::Instruction::Trade(TradeEvent {
+                    base.instruction = Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
                         mint: event.mint.to_bytes().to_vec(),
                         sol_amount: event.sol_amount,
                         token_amount: event.token_amount,
@@ -97,7 +125,7 @@ fn map_events(block: Block) -> Result<Events, Error> {
                         creator_fee_basis_points: Some(event.creator_fee_basis_points),
                         creator_fee: Some(event.creator_fee),
                     }));
-                    transaction.instructions.push(inst);
+                    transaction.instructions.push(base.clone());
                 }
                 _ => {}
             }

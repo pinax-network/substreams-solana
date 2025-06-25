@@ -24,7 +24,10 @@ pub struct Instruction {
     /// Lamports paid for this instruction.
     #[prost(uint64, tag="3")]
     pub fee: u64,
-    #[prost(oneof="instruction::Instruction", tags="4, 5, 6")]
+    /// Compute units consumed by this instruction.
+    #[prost(uint64, tag="4")]
+    pub compute_units_consumed: u64,
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -32,13 +35,29 @@ pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
-        #[prost(message, tag="4")]
+        #[prost(message, tag="10")]
         Buy(super::BuyInstruction),
-        #[prost(message, tag="5")]
+        #[prost(message, tag="11")]
         Sell(super::SellInstruction),
-        #[prost(message, tag="6")]
+        #[prost(message, tag="12")]
+        Create(super::CreateInstruction),
+        #[prost(message, tag="13")]
+        SetParams(super::SetParamsInstruction),
+        #[prost(message, tag="14")]
+        Initialize(super::InitializeInstruction),
+        #[prost(message, tag="15")]
+        Withdraw(super::WithdrawInstruction),
+        #[prost(message, tag="16")]
         Trade(super::TradeEvent),
     }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct InitializeInstruction {
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct WithdrawInstruction {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
@@ -56,6 +75,59 @@ pub struct SellInstruction {
     #[prost(uint64, tag="2")]
     pub min_sol_output: u64,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreateInstruction {
+    /// UTF-8 name of the token pool.
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// Ticker symbol (≤ 10 UTF-8 bytes).
+    #[prost(string, tag="2")]
+    pub symbol: ::prost::alloc::string::String,
+    /// URI pointing to off-chain JSON metadata.
+    #[prost(string, tag="3")]
+    pub uri: ::prost::alloc::string::String,
+    /// Pool creator (receives creator fees).
+    #[prost(bytes="vec", tag="4")]
+    pub creator: ::prost::alloc::vec::Vec<u8>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SetParamsInstruction {
+    /// Account that will collect protocol fees going forward.
+    #[prost(bytes="vec", tag="1")]
+    pub fee_recipient: ::prost::alloc::vec::Vec<u8>,
+    /// Virtual token reserve used in price calculation.
+    #[prost(uint64, tag="2")]
+    pub initial_virtual_token_reserves: u64,
+    /// Virtual SOL reserve used in price calculation.
+    #[prost(uint64, tag="3")]
+    pub initial_virtual_sol_reserves: u64,
+    /// Real SPL-Token balance present at pool creation (for reference).
+    #[prost(uint64, tag="4")]
+    pub initial_real_token_reserves: u64,
+    /// Total supply of the SPL-Token.
+    #[prost(uint64, tag="5")]
+    pub token_total_supply: u64,
+    /// Protocol fee charged on each trade (basis points, i.e. 1 bp = 0.01 %).
+    #[prost(uint64, tag="6")]
+    pub fee_basis_points: u64,
+}
+// pub struct SetParamsInstruction {
+//      /// Account that will collect protocol fees going forward.
+//      pub fee_recipient: Pubkey,
+//      /// Virtual token reserve used in price calculation.
+//      pub initial_virtual_token_reserves: u64,
+//      /// Virtual SOL reserve used in price calculation.
+//      pub initial_virtual_sol_reserves: u64,
+//      /// Real SPL-Token balance present at pool creation (for reference).
+//      pub initial_real_token_reserves: u64,
+//      /// Total supply of the SPL-Token.
+//      pub token_total_supply: u64,
+//      /// Protocol fee charged on each trade (basis points, i.e. 1 bp = 0.01 %).
+//      pub fee_basis_points: u64,
+// }
+
 /// One emitted trade (buy or sell) on a Pump.fun bonding curve.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
