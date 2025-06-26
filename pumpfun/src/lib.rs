@@ -39,6 +39,10 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                         max_sol_cost: event.max_sol_cost,
                     }));
                     transaction.instructions.push(base.clone());
+
+                    // TO-DO: include SPL-Tokens & Native SOL transfers
+                    // for inner in instruction.inner_instructions() {
+                    // }
                 }
                 // -- Sell --
                 Ok(pumpfun::instructions::PumpFunInstruction::Sell(event)) => {
