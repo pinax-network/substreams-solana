@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: pumpfun
-  version: v0.1.0
+  version: v0.1.1
   url: https://github.com/pinax-network/substreams-solana
   description: Pump.fun bonding curve events for Solana.
   image: ../image.png
@@ -24,8 +24,18 @@ modules:
   - name: map_events
     kind: map
     inputs:
+      - params: string
       - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        params: true
     output:
       type: proto:pumpfun.v1.Events
 
 network: solana
+
+params:
+  # Bonding‑Curve: 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P
+  # PumpSwap AMM: pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA
+  map_events: "program:6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P || program:pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"
