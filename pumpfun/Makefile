@@ -20,7 +20,7 @@ gui: build
 
 .PHONY: prod
 prod: build
-	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) -t 349743401 --limit-processed-blocks 0 --production-mode  -H "X-Sf-Substreams-Parallel-Jobs: $(PARALLEL_JOBS)"
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) -t 0 --limit-processed-blocks 0 --production-mode  -H "X-Sf-Substreams-Parallel-Jobs: $(PARALLEL_JOBS)"
 
 .PHONY: index
 index:
