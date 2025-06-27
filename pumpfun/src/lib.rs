@@ -1,11 +1,13 @@
 use proto::pb::pumpfun::v1 as pb;
 use substreams::errors::Error;
-use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
+use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
 use substreams_solana_idls::pumpfun;
 
 #[substreams::handlers::map]
-fn map_events(block: Block) -> Result<pb::Events, Error> {
+fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
     let mut events = pb::Events::default();
+
+    let matcher: substreams::ExprMatcher<'_> = substreams::expr_matcher(&params);
 
     // transactions
     for tx in block.transactions() {
@@ -16,10 +18,11 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
         for instruction in tx.walk_instructions() {
             let program_id = instruction.program_id().0;
 
-            // Must be the PumpFun Bonding Curve program ID
-            if program_id.to_vec() != pumpfun::PROGRAM_ID {
+            // Skip instructions
+            if !matcher.matches_keys(&vec![format!("program:{}", base58::encode(&program_id))]) {
                 continue;
             }
+
             let meta = instruction.meta();
             let mut base = pb::Instruction {
                 program_id: program_id.to_vec(),
