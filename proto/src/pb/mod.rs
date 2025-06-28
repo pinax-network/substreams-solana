@@ -1,4 +1,11 @@
 // @generated
+pub mod jupiter {
+    // @@protoc_insertion_point(attribute:jupiter.v1)
+    pub mod v1 {
+        include!("jupiter.v1.rs");
+        // @@protoc_insertion_point(jupiter.v1)
+    }
+}
 pub mod pumpfun {
     // @@protoc_insertion_point(attribute:pumpfun.v1)
     pub mod v1 {

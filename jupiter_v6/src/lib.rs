@@ -1,0 +1,63 @@
+use proto::pb::jupiter::v1 as pb;
+use substreams_solana::{base58, pb::sf::solana::r#type::v1::Block};
+use substreams_solana_idls::jupiter;
+
+#[substreams::handlers::map]
+fn map_events(params: String, block: Block) -> Result<pb::Events, substreams::errors::Error> {
+    let mut events = pb::Events::default();
+
+    let matcher = substreams::expr_matcher(&params);
+
+    // transactions
+    for tx in block.transactions() {
+        let mut transaction = pb::Transaction::default();
+        transaction.signature = tx.hash().to_vec();
+
+        // Include instructions and events
+        for instruction in tx.walk_instructions() {
+            let program_id = instruction.program_id().0;
+
+            // Skip instructions
+            if !matcher.matches_keys(&vec![format!("program:{}", base58::encode(&program_id))]) {
+                continue;
+            }
+
+            let meta = instruction.meta();
+            let mut base = pb::Instruction {
+                program_id: program_id.to_vec(),
+                fee: meta.fee,
+                stack_height: instruction.stack_height(),
+                compute_units_consumed: meta.compute_units_consumed(),
+                instruction: None,
+            };
+            // -- Events --
+            match jupiter::v6::events::unpack(instruction.data()) {
+                // -- Swap --
+                Ok(jupiter::v6::events::JupiterV6Event::Swap(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::SwapEvent(pb::SwapEvent {
+                        amm: event.amm.to_bytes().to_vec(),
+                        input_mint: event.input_mint.to_bytes().to_vec(),
+                        input_amount: event.input_amount,
+                        output_mint: event.output_mint.to_bytes().to_vec(),
+                        output_amount: event.output_amount,
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- Fee --
+                Ok(jupiter::v6::events::JupiterV6Event::Fee(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::FeeEvent(pb::FeeEvent {
+                        account: event.account.to_bytes().to_vec(),
+                        mint: event.mint.to_bytes().to_vec(),
+                        amount: event.amount,
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                _ => {}
+            }
+        }
+        if !transaction.instructions.is_empty() {
+            events.transactions.push(transaction);
+        }
+    }
+    Ok(events)
+}

@@ -817,6 +817,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "jupiter_v6"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "keccak"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2536,9 +2547,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-database-change"
-version = "2.1.1"
+version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c28b68c865258773974a130b162a92568bfcf8d0139192d2b308594c8bf42d0"
+checksum = "a93bcd1a0cda40746b8c3a3d64b0945986722b2ca3b686595cfbb3f295246d7d"
 dependencies = [
  "prost 0.13.5",
  "prost-types 0.13.5",
@@ -2647,9 +2658,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-idls"
-version = "0.1.4"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e557424a59b35c88ac023aadde4518a719033704b3a99cb9e81d65c49a902c45"
+checksum = "5cec6b789db7dcd2e1662a074ed905d3cf42e2400e0d425ab4d02ffa51680a52"
 dependencies = [
  "borsh 1.5.7",
  "serde",

@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package jupiter.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    repeated Instruction instructions = 2;
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    uint64 fee = 3; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 4; // Compute units consumed by this instruction.
+    oneof instruction {
+        SwapEvent swap_event = 10;
+        FeeEvent fee_event = 11;
+    }
+}
+
+message SwapEvent {
+    bytes amm = 1; // AMM account address.
+    bytes input_mint = 2; // Input token mint address.
+    uint64 input_amount = 3; // Amount of input tokens swapped.
+    bytes output_mint = 4; // Output token mint address.
+    uint64 output_amount = 5; // Amount of output tokens received.
+}
+
+message FeeEvent {
+    bytes account = 1; // Account that collected the fee.
+    bytes mint = 2; // Token mint address for the fee.
+    uint64 amount = 3; // Amount of fee collected.
+}
