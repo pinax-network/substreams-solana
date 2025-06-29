@@ -11,6 +11,9 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, substreams::er
     // transactions
     for tx in block.transactions() {
         let mut transaction = pb::Transaction::default();
+        let tx_meta = tx.meta.as_ref().expect("Transaction meta should be present");
+        transaction.fee = tx_meta.fee;
+        transaction.compute_units_consumed = tx_meta.compute_units_consumed();
         transaction.signature = tx.hash().to_vec();
 
         // Include instructions and events
@@ -21,13 +24,9 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, substreams::er
             if !matcher.matches_keys(&vec![format!("program:{}", base58::encode(&program_id))]) {
                 continue;
             }
-
-            let meta = instruction.meta();
             let mut base = pb::Instruction {
                 program_id: program_id.to_vec(),
-                fee: meta.fee,
                 stack_height: instruction.stack_height(),
-                compute_units_consumed: meta.compute_units_consumed(),
                 instruction: None,
             };
             // -- Events --

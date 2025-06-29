@@ -11,7 +11,13 @@ pub struct Events {
 pub struct Transaction {
     #[prost(bytes="vec", tag="1")]
     pub signature: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, repeated, tag="2")]
+    /// Lamports paid for this instruction.
+    #[prost(uint64, tag="2")]
+    pub fee: u64,
+    /// Compute units consumed by this instruction.
+    #[prost(uint64, tag="3")]
+    pub compute_units_consumed: u64,
+    #[prost(message, repeated, tag="4")]
     pub instructions: ::prost::alloc::vec::Vec<Instruction>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -21,12 +27,6 @@ pub struct Instruction {
     pub program_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint32, tag="2")]
     pub stack_height: u32,
-    /// Lamports paid for this instruction.
-    #[prost(uint64, tag="3")]
-    pub fee: u64,
-    /// Compute units consumed by this instruction.
-    #[prost(uint64, tag="4")]
-    pub compute_units_consumed: u64,
     #[prost(oneof="instruction::Instruction", tags="10, 11")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }

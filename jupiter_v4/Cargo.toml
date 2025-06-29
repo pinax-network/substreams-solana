@@ -1,0 +1,17 @@
+[package]
+name = "jupiter_v4"
+description = "Jupiter Aggregator V4"
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+substreams-solana-idls = { workspace = true }
+proto = { path = "../proto" }
+common = { path = "../common" }
+base64 = "0.22.1"

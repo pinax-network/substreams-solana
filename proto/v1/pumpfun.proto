@@ -8,14 +8,14 @@ message Events {
 
 message Transaction {
     bytes signature = 1;
-    repeated Instruction instructions = 2;
+    uint64 fee = 2; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 3; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 4;
 }
 
 message Instruction {
     bytes program_id = 1;
     uint32 stack_height = 2;
-    uint64 fee = 3; // Lamports paid for this instruction.
-    uint64 compute_units_consumed = 4; // Compute units consumed by this instruction.
     oneof instruction {
         BuyInstruction buy = 10;
         SellInstruction sell = 11;

@@ -817,6 +817,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "jupiter_v4"
+version = "0.0.0"
+dependencies = [
+ "base64 0.22.1",
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "jupiter_v6"
 version = "0.0.0"
 dependencies = [
@@ -2658,9 +2670,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-idls"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5cec6b789db7dcd2e1662a074ed905d3cf42e2400e0d425ab4d02ffa51680a52"
+checksum = "336aacf42a9c4ff884cbf9b12064dfaaf08550343f2ada65d748bc283a31b273"
 dependencies = [
  "borsh 1.5.7",
  "serde",
