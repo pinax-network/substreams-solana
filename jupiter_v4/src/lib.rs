@@ -1,4 +1,4 @@
-use common::solana::{is_invoke, parse_invoke_height, parse_program_data, parse_program_id};
+use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_height, parse_program_data, parse_program_id};
 use proto::pb::jupiter::v1 as pb;
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 use substreams_solana_idls::jupiter;
@@ -22,6 +22,13 @@ fn map_events(_params: String, block: Block) -> Result<pb::Events, substreams::e
         transaction.fee = tx_meta.fee;
         transaction.compute_units_consumed = tx_meta.compute_units_consumed();
         transaction.signature = tx.hash().to_vec();
+
+        if let Some(fee_payer) = get_fee_payer(tx) {
+            transaction.fee_payer = fee_payer;
+        }
+        if let Some(signers) = get_signers(tx) {
+            transaction.signers = signers;
+        }
 
         let mut is_invoked = false;
 

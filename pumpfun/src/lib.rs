@@ -1,3 +1,4 @@
+use common::solana::{get_fee_payer, get_signers};
 use proto::pb::pumpfun::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
@@ -10,12 +11,20 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
     let matcher: substreams::ExprMatcher<'_> = substreams::expr_matcher(&params);
 
     // transactions
+    // transactions
     for tx in block.transactions() {
         let mut transaction = pb::Transaction::default();
         let tx_meta = tx.meta.as_ref().expect("Transaction meta should be present");
         transaction.fee = tx_meta.fee;
         transaction.compute_units_consumed = tx_meta.compute_units_consumed();
         transaction.signature = tx.hash().to_vec();
+
+        if let Some(fee_payer) = get_fee_payer(tx) {
+            transaction.fee_payer = fee_payer;
+        }
+        if let Some(signers) = get_signers(tx) {
+            transaction.signers = signers;
+        }
 
         // Include instructions and events
         for instruction in tx.walk_instructions() {

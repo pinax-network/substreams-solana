@@ -2,7 +2,7 @@ use base64::Engine;
 // use solana_sdk::pubkey::Pubkey;
 // use std::str::FromStr;
 use substreams::pb::substreams::Clock;
-use substreams_solana::base58;
+use substreams_solana::{base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
 
 const GENESIS_TIMESTAMP: u64 = 1584332940; // Genesis timestamp in seconds
 const SLOT_DURATION_MS: u64 = 400; // Slot duration in milliseconds
@@ -11,6 +11,34 @@ pub fn to_timestamp(clock: &Clock) -> u64 {
     // GENESIS_TIMESTAMP is the genesis timestamp
     // SLOT_DURATION_MS per slot, so we multiply the slot number by SLOT_DURATION_MS and divide by 1000 to get seconds
     GENESIS_TIMESTAMP + (clock.number * SLOT_DURATION_MS) / 1000
+}
+
+pub fn get_fee_payer(tx: &ConfirmedTransaction) -> Option<Vec<u8>> {
+    // ConfirmedTransaction → Transaction → Message → account_keys[0]
+    tx.transaction
+        .as_ref() // Option<&Transaction>
+        .and_then(|t| t.message.as_ref()) // Option<&Message>
+        .and_then(|msg| msg.account_keys.get(0))
+        .cloned() // Option<Vec<u8>>
+}
+
+/// Returns a vector of 32-byte pubkeys for every signer in the transaction
+/// (index 0 is always the fee-payer).
+/// `None` is returned only if the protobuf is missing the expected fields.
+pub fn get_signers(tx: &ConfirmedTransaction) -> Option<Vec<Vec<u8>>> {
+    tx.transaction
+        .as_ref() // Option<&Transaction>
+        .and_then(|t| t.message.as_ref()) // Option<&Message>
+        .and_then(|msg| {
+            msg.header.as_ref().map(|hdr| {
+                let n = hdr.num_required_signatures as usize;
+                msg.account_keys
+                    .iter()
+                    .take(n) // first `n` keys are all signers
+                    .cloned()
+                    .collect::<Vec<Vec<u8>>>()
+            })
+        })
 }
 
 pub fn parse_program_data(log_message: &String) -> Option<Vec<u8>> {

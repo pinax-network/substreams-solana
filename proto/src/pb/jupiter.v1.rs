@@ -11,13 +11,20 @@ pub struct Events {
 pub struct Transaction {
     #[prost(bytes="vec", tag="1")]
     pub signature: ::prost::alloc::vec::Vec<u8>,
+    /// Fee payer account address.
+    #[prost(bytes="vec", tag="2")]
+    pub fee_payer: ::prost::alloc::vec::Vec<u8>,
+    /// Signers of the transaction.
+    #[prost(bytes="vec", repeated, tag="3")]
+    pub signers: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     /// Lamports paid for this instruction.
-    #[prost(uint64, tag="2")]
+    #[prost(uint64, tag="4")]
     pub fee: u64,
     /// Compute units consumed by this instruction.
-    #[prost(uint64, tag="3")]
+    #[prost(uint64, tag="5")]
     pub compute_units_consumed: u64,
-    #[prost(message, repeated, tag="4")]
+    /// Instructions executed in this transaction.
+    #[prost(message, repeated, tag="6")]
     pub instructions: ::prost::alloc::vec::Vec<Instruction>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]

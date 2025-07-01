@@ -8,9 +8,11 @@ message Events {
 
 message Transaction {
     bytes signature = 1;
-    uint64 fee = 2; // Lamports paid for this instruction.
-    uint64 compute_units_consumed = 3; // Compute units consumed by this instruction.
-    repeated Instruction instructions = 4;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
 }
 
 message Instruction {
