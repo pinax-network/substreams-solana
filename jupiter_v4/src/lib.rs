@@ -1,4 +1,4 @@
-use base64::Engine;
+use common::solana::{is_invoke, parse_invoke_height, parse_program_data, parse_program_id};
 use proto::pb::jupiter::v1 as pb;
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 use substreams_solana_idls::jupiter;
@@ -23,7 +23,29 @@ fn map_events(_params: String, block: Block) -> Result<pb::Events, substreams::e
         transaction.compute_units_consumed = tx_meta.compute_units_consumed();
         transaction.signature = tx.hash().to_vec();
 
+        let mut is_invoked = false;
+
         for log_message in tx_meta.log_messages.iter() {
+            // -- must match Jupiter V4 program ID --
+            let match_program_id = match parse_program_id(log_message) {
+                Some(id) => id == jupiter::v4::PROGRAM_ID.to_vec(),
+                None => false,
+            };
+            // ─── NEW: track invoke / success & stack height ─────────────────────────────
+            if is_invoke(log_message) && match_program_id {
+                if let Some(h) = parse_invoke_height(log_message) {
+                    base.stack_height = h - 1; // stack height is 1-based, so we subtract 1
+                    is_invoked = true;
+                }
+            }
+
+            // Not invoked, skip
+            // makes sure we only process logs that are invoked by the Jupiter V4 program
+            // in case of multiple invocations using the same Program Data
+            if !is_invoked {
+                continue;
+            }
+
             if let Some(data) = parse_program_data(&log_message) {
                 // -- Events --
                 match jupiter::v4::events::unpack(data.as_slice()) {
@@ -47,13 +69,4 @@ fn map_events(_params: String, block: Block) -> Result<pb::Events, substreams::e
         }
     }
     Ok(events)
-}
-
-pub fn parse_program_data(log_message: &String) -> Option<Vec<u8>> {
-    if let Some(b64) = log_message.strip_prefix("Program data:") {
-        // remove embedded whitespace, if any
-        let clean: String = b64.chars().filter(|c| !c.is_whitespace()).collect();
-        return Some(base64::engine::general_purpose::STANDARD.decode(clean).unwrap_or_default());
-    }
-    return None;
 }

@@ -14,4 +14,3 @@ substreams-solana = { workspace = true }
 substreams-solana-idls = { workspace = true }
 proto = { path = "../proto" }
 common = { path = "../common" }
-base64 = "0.22.1"

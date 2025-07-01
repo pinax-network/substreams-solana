@@ -16,7 +16,7 @@ noop: build
 
 .PHONY: gui
 gui: build
-	substreams run -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) -t +10 --network solana
+	substreams gui -e $(ENDPOINT) substreams.yaml map_events -s $(START_BLOCK) -t +10 --network solana
 
 .PHONY: prod
 prod: build
