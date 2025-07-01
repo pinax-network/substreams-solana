@@ -38,4 +38,4 @@ network: solana
 params:
   # Bonding‑Curve: 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P
   # PumpSwap AMM: pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA
-  map_events: "program:6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P || program:pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"
+  map_events: "program:6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
