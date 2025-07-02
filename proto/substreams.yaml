@@ -6,8 +6,6 @@ package:
 imports:
   solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
   solana_accounts: https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-accounts-v0.1.0/solana-accounts-foundational-v0.1.0.spkg
-  # pumpfun: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/pumpfun-events-v0.1.4.spkg
-  raydium: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/raydium-amm-events-v0.1.4.spkg
 
 protobuf:
   files:
@@ -15,6 +13,7 @@ protobuf:
     - v1/spl-token-balances.proto
     - v1/pumpfun.proto
     - v1/jupiter.proto
+    - v1/raydium.proto
   excludePaths:
     - sf/substreams
     - sf/solana

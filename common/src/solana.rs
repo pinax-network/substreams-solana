@@ -1,6 +1,4 @@
 use base64::Engine;
-// use solana_sdk::pubkey::Pubkey;
-// use std::str::FromStr;
 use substreams::pb::substreams::Clock;
 use substreams_solana::{base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
 
@@ -43,6 +41,16 @@ pub fn get_signers(tx: &ConfirmedTransaction) -> Option<Vec<Vec<u8>>> {
 
 pub fn parse_program_data(log_message: &String) -> Option<Vec<u8>> {
     if let Some(b64) = log_message.strip_prefix("Program data:") {
+        // remove embedded whitespace, if any
+        let clean: String = b64.chars().filter(|c| !c.is_whitespace()).collect();
+        return Some(base64::engine::general_purpose::STANDARD.decode(clean).unwrap_or_default());
+    }
+    return None;
+}
+
+// Program log: ray_log: A2vOXFR2BAAAAAAAAAAAAAABAAAAAAAAAGdf5p0tPAYAS3d05xcAAAAKLhn2iZx5BJPGFwAAAAAA
+pub fn parse_raydium_log(log_message: &String) -> Option<Vec<u8>> {
+    if let Some(b64) = log_message.strip_prefix("Program log: ray_log:") {
         // remove embedded whitespace, if any
         let clean: String = b64.chars().filter(|c| !c.is_whitespace()).collect();
         return Some(base64::engine::general_purpose::STANDARD.decode(clean).unwrap_or_default());
@@ -167,5 +175,13 @@ mod tests {
     fn program_id_rejects_log_sentinel() {
         let log = "Program log: Instruction: CloseAccount";
         assert!(parse_program_id(log).is_none());
+    }
+
+    #[test]
+    fn parse_raydium_log_decodes() {
+        // "hello" in base64
+        let msg = "Program log: ray_log: aGVsbG8=";
+        let decoded = parse_raydium_log(&msg.to_string()).unwrap();
+        assert_eq!(decoded, b"hello");
     }
 }

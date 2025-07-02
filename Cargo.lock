@@ -1458,6 +1458,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "raydium_amm_v4"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.5.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2670,9 +2681,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-idls"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "336aacf42a9c4ff884cbf9b12064dfaaf08550343f2ada65d748bc283a31b273"
+checksum = "0f051b466f940b6372fff3ebe39d44d49bd82386b449ff9b62f86e3224083170"
 dependencies = [
  "borsh 1.5.7",
  "serde",

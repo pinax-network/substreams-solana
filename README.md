@@ -13,3 +13,7 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
   - [x] Transfers (Mints, Burns, Approves, Revokes)
   - [x] Balances
 - [ ] Native tokens
+- [x] Raydium AMM v4
+- [x] Pump.fun - Bonding Curve
+- [x] Jupiter Aggregator V4
+- [x] Jupiter Aggregator V6

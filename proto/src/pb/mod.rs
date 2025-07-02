@@ -13,10 +13,12 @@ pub mod pumpfun {
         // @@protoc_insertion_point(pumpfun.v1)
     }
 }
-// @@protoc_insertion_point(attribute:raydium_amm)
-pub mod raydium_amm {
-    include!("raydium_amm.rs");
-    // @@protoc_insertion_point(raydium_amm)
+pub mod raydium {
+    // @@protoc_insertion_point(attribute:raydium.v1)
+    pub mod v1 {
+        include!("raydium.v1.rs");
+        // @@protoc_insertion_point(raydium.v1)
+    }
 }
 pub mod sf {
     pub mod firehose {
