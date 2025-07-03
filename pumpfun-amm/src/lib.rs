@@ -45,9 +45,18 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                 // -- Buy --
                 Ok(pumpfun::instructions::PumpFunAmmInstruction::Buy(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::BuyInstruction(pb::BuyInstruction {
-                        accounts: Some(get_buy_accounts(&instruction)),
+                        accounts: Some(get_trade_accounts(&instruction)),
                         base_amount_out: event.base_amount_out,
                         max_quote_amount_in: event.max_quote_amount_in,
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- Sell --
+                Ok(pumpfun::instructions::PumpFunAmmInstruction::Sell(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::SellInstruction(pb::SellInstruction {
+                        accounts: Some(get_trade_accounts(&instruction)),
+                        base_amount_in: event.base_amount_in,
+                        min_quote_amount_out: event.min_quote_amount_out,
                     }));
                     transaction.instructions.push(base.clone());
                 }
@@ -84,6 +93,35 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                     }));
                     transaction.instructions.push(base.clone());
                 }
+                // -- Sell V2 --
+                Ok(pumpfun::events::PumpFunAmmEvent::SellEventV2(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
+                        timestamp: event.timestamp,
+                        base_amount_in: event.base_amount_in,
+                        min_quote_amount_out: event.min_quote_amount_out,
+                        user_base_token_reserves: event.user_base_token_reserves,
+                        user_quote_token_reserves: event.user_quote_token_reserves,
+                        pool_base_token_reserves: event.pool_base_token_reserves,
+                        pool_quote_token_reserves: event.pool_quote_token_reserves,
+                        quote_amount_out: event.quote_amount_out,
+                        lp_fee_basis_points: event.lp_fee_basis_points,
+                        lp_fee: event.lp_fee,
+                        protocol_fee_basis_points: event.protocol_fee_basis_points,
+                        protocol_fee: event.protocol_fee,
+                        quote_amount_out_without_lp_fee: event.quote_amount_out_without_lp_fee,
+                        user_quote_amount_out: event.user_quote_amount_out,
+                        pool: event.pool.to_bytes().to_vec(),
+                        user: event.user.to_bytes().to_vec(),
+                        user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
+                        user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
+                        protocol_fee_recipient: event.protocol_fee_recipient.to_bytes().to_vec(),
+                        protocol_fee_recipient_token_account: event.protocol_fee_recipient_token_account.to_bytes().to_vec(),
+                        coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
+                        coin_creator_fee_basis_points: Some(event.coin_creator_fee_basis_points),
+                        coin_creator_fee: Some(event.coin_creator_fee),
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
                 _ => {}
             }
         }
@@ -94,8 +132,8 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
     Ok(events)
 }
 
-pub fn get_buy_accounts(instruction: &InstructionView) -> pb::BuyAccounts {
-    pb::BuyAccounts {
+pub fn get_trade_accounts(instruction: &InstructionView) -> pb::TradeAccounts {
+    pb::TradeAccounts {
         pool: instruction.accounts()[1 - 1].0.to_vec(),
         user: instruction.accounts()[2 - 1].0.to_vec(),
         global_config: instruction.accounts()[3 - 1].0.to_vec(),
