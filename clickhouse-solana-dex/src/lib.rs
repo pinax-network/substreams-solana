@@ -10,7 +10,7 @@ use substreams_database_change::pb::database::DatabaseChanges;
 pub fn db_out(
     mut clock: Clock,
     // DEXs
-    raydium_events: pb::raydium_amm::RaydiumAmmBlockEvents,
+    raydium_events: pb::raydium::v1::Events,
     spl_token_transfer_events: pb::solana::spl::token::transfers::v1::Events,
     // pumpfun_events: pb::pumpfun::PumpfunBlockEvents,
 ) -> Result<DatabaseChanges, Error> {

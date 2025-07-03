@@ -1,3 +1,4 @@
+use proto::pb::raydium::v1::{Instruction, Transaction};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::tables::Row;
 use substreams_solana::base58;
@@ -13,6 +14,36 @@ pub fn common_key(clock: &Clock, execution_index: u64) -> [(&'static str, String
         ("block_hash", clock.id.to_string()),
     ]
 }
+
+pub fn common_key_v2(clock: &Clock, transaction_index: usize, instruction_index: usize) -> [(&'static str, String); 3] {
+    [
+        ("block_hash", clock.id.to_string()),
+        ("transaction_index", transaction_index.to_string()),
+        ("instruction_index", instruction_index.to_string()),
+    ]
+}
+
+pub fn set_transaction_v2(tx: &Transaction, row: &mut Row) {
+    row.set("signature", base58::encode(tx.signature.to_vec()))
+        .set("fee_payer", base58::encode(tx.fee_payer.to_vec()))
+        .set("signers_raw", tx.signers.iter().map(base58::encode).collect::<Vec<_>>().join(","))
+        .set("fee", tx.fee)
+        .set("compute_units_consumed", tx.compute_units_consumed);
+}
+
+pub fn set_instruction_v2(instruction: &Instruction, row: &mut Row) {
+    row.set("program_id", base58::encode(instruction.program_id.to_vec()))
+        .set("stack_height", instruction.stack_height);
+}
+
+// message Transaction {
+//     bytes  signature                = 1;
+//     bytes  fee_payer                = 2;          // Fee-payer account address
+//     repeated bytes signers          = 3;          // Signers of the tx
+//     uint64 fee                      = 4;          // Lamports paid
+//     uint64 compute_units_consumed   = 5;          // CU used
+//     repeated Instruction instructions = 6;        // Executed instructions
+//   }
 
 // Helper function to set clock data in a row
 pub fn set_clock(clock: &Clock, row: &mut Row) {
