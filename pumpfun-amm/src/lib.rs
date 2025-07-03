@@ -60,6 +60,26 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                     }));
                     transaction.instructions.push(base.clone());
                 }
+                // -- CreatePool V2 --
+                Ok(pumpfun::instructions::PumpFunAmmInstruction::CreatePoolV2(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::CreatePoolInstruction(pb::CreatePoolInstruction {
+                        index: event.index as u32,
+                        base_amount_in: event.base_amount_in,
+                        quote_amount_in: event.quote_amount_in,
+                        coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- CreatePool V1 --
+                Ok(pumpfun::instructions::PumpFunAmmInstruction::CreatePoolV1(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::CreatePoolInstruction(pb::CreatePoolInstruction {
+                        index: event.index as u32,
+                        base_amount_in: event.base_amount_in,
+                        quote_amount_in: event.quote_amount_in,
+                        coin_creator: None,
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
                 _ => {}
             }
             // -- Events --
@@ -119,6 +139,58 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                         coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
                         coin_creator_fee_basis_points: Some(event.coin_creator_fee_basis_points),
                         coin_creator_fee: Some(event.coin_creator_fee),
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- CreatePool V1 --
+                Ok(pumpfun::events::PumpFunAmmEvent::CreatePoolEventV1(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
+                        timestamp: event.timestamp,
+                        index: event.index as u32,
+                        creator: event.creator.to_bytes().to_vec(),
+                        base_mint: event.base_mint.to_bytes().to_vec(),
+                        quote_mint: event.quote_mint.to_bytes().to_vec(),
+                        base_mint_decimals: event.base_mint_decimals as u32,
+                        quote_mint_decimals: event.quote_mint_decimals as u32,
+                        base_amount_in: event.base_amount_in,
+                        quote_amount_in: event.quote_amount_in,
+                        pool_base_amount: event.pool_base_amount,
+                        pool_quote_amount: event.pool_quote_amount,
+                        minimum_liquidity: event.minimum_liquidity,
+                        initial_liquidity: event.initial_liquidity,
+                        lp_token_amount_out: event.lp_token_amount_out,
+                        pool_bump: event.pool_bump as u32,
+                        pool: event.pool.to_bytes().to_vec(),
+                        lp_mint: event.lp_mint.to_bytes().to_vec(),
+                        user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
+                        user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
+                        coin_creator: None,
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- CreatePool V2 --
+                Ok(pumpfun::events::PumpFunAmmEvent::CreatePoolEventV2(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
+                        timestamp: event.timestamp,
+                        index: event.index as u32,
+                        creator: event.creator.to_bytes().to_vec(),
+                        base_mint: event.base_mint.to_bytes().to_vec(),
+                        quote_mint: event.quote_mint.to_bytes().to_vec(),
+                        base_mint_decimals: event.base_mint_decimals as u32,
+                        quote_mint_decimals: event.quote_mint_decimals as u32,
+                        base_amount_in: event.base_amount_in,
+                        quote_amount_in: event.quote_amount_in,
+                        pool_base_amount: event.pool_base_amount,
+                        pool_quote_amount: event.pool_quote_amount,
+                        minimum_liquidity: event.minimum_liquidity,
+                        initial_liquidity: event.initial_liquidity,
+                        lp_token_amount_out: event.lp_token_amount_out,
+                        pool_bump: event.pool_bump as u32,
+                        pool: event.pool.to_bytes().to_vec(),
+                        lp_mint: event.lp_mint.to_bytes().to_vec(),
+                        user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
+                        user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
+                        coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
                     }));
                     transaction.instructions.push(base.clone());
                 }

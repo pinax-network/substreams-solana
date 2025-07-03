@@ -34,7 +34,7 @@ pub struct Instruction {
     pub program_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint32, tag="2")]
     pub stack_height: u32,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -50,6 +50,10 @@ pub mod instruction {
         SellEvent(super::SellEvent),
         #[prost(message, tag="13")]
         SellInstruction(super::SellInstruction),
+        #[prost(message, tag="14")]
+        CreatePoolEvent(super::CreatePoolEvent),
+        #[prost(message, tag="15")]
+        CreatePoolInstruction(super::CreatePoolInstruction),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -274,5 +278,89 @@ pub struct SellEvent {
     /// Coin creator fee in lamports.
     #[prost(uint64, optional, tag="23")]
     pub coin_creator_fee: ::core::option::Option<u64>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreatePoolEvent {
+    /// Timestamp of the event.
+    #[prost(int64, tag="1")]
+    pub timestamp: i64,
+    /// Index of the pool.
+    #[prost(uint32, tag="2")]
+    pub index: u32,
+    /// Creator's account address.
+    #[prost(bytes="vec", tag="3")]
+    pub creator: ::prost::alloc::vec::Vec<u8>,
+    /// Base mint address.
+    #[prost(bytes="vec", tag="4")]
+    pub base_mint: ::prost::alloc::vec::Vec<u8>,
+    /// Quote mint address.
+    #[prost(bytes="vec", tag="5")]
+    pub quote_mint: ::prost::alloc::vec::Vec<u8>,
+    /// Base mint decimals.
+    #[prost(uint32, tag="6")]
+    pub base_mint_decimals: u32,
+    /// Quote mint decimals.
+    #[prost(uint32, tag="7")]
+    pub quote_mint_decimals: u32,
+    /// Amount of base token in.
+    #[prost(uint64, tag="8")]
+    pub base_amount_in: u64,
+    /// Amount of quote token in.
+    #[prost(uint64, tag="9")]
+    pub quote_amount_in: u64,
+    /// Pool's base token amount.
+    #[prost(uint64, tag="10")]
+    pub pool_base_amount: u64,
+    /// Pool's quote token amount.
+    #[prost(uint64, tag="11")]
+    pub pool_quote_amount: u64,
+    /// Minimum liquidity for the pool.
+    #[prost(uint64, tag="12")]
+    pub minimum_liquidity: u64,
+    /// Initial liquidity provided to the pool.
+    #[prost(uint64, tag="13")]
+    pub initial_liquidity: u64,
+    /// LP token amount out.
+    #[prost(uint64, tag="14")]
+    pub lp_token_amount_out: u64,
+    /// Pool bump seed.
+    #[prost(uint32, tag="15")]
+    pub pool_bump: u32,
+    /// Pool account address.
+    #[prost(bytes="vec", tag="16")]
+    pub pool: ::prost::alloc::vec::Vec<u8>,
+    /// LP mint address.
+    #[prost(bytes="vec", tag="17")]
+    pub lp_mint: ::prost::alloc::vec::Vec<u8>,
+    /// User's base token account address.
+    #[prost(bytes="vec", tag="18")]
+    pub user_base_token_account: ::prost::alloc::vec::Vec<u8>,
+    /// User's quote token account address.
+    #[prost(bytes="vec", tag="19")]
+    pub user_quote_token_account: ::prost::alloc::vec::Vec<u8>,
+    /// V2 specific fields
+    ///
+    /// Coin creator account address.
+    #[prost(bytes="vec", optional, tag="20")]
+    pub coin_creator: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreatePoolInstruction {
+    /// Index of the pool.
+    #[prost(uint32, tag="1")]
+    pub index: u32,
+    /// Amount of base token in.
+    #[prost(uint64, tag="2")]
+    pub base_amount_in: u64,
+    /// Amount of quote token in.
+    #[prost(uint64, tag="3")]
+    pub quote_amount_in: u64,
+    /// V2 specific fields
+    ///
+    /// Coin creator account address.
+    #[prost(bytes="vec", optional, tag="4")]
+    pub coin_creator: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
 }
 // @@protoc_insertion_point(module)

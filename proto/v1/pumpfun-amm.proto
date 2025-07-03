@@ -23,6 +23,8 @@ message Instruction {
         BuyInstruction buy_instruction = 11;
         SellEvent sell_event = 12;
         SellInstruction sell_instruction = 13;
+        CreatePoolEvent create_pool_event = 14;
+        CreatePoolInstruction create_pool_instruction = 15;
     }
 }
 
@@ -110,4 +112,37 @@ message SellEvent {
     optional bytes coin_creator = 21; // Coin creator account address.
     optional uint64 coin_creator_fee_basis_points = 22; // Coin creator fee in basis points
     optional uint64 coin_creator_fee = 23; // Coin creator fee in lamports.
+}
+
+message CreatePoolEvent {
+    int64 timestamp = 1; // Timestamp of the event.
+    uint32 index = 2; // Index of the pool.
+    bytes creator = 3; // Creator's account address.
+    bytes base_mint = 4; // Base mint address.
+    bytes quote_mint = 5; // Quote mint address.
+    uint32 base_mint_decimals = 6; // Base mint decimals.
+    uint32 quote_mint_decimals = 7; // Quote mint decimals.
+    uint64 base_amount_in = 8; // Amount of base token in.
+    uint64 quote_amount_in = 9; // Amount of quote token in.
+    uint64 pool_base_amount = 10; // Pool's base token amount.
+    uint64 pool_quote_amount = 11; // Pool's quote token amount.
+    uint64 minimum_liquidity = 12; // Minimum liquidity for the pool.
+    uint64 initial_liquidity = 13; // Initial liquidity provided to the pool.
+    uint64 lp_token_amount_out = 14; // LP token amount out.
+    uint32 pool_bump = 15; // Pool bump seed.
+    bytes pool = 16; // Pool account address.
+    bytes lp_mint = 17; // LP mint address.
+    bytes user_base_token_account = 18; // User's base token account address.
+    bytes user_quote_token_account = 19; // User's quote token account address.
+
+    // V2 specific fields
+    optional bytes coin_creator = 20; // Coin creator account address.
+}
+
+message CreatePoolInstruction {
+    uint32 index = 1; // Index of the pool.
+    uint64 base_amount_in = 2; // Amount of base token in.
+    uint64 quote_amount_in = 3; // Amount of quote token in.
+    // V2 specific fields
+    optional bytes coin_creator = 4; // Coin creator account address.
 }

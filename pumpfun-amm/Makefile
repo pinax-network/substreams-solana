@@ -1,5 +1,5 @@
 ENDPOINT ?= solana.substreams.pinax.network:443
-START_BLOCK ?= 349733401
+START_BLOCK ?= 350752736
 PARALLEL_JOBS ?= 500
 
 .PHONY: build
