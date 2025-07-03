@@ -8,9 +8,10 @@ members = [
   # DEXs
   "clickhouse-solana-dex",
   "pumpfun",
-  "jupiter_v4",
-  "jupiter_v6",
-  "raydium_amm_v4",
+  "pumpfun-amm",
+  "jupiter-v4",
+  "jupiter-v6",
+  "raydium-amm-v4",
 
   # # General
   # "clickhouse-transactions",
@@ -33,7 +34,7 @@ bs58 = "0.5.1"
 substreams = "0.6.1"
 substreams-abis = "0.4.5"
 substreams-solana = "0.14.1"
-substreams-solana-idls = "0.3.0"
+substreams-solana-idls = "0.4.0"
 spl-token = "8.0.0"
 substreams-solana-program-instructions = "0.2"
 substreams-database-change = "2.1.2"

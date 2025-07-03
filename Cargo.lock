@@ -1366,6 +1366,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "pumpfun_amm"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2681,9 +2692,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-idls"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f051b466f940b6372fff3ebe39d44d49bd82386b449ff9b62f86e3224083170"
+checksum = "72aab5d7449532e8a4eeea1ec8c5024e574011489ca69ff6fa4c3ceb9a266ef7"
 dependencies = [
  "borsh 1.5.7",
  "serde",

@@ -7,6 +7,13 @@ pub mod jupiter {
     }
 }
 pub mod pumpfun {
+    pub mod amm {
+        // @@protoc_insertion_point(attribute:pumpfun.amm.v1)
+        pub mod v1 {
+            include!("pumpfun.amm.v1.rs");
+            // @@protoc_insertion_point(pumpfun.amm.v1)
+        }
+    }
     // @@protoc_insertion_point(attribute:pumpfun.v1)
     pub mod v1 {
         include!("pumpfun.v1.rs");

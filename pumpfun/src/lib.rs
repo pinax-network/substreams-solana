@@ -2,7 +2,7 @@ use common::solana::{get_fee_payer, get_signers};
 use proto::pb::pumpfun::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
-use substreams_solana_idls::pumpfun;
+use substreams_solana_idls::pumpfun::bonding_curve as pumpfun;
 
 #[substreams::handlers::map]
 fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {

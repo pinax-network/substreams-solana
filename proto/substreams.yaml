@@ -12,6 +12,7 @@ protobuf:
     - v1/spl-token-transfers.proto
     - v1/spl-token-balances.proto
     - v1/pumpfun.proto
+    - v1/pumpfun-amm.proto
     - v1/jupiter.proto
     - v1/raydium.proto
   excludePaths:

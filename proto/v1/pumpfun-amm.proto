@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package pumpfun.amm.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    oneof instruction {
+        BuyEvent buy_event = 10;
+        BuyInstruction buy_instruction = 11;
+    }
+}
+
+message BuyInstruction {
+    BuyAccounts accounts = 1; // Accounts involved in the buy operation.
+    uint64 base_amount_out = 2; // Amount of base token out.
+    uint64 max_quote_amount_in = 3; // Maximum amount of quote token in.
+}
+
+message BuyAccounts {
+    // accounts
+    bytes pool = 1; // Pool account address.
+    bytes user = 2; // User account address.
+    bytes global_config = 3; // Global configuration account address.
+    bytes base_mint = 4; // User's base token account address.
+    bytes quote_mint = 5; // User's quote token account address.
+    bytes user_base_token_account = 6; // User's base token account address.
+    bytes user_quote_token_account = 7; // User's quote token account address.
+    bytes pool_base_token_account = 8; // Pool's base token account address.
+    bytes pool_quote_token_account = 9; // Pool's quote token account address.
+    bytes protocol_fee_recipient = 10; // Protocol fee recipient account address.
+    bytes protocol_fee_recipient_token_account = 11; // Protocol fee recipient token account address
+
+    // V2 specific accounts
+    optional bytes coin_creator_vault_ata = 18; // Coin creator vault associated token account address.
+    optional bytes coin_creator_vault_authority = 19; // Coin creator vault authority account address.
+}
+
+message BuyEvent {
+    int64 timestamp = 1; // Timestamp of the event.
+    uint64 base_amount_out = 2; // Amount of base token out.
+    uint64 max_quote_amount_in = 3; // Maximum amount of quote token in.
+    uint64 user_base_token_reserves = 4; // User's base token reserves.
+    uint64 user_quote_token_reserves = 5; // User's quote token reserves.
+    uint64 pool_base_token_reserves = 6; // Pool's base token reserves.
+    uint64 pool_quote_token_reserves = 7; // Pool's quote token reserves.
+    uint64 quote_amount_in = 8; // Amount of quote token in.
+    uint64 lp_fee_basis_points = 9; // LP fee in basis points.
+    uint64 lp_fee = 10; // LP fee in lamports.
+    uint64 protocol_fee_basis_points = 11; // Protocol fee in basis points.
+    uint64 protocol_fee = 12; // Protocol fee in lamports.
+    uint64 quote_amount_in_with_lp_fee = 13; // Quote amount in with LP fee applied.
+    uint64 user_quote_amount_in = 14; // User's quote amount in after fees.
+    bytes pool = 15; // Pool account address.
+    bytes user = 16; // User account address.
+    bytes user_base_token_account = 17; // User's base token account address.
+    bytes user_quote_token_account = 18; // User's quote token account address.
+    bytes protocol_fee_recipient = 19; // Protocol fee recipient account address.
+    bytes protocol_fee_recipient_token_account = 20; // Protocol fee recipient token account address.
+    // V2 specific fields
+    optional bytes coin_creator = 21; // Coin creator account address.
+    optional uint64 coin_creator_fee_basis_points = 22; // Coin creator fee in basis points
+    optional uint64 coin_creator_fee = 23; // Coin creator fee in lamports.
+}
