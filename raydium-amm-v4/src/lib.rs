@@ -1,7 +1,6 @@
 use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_id, parse_raydium_log};
 use proto::pb::raydium::amm::v1 as pb;
-use substreams::log;
-use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
+use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
 use substreams_solana_idls::raydium;
 
 #[substreams::handlers::map]
@@ -93,9 +92,9 @@ fn map_events(block: Block) -> Result<pb::Events, substreams::errors::Error> {
 
             if let Some(data) = parse_raydium_log(&log_message) {
                 // -- Events --
-                match raydium::amm::v4::events::unpack(data.as_slice()) {
+                match raydium::amm::v4::logs::unpack(data.as_slice()) {
                     // -- SwapBaseIn --
-                    Ok(raydium::amm::v4::events::RaydiumV4Event::SwapBaseIn(event)) => {
+                    Ok(raydium::amm::v4::logs::RaydiumV4Log::SwapBaseIn(event)) => {
                         base.log = Some(pb::log::Log::SwapBaseIn(pb::SwapBaseInLog {
                             amount_in: event.amount_in,
                             minimum_out: event.minimum_out,
@@ -108,7 +107,7 @@ fn map_events(block: Block) -> Result<pb::Events, substreams::errors::Error> {
                         transaction.logs.push(base.clone());
                     }
                     // -- SwapBaseOut --
-                    Ok(raydium::amm::v4::events::RaydiumV4Event::SwapBaseOut(event)) => {
+                    Ok(raydium::amm::v4::logs::RaydiumV4Log::SwapBaseOut(event)) => {
                         base.log = Some(pb::log::Log::SwapBaseOut(pb::SwapBaseOutLog {
                             max_in: event.max_in,
                             amount_out: event.amount_out,
@@ -170,15 +169,15 @@ fn map_events(block: Block) -> Result<pb::Events, substreams::errors::Error> {
             }
         }
         if !transaction.logs.is_empty() || !transaction.instructions.is_empty() {
-            if transaction.logs.len() != transaction.instructions.len() {
-                log::info!(
-                    "Transaction logs and instructions count mismatch: {} logs, {} instructions - transaction:\n{}",
-                    transaction.logs.len(),
-                    transaction.instructions.len(),
-                    base58::encode(transaction.clone().signature)
-                );
-                events.transactions.push(transaction);
-            }
+            // if transaction.logs.len() != transaction.instructions.len() {
+            //     panic!(
+            //         "Transaction logs and instructions count mismatch: {} logs, {} instructions - transaction:\n{}",
+            //         transaction.logs.len(),
+            //         transaction.instructions.len(),
+            //         base58::encode(transaction.clone().signature)
+            //     );
+            // }
+            events.transactions.push(transaction);
         }
     }
     Ok(events)
