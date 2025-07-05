@@ -1,4 +1,4 @@
-use proto::pb::raydium::v1::{Instruction, Transaction};
+use proto::pb::raydium::amm::v1::{Instruction, Transaction};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::tables::Row;
 use substreams_solana::base58;

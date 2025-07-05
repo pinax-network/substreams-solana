@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/raydium.proto
+    - v1/raydium-amm.proto
   importPaths:
     - ../proto
 
@@ -24,16 +24,12 @@ modules:
   - name: map_events
     kind: map
     inputs:
-      - params: string
       - map: solana_common:blocks_without_votes
     blockFilter:
       module: solana_common:program_ids_without_votes
       query:
-        params: true
+        string: "program:675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"
     output:
-      type: proto:raydium.v1.Events
+      type: proto:raydium.amm.v1.Events
 
 network: solana
-
-params:
-  map_events: "program:675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"

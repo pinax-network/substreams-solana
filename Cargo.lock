@@ -2692,9 +2692,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-idls"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72aab5d7449532e8a4eeea1ec8c5024e574011489ca69ff6fa4c3ceb9a266ef7"
+checksum = "1e1e72e9a7f722d4468d555b9ef8d4f6ff1357bf0fa2e5fb85fa462e46c8edf9"
 dependencies = [
  "borsh 1.5.7",
  "serde",

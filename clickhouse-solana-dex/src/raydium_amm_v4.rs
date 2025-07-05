@@ -1,13 +1,16 @@
 use common::clickhouse::{common_key_v2, set_clock, set_instruction_v2, set_transaction_v2};
-use proto::pb::raydium::v1 as pb;
+use proto::pb::raydium::amm::v1 as pb;
 use substreams::pb::substreams::Clock;
 
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
         for (instruction_index, instruction) in transaction.instructions.iter().enumerate() {
             match &instruction.instruction {
-                Some(pb::instruction::Instruction::SwapBaseInLog(event)) => {
+                Some(pb::instruction::Instruction::SwapBaseIn(event)) => {
                     handle_swap_base_in(tables, clock, transaction, instruction, event, transaction_index, instruction_index);
+                }
+                Some(pb::instruction::Instruction::SwapBaseOut(event)) => {
+                    handle_swap_base_out(tables, clock, transaction, instruction, event, transaction_index, instruction_index);
                 }
                 _ => {}
             }
@@ -20,7 +23,7 @@ fn handle_swap_base_in(
     clock: &Clock,
     transaction: &pb::Transaction,
     instruction: &pb::Instruction,
-    event: &pb::SwapBaseInLog,
+    event: &pb::SwapBaseInInstruction,
     transaction_index: usize,
     instruction_index: usize,
 ) {

@@ -15,6 +15,7 @@ message Transaction {
     repeated Instruction instructions = 6; // Instructions executed in this transaction.
 }
 
+
 message Instruction {
     bytes program_id = 1;
     uint32 stack_height = 2;

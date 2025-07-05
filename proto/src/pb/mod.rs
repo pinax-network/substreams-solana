@@ -21,10 +21,12 @@ pub mod pumpfun {
     }
 }
 pub mod raydium {
-    // @@protoc_insertion_point(attribute:raydium.v1)
-    pub mod v1 {
-        include!("raydium.v1.rs");
-        // @@protoc_insertion_point(raydium.v1)
+    pub mod amm {
+        // @@protoc_insertion_point(attribute:raydium.amm.v1)
+        pub mod v1 {
+            include!("raydium.amm.v1.rs");
+            // @@protoc_insertion_point(raydium.amm.v1)
+        }
     }
 }
 pub mod sf {

@@ -13,7 +13,7 @@ imports:
 
   # DEXs
   # pumpfun: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/pumpfun-events-v0.1.4.spkg
-  raydium: https://github.com/pinax-network/substreams-solana-0xbolt/releases/download/raydium_amm-v0.1.8/raydium-amm-events-v0.1.8.spkg
+  raydium: https://github.com/pinax-network/substreams-solana/releases/download/raydium-v0.1.0/raydium-amm-v4-v0.1.0.spkg
 
   # SPL Token
   spl_token_transfers: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-transfers-v0.1.0.spkg

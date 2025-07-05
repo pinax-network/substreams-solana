@@ -1,10 +1,10 @@
-use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_height, parse_program_data, parse_program_id};
+use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_data, parse_program_id};
 use proto::pb::jupiter::v1 as pb;
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 use substreams_solana_idls::jupiter;
 
 #[substreams::handlers::map]
-fn map_events(_params: String, block: Block) -> Result<pb::Events, substreams::errors::Error> {
+fn map_events(block: Block) -> Result<pb::Events, substreams::errors::Error> {
     let mut events = pb::Events::default();
 
     // let matcher = substreams::expr_matcher(&params);
@@ -40,7 +40,7 @@ fn map_events(_params: String, block: Block) -> Result<pb::Events, substreams::e
             };
             // ─── NEW: track invoke / success & stack height ─────────────────────────────
             if is_invoke(log_message) && match_program_id {
-                if let Some(h) = parse_invoke_height(log_message) {
+                if let Some(h) = parse_invoke_depth(log_message) {
                     base.stack_height = h - 1; // stack height is 1-based, so we subtract 1
                     is_invoked = true;
                 }

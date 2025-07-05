@@ -59,7 +59,7 @@ pub fn parse_raydium_log(log_message: &String) -> Option<Vec<u8>> {
 }
 
 /// Matches:  Program <PK> invoke [123]
-pub fn parse_invoke_height(log: &str) -> Option<u32> {
+pub fn parse_invoke_depth(log: &str) -> Option<u32> {
     let prefix = " invoke [";
     if let Some(pos) = log.find(prefix) {
         // fast path – cheap slice instead of regex
@@ -118,14 +118,14 @@ mod tests {
     #[test]
     fn parse_height_ok() {
         let log = "Program ABCD invoke [42]";
-        assert_eq!(parse_invoke_height(log), Some(42));
+        assert_eq!(parse_invoke_depth(log), Some(42));
     }
 
     #[test]
     fn parse_height_malformed() {
         // missing closing bracket
         let log = "Program ABCD invoke [42";
-        assert_eq!(parse_invoke_height(log), None);
+        assert_eq!(parse_invoke_depth(log), None);
     }
 
     #[test]

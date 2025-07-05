@@ -14,7 +14,7 @@ protobuf:
     - v1/pumpfun.proto
     - v1/pumpfun-amm.proto
     - v1/jupiter.proto
-    - v1/raydium.proto
+    - v1/raydium-amm.proto
   excludePaths:
     - sf/substreams
     - sf/solana

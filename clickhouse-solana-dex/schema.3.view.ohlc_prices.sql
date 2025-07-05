@@ -73,9 +73,9 @@ WITH
     pow(10, m1.decimals) AS scale1
 SELECT
     toStartOfHour(s.timestamp)  AS timestamp,
-    s.pool                   AS pool,
+    s.pool                      AS pool,
     any(s.protocol)             AS protocol,
-    any(s.program_id)             as program_id,
+    any(s.program_id)           AS program_id,
 
     -- token0 metadata --
     t0                      AS token0,
