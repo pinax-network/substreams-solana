@@ -89,7 +89,7 @@ pub struct SwapAccounts {
     pub token_program: ::prost::alloc::vec::Vec<u8>,
     /// AMM pool account (Raydium V4 liquidity-state)
     #[prost(bytes="vec", tag="2")]
-    pub amm_id: ::prost::alloc::vec::Vec<u8>,
+    pub amm: ::prost::alloc::vec::Vec<u8>,
     /// AMM authority PDA
     #[prost(bytes="vec", tag="3")]
     pub amm_authority: ::prost::alloc::vec::Vec<u8>,
@@ -98,43 +98,43 @@ pub struct SwapAccounts {
     pub amm_open_orders: ::prost::alloc::vec::Vec<u8>,
     /// AMM target-orders
     #[prost(bytes="vec", tag="5")]
-    pub pool_coin_token_account: ::prost::alloc::vec::Vec<u8>,
+    pub amm_target_orders: ::prost::alloc::vec::Vec<u8>,
     /// AMM coin vault (base-token vault)
     #[prost(bytes="vec", tag="6")]
-    pub pool_pc_token_account: ::prost::alloc::vec::Vec<u8>,
+    pub amm_coin_vault: ::prost::alloc::vec::Vec<u8>,
     /// AMM pc vault (quote-token vault)
     #[prost(bytes="vec", tag="7")]
-    pub serum_program_id: ::prost::alloc::vec::Vec<u8>,
+    pub market_program: ::prost::alloc::vec::Vec<u8>,
     /// OpenBook (or Serum) DEX program
     #[prost(bytes="vec", tag="8")]
-    pub serum_market: ::prost::alloc::vec::Vec<u8>,
+    pub market: ::prost::alloc::vec::Vec<u8>,
     /// Market account
     #[prost(bytes="vec", tag="9")]
-    pub serum_bids: ::prost::alloc::vec::Vec<u8>,
+    pub market_bids: ::prost::alloc::vec::Vec<u8>,
     /// Market bids slab
     #[prost(bytes="vec", tag="10")]
-    pub serum_asks: ::prost::alloc::vec::Vec<u8>,
+    pub market_asks: ::prost::alloc::vec::Vec<u8>,
     /// Market asks slab
     #[prost(bytes="vec", tag="11")]
-    pub serum_event_queue: ::prost::alloc::vec::Vec<u8>,
+    pub market_event_queue: ::prost::alloc::vec::Vec<u8>,
     /// Market event queue
     #[prost(bytes="vec", tag="12")]
-    pub serum_coin_vault_account: ::prost::alloc::vec::Vec<u8>,
+    pub market_coin_vault: ::prost::alloc::vec::Vec<u8>,
     /// Market pc vault (quote)
     #[prost(bytes="vec", tag="13")]
-    pub serum_pc_vault: ::prost::alloc::vec::Vec<u8>,
+    pub market_pc_vault: ::prost::alloc::vec::Vec<u8>,
     /// Market vault-signer PDA
     #[prost(bytes="vec", tag="14")]
-    pub serum_vault_signer: ::prost::alloc::vec::Vec<u8>,
+    pub market_vault_signer: ::prost::alloc::vec::Vec<u8>,
     /// User source ATA (base token)
     #[prost(bytes="vec", tag="15")]
-    pub user_source_token_account: ::prost::alloc::vec::Vec<u8>,
+    pub user_token_source: ::prost::alloc::vec::Vec<u8>,
     /// User destination ATA (quote token)
     #[prost(bytes="vec", tag="16")]
-    pub user_dest_token_account: ::prost::alloc::vec::Vec<u8>,
+    pub user_token_destination: ::prost::alloc::vec::Vec<u8>,
     /// User wallet (authority & fee-payer)
     #[prost(bytes="vec", tag="17")]
-    pub user_owner: ::prost::alloc::vec::Vec<u8>,
+    pub user_source_owner: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

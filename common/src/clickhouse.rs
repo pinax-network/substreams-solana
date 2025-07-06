@@ -15,6 +15,7 @@ pub fn common_key(clock: &Clock, execution_index: u64) -> [(&'static str, String
     ]
 }
 
+/// inserts rows for transaction_index and instruction_index
 pub fn common_key_v2(clock: &Clock, transaction_index: usize, instruction_index: usize) -> [(&'static str, String); 3] {
     [
         ("block_hash", clock.id.to_string()),

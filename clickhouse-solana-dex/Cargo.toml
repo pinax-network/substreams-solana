@@ -11,6 +11,7 @@ crate-type = ["cdylib", "rlib"]
 substreams = { workspace = true }
 substreams-solana = { workspace = true }
 substreams-database-change = "2.0"
+num_enum = "0.7.4"
 
 proto = { path = "../proto" }
 common = { path = "../common" }

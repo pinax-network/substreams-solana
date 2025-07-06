@@ -44,23 +44,23 @@ message Log {
 }
 
 message SwapAccounts {
-  bytes token_program               = 1; // Token program (usually SPL Token)
-  bytes amm_id                      = 2; // AMM pool account (Raydium V4 liquidity-state)
-  bytes amm_authority               = 3; // AMM authority PDA
-  bytes amm_open_orders             = 4; // AMM open-orders
-  bytes pool_coin_token_account     = 5; // AMM target-orders
-  bytes pool_pc_token_account       = 6; // AMM coin vault (base-token vault)
-  bytes serum_program_id            = 7; // AMM pc vault (quote-token vault)
-  bytes serum_market                = 8; // OpenBook (or Serum) DEX program
-  bytes serum_bids                  = 9; // Market account
-  bytes serum_asks                  = 10; // Market bids slab
-  bytes serum_event_queue           = 11; // Market asks slab
-  bytes serum_coin_vault_account    = 12; // Market event queue
-  bytes serum_pc_vault              = 13; // Market pc vault (quote)
-  bytes serum_vault_signer          = 14; // Market vault-signer PDA
-  bytes user_source_token_account   = 15; // User source ATA (base token)
-  bytes user_dest_token_account     = 16; // User destination ATA (quote token)
-  bytes user_owner                  = 17; // User wallet (authority & fee-payer)
+  bytes token_program             = 1; // Token program (usually SPL Token)
+  bytes amm                       = 2; // AMM pool account (Raydium V4 liquidity-state)
+  bytes amm_authority             = 3; // AMM authority PDA
+  bytes amm_open_orders           = 4; // AMM open-orders
+  bytes amm_target_orders         = 5; // AMM target-orders
+  bytes amm_coin_vault            = 6; // AMM coin vault (base-token vault)
+  bytes market_program            = 7; // AMM pc vault (quote-token vault)
+  bytes market                    = 8; // OpenBook (or Serum) DEX program
+  bytes market_bids               = 9; // Market account
+  bytes market_asks               = 10; // Market bids slab
+  bytes market_event_queue        = 11; // Market asks slab
+  bytes market_coin_vault         = 12; // Market event queue
+  bytes market_pc_vault           = 13; // Market pc vault (quote)
+  bytes market_vault_signer       = 14; // Market vault-signer PDA
+  bytes user_token_source         = 15; // User source ATA (base token)
+  bytes user_token_destination    = 16; // User destination ATA (quote token)
+  bytes user_source_owner         = 17; // User wallet (authority & fee-payer)
 }
 
 message SwapBaseInInstruction {
