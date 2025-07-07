@@ -12,31 +12,58 @@ CREATE TABLE IF NOT EXISTS swaps (
     instruction_index       UInt32,
 
     -- transaction --
-    signature               FixedString(88),                    -- EVM aka `tx_hash`
-    program_id              LowCardinality(FixedString(44)),    -- EVM aka `contract`
+    signature               FixedString(88),
+    program_id              LowCardinality(FixedString(44)),
 
     -- common fields --
-    pool                    LowCardinality(FixedString(44)),    -- Solana aka `amm`
-    sender                  FixedString(44),                    -- Solana aka `user`
-    token0                  FixedString(44),                    -- Solana aka `input_mint`
-    amount0                 Int128,                             -- Solana aka `input_amount`
-    token1                  FixedString(44),                    -- Solana aka `output_mint`
-    amount1                 Int128,                             -- Solana aka `output_amount`
-    price                   Float64,
-    protocol                Enum8('raydium_amm_v4' = 1, 'pumpfun' = 2, 'pumpfun_amm' = 3, 'jupiter_v4' = 4, 'jupiter_v6' = 5),
+    amm                         LowCardinality(FixedString(44)) COMMENT 'AMM protocol (Raydium Liquidity Pool V4)',
+    amm_pool                    LowCardinality(FixedString(44)) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',
+    input_mint                  LowCardinality(FixedString(44)) COMMENT 'Input token mint address',
+    input_amount                UInt64                          COMMENT 'Amount of input tokens swapped',
+    output_mint                 LowCardinality(FixedString(44)) COMMENT 'Output token mint address',
+    output_amount               UInt64                          COMMENT 'Amount of output tokens received',
 
     -- indexes --
     INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 4,
     INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 4,
     INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4,
-    INDEX idx_pool              (pool)              TYPE set(128)       GRANULARITY 4,
-    INDEX idx_sender            (sender)            TYPE bloom_filter   GRANULARITY 4,
-    INDEX idx_token0            (token0)            TYPE set(128)       GRANULARITY 4,
-    INDEX idx_amount0           (amount0)           TYPE minmax         GRANULARITY 4,
-    INDEX idx_token1            (token1)            TYPE set(128)       GRANULARITY 4,
-    INDEX idx_amount1           (amount1)           TYPE minmax         GRANULARITY 4,
-    INDEX idx_price             (price)             TYPE minmax         GRANULARITY 4,
-    INDEX idx_protocol          (protocol)          TYPE set(4)         GRANULARITY 1
+    INDEX idx_program_id        (program_id)        TYPE set(128)       GRANULARITY 4,
+    INDEX idx_amm               (amm)               TYPE set(128)       GRANULARITY 4,
+    INDEX idx_amm_pool          (amm_pool)          TYPE set(128)       GRANULARITY 4,
+    INDEX idx_input_mint        (input_mint)        TYPE set(128)       GRANULARITY 4,
+    INDEX idx_output_mint       (output_mint)       TYPE set(128)       GRANULARITY 4,
+    INDEX idx_input_amount      (input_amount)      TYPE minmax         GRANULARITY 4,
+    INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
-ORDER BY (block_hash, transaction_index, instruction_index);
+ORDER BY (program_id, amm, amm_pool, block_hash, transaction_index, instruction_index);
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Raydium-AMM → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_amm_v4_swap_base_in
+TO swaps AS
+SELECT
+    -- block --
+    block_num,
+    block_hash,
+    timestamp,
+    -- ordering --
+    transaction_index,
+    instruction_index,
+
+    -- transaction --
+    signature,
+    program_id,
+
+    -- common fields --
+    program_id              AS amm,
+    amm                     AS amm_pool,
+    amm_coin_vault          AS input_mint,
+    amount_in               AS input_amount,
+    amm_pc_vault            AS output_mint,
+    amount_out              AS output_amount
+
+FROM raydium_amm_v4_swap_base_in AS s
+-- ignore dust swaps (typically trying to disort the price)
+WHERE s.amount_in > 1 AND s.amount_out > 1;

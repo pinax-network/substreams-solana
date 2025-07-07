@@ -60,5 +60,5 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
 ENGINE = ReplacingMergeTree
 ORDER BY (block_hash, transaction_index, instruction_index);
 
-CREATE TABLE pumpfun_sell AS pumpfun_buy;
-ALTER TABLE pumpfun_sell RENAME COLUMN max_sol_cost TO min_sol_output;
+CREATE TABLE IF NOT EXISTS pumpfun_sell AS pumpfun_buy;
+ALTER TABLE pumpfun_sell RENAME COLUMN IF EXISTS max_sol_cost TO min_sol_output;
