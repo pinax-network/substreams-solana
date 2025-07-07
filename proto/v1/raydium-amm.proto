@@ -48,19 +48,20 @@ message SwapAccounts {
   bytes amm                       = 2; // AMM pool account (Raydium V4 liquidity-state)
   bytes amm_authority             = 3; // AMM authority PDA
   bytes amm_open_orders           = 4; // AMM open-orders
-  bytes amm_target_orders         = 5; // AMM target-orders
+  optional bytes amm_target_orders = 5; // AMM target-orders
   bytes amm_coin_vault            = 6; // AMM coin vault (base-token vault)
-  bytes market_program            = 7; // AMM pc vault (quote-token vault)
-  bytes market                    = 8; // OpenBook (or Serum) DEX program
-  bytes market_bids               = 9; // Market account
-  bytes market_asks               = 10; // Market bids slab
-  bytes market_event_queue        = 11; // Market asks slab
-  bytes market_coin_vault         = 12; // Market event queue
-  bytes market_pc_vault           = 13; // Market pc vault (quote)
-  bytes market_vault_signer       = 14; // Market vault-signer PDA
-  bytes user_token_source         = 15; // User source ATA (base token)
-  bytes user_token_destination    = 16; // User destination ATA (quote token)
-  bytes user_source_owner         = 17; // User wallet (authority & fee-payer)
+  bytes amm_pc_vault              = 7; // AMM pc vault (quote-token vault)
+  bytes market_program            = 8; // OpenBook (or Serum) DEX program
+  bytes market                    = 9; // OpenBook (or Serum) DEX market account
+  bytes market_bids               = 10; // Market account
+  bytes market_asks               = 11; // Market bids slab
+  bytes market_event_queue        = 12; // Market asks slab
+  bytes market_coin_vault         = 13; // Market event queue
+  bytes market_pc_vault           = 14; // Market pc vault (quote)
+  bytes market_vault_signer       = 15; // Market vault-signer PDA
+  bytes user_token_source         = 16; // User source ATA (base token)
+  bytes user_token_destination    = 17; // User destination ATA (quote token)
+  bytes user_source_owner         = 18; // User wallet (authority & fee-payer)
 }
 
 message SwapBaseInInstruction {
@@ -95,38 +96,38 @@ message SwapBaseOutLog {
   uint64 deduct_in    = 7;
 }
 
-message InitLog {
-  uint32 pc_decimals   = 1;
-  uint32 coin_decimals = 2;
-  uint64 pc_lot_size   = 3;
-  uint64 coin_lot_size = 4;
-  uint64 pc_amount     = 5;
-  uint64 coin_amount   = 6;
-  bytes  market        = 7;   // 32-byte Pubkey
-}
+// message InitLog {
+//   uint32 pc_decimals   = 1;
+//   uint32 coin_decimals = 2;
+//   uint64 pc_lot_size   = 3;
+//   uint64 coin_lot_size = 4;
+//   uint64 pc_amount     = 5;
+//   uint64 coin_amount   = 6;
+//   bytes  market        = 7;   // 32-byte Pubkey
+// }
 
-message DepositLog {
-  uint64 max_coin    = 1;
-  uint64 max_pc      = 2;
-  uint64 base        = 3;
-  uint64 pool_coin   = 4;
-  uint64 pool_pc     = 5;
-  uint64 pool_lp     = 6;
-  string calc_pnl_x  = 7;     // UInt128 as decimal string
-  string calc_pnl_y  = 8;     // UInt128 as decimal string
-  uint64 deduct_coin = 9;
-  uint64 deduct_pc   = 10;
-  uint64 mint_lp     = 11;
-}
+// message DepositLog {
+//   uint64 max_coin    = 1;
+//   uint64 max_pc      = 2;
+//   uint64 base        = 3;
+//   uint64 pool_coin   = 4;
+//   uint64 pool_pc     = 5;
+//   uint64 pool_lp     = 6;
+//   string calc_pnl_x  = 7;     // UInt128 as decimal string
+//   string calc_pnl_y  = 8;     // UInt128 as decimal string
+//   uint64 deduct_coin = 9;
+//   uint64 deduct_pc   = 10;
+//   uint64 mint_lp     = 11;
+// }
 
-message WithdrawLog {
-  uint64 withdraw_lp = 1;
-  uint64 user_lp     = 2;
-  uint64 pool_coin   = 3;
-  uint64 pool_pc     = 4;
-  uint64 pool_lp     = 5;
-  string calc_pnl_x  = 6;     // UInt128 as decimal string
-  string calc_pnl_y  = 7;     // UInt128 as decimal string
-  uint64 out_coin    = 8;
-  uint64 out_pc      = 9;
-}
+// message WithdrawLog {
+//   uint64 withdraw_lp = 1;
+//   uint64 user_lp     = 2;
+//   uint64 pool_coin   = 3;
+//   uint64 pool_pc     = 4;
+//   uint64 pool_lp     = 5;
+//   string calc_pnl_x  = 6;     // UInt128 as decimal string
+//   string calc_pnl_y  = 7;     // UInt128 as decimal string
+//   uint64 out_coin    = 8;
+//   uint64 out_pc      = 9;
+// }

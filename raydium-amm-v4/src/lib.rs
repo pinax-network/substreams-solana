@@ -183,24 +183,40 @@ fn map_events(block: Block) -> Result<pb::Events, substreams::errors::Error> {
     Ok(events)
 }
 
-pub fn get_swap_accounts(instruction: &InstructionView) -> pb::SwapAccounts {
+/// Convenience: return the `idx`-th account’s pubkey bytes.
+///
+/// * `ix`   – the fully-parsed instruction (`InstructionView`)
+/// * `idx`  – the position in the account vector
+#[inline]
+fn account_bytes(ix: &InstructionView, idx: usize) -> Vec<u8> {
+    ix.accounts()[idx].0.to_vec()
+}
+
+pub fn get_swap_accounts(ix: &InstructionView) -> pb::SwapAccounts {
+    let with_target_orders = ix.accounts().len() == 18; // v4 = 18, legacy = 17
+    let offset = if with_target_orders { 1 } else { 0 }; // how many slots to shift after we pass index 3
+
     pb::SwapAccounts {
-        token_program: instruction.accounts()[0].0.to_vec(),
-        amm: instruction.accounts()[1].0.to_vec(),
-        amm_authority: instruction.accounts()[2].0.to_vec(),
-        amm_open_orders: instruction.accounts()[3].0.to_vec(),
-        amm_target_orders: instruction.accounts()[4].0.to_vec(),
-        amm_coin_vault: instruction.accounts()[5].0.to_vec(),
-        market_program: instruction.accounts()[6].0.to_vec(),
-        market: instruction.accounts()[7].0.to_vec(),
-        market_bids: instruction.accounts()[8].0.to_vec(),
-        market_asks: instruction.accounts()[8].0.to_vec(),
-        market_event_queue: instruction.accounts()[10].0.to_vec(),
-        market_coin_vault: instruction.accounts()[11].0.to_vec(),
-        market_pc_vault: instruction.accounts()[12].0.to_vec(),
-        market_vault_signer: instruction.accounts()[13].0.to_vec(),
-        user_token_source: instruction.accounts()[14].0.to_vec(),
-        user_token_destination: instruction.accounts()[15].0.to_vec(),
-        user_source_owner: instruction.accounts()[16].0.to_vec(),
+        // fixed positions
+        token_program: account_bytes(ix, 0),
+        amm: account_bytes(ix, 1),
+        amm_authority: account_bytes(ix, 2),
+        amm_open_orders: account_bytes(ix, 3),
+        // new in Raydium-v4
+        amm_target_orders: if with_target_orders { Some(account_bytes(ix, 4)) } else { None },
+        // everything after index 3 shifts by +1 when target-orders is present
+        amm_coin_vault: account_bytes(ix, 4 + offset),
+        amm_pc_vault: account_bytes(ix, 5 + offset),
+        market_program: account_bytes(ix, 6 + offset),
+        market: account_bytes(ix, 7 + offset),
+        market_bids: account_bytes(ix, 8 + offset),
+        market_asks: account_bytes(ix, 9 + offset),
+        market_event_queue: account_bytes(ix, 10 + offset),
+        market_coin_vault: account_bytes(ix, 11 + offset),
+        market_pc_vault: account_bytes(ix, 12 + offset),
+        market_vault_signer: account_bytes(ix, 13 + offset),
+        user_token_source: account_bytes(ix, 14 + offset),
+        user_token_destination: account_bytes(ix, 15 + offset),
+        user_source_owner: account_bytes(ix, 16 + offset),
     }
 }

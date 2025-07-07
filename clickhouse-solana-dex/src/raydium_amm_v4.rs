@@ -17,25 +17,25 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
         // if not, it will skip the instruction
         for (instruction_index, instruction) in transaction.instructions.iter().enumerate() {
             match &instruction.instruction {
-                Some(pb::instruction::Instruction::SwapBaseIn(event)) => {
+                Some(pb::instruction::Instruction::SwapBaseIn(data)) => {
                     handle_swap_base_in(
                         tables,
                         clock,
                         transaction,
                         instruction,
-                        event,
+                        data,
                         &transaction.logs[instruction_index],
                         transaction_index,
                         instruction_index,
                     );
                 }
-                Some(pb::instruction::Instruction::SwapBaseOut(event)) => {
+                Some(pb::instruction::Instruction::SwapBaseOut(data)) => {
                     handle_swap_base_out(
                         tables,
                         clock,
                         transaction,
                         instruction,
-                        event,
+                        data,
                         &transaction.logs[instruction_index],
                         transaction_index,
                         instruction_index,
@@ -81,6 +81,7 @@ fn handle_swap_base_in(
         .set("amm_open_orders", base58::encode(&accounts.amm_open_orders))
         .set("amm_target_orders", base58::encode(&accounts.amm_target_orders))
         .set("amm_coin_vault", base58::encode(&accounts.amm_coin_vault))
+        .set("amm_pc_vault", base58::encode(&accounts.amm_pc_vault))
         .set("market_program", base58::encode(&accounts.market_program))
         .set("market", base58::encode(&accounts.market))
         .set("market_bids", base58::encode(&accounts.market_bids))

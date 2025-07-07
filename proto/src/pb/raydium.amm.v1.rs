@@ -97,43 +97,46 @@ pub struct SwapAccounts {
     #[prost(bytes="vec", tag="4")]
     pub amm_open_orders: ::prost::alloc::vec::Vec<u8>,
     /// AMM target-orders
-    #[prost(bytes="vec", tag="5")]
-    pub amm_target_orders: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", optional, tag="5")]
+    pub amm_target_orders: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// AMM coin vault (base-token vault)
     #[prost(bytes="vec", tag="6")]
     pub amm_coin_vault: ::prost::alloc::vec::Vec<u8>,
     /// AMM pc vault (quote-token vault)
     #[prost(bytes="vec", tag="7")]
-    pub market_program: ::prost::alloc::vec::Vec<u8>,
+    pub amm_pc_vault: ::prost::alloc::vec::Vec<u8>,
     /// OpenBook (or Serum) DEX program
     #[prost(bytes="vec", tag="8")]
+    pub market_program: ::prost::alloc::vec::Vec<u8>,
+    /// OpenBook (or Serum) DEX market account
+    #[prost(bytes="vec", tag="9")]
     pub market: ::prost::alloc::vec::Vec<u8>,
     /// Market account
-    #[prost(bytes="vec", tag="9")]
+    #[prost(bytes="vec", tag="10")]
     pub market_bids: ::prost::alloc::vec::Vec<u8>,
     /// Market bids slab
-    #[prost(bytes="vec", tag="10")]
+    #[prost(bytes="vec", tag="11")]
     pub market_asks: ::prost::alloc::vec::Vec<u8>,
     /// Market asks slab
-    #[prost(bytes="vec", tag="11")]
+    #[prost(bytes="vec", tag="12")]
     pub market_event_queue: ::prost::alloc::vec::Vec<u8>,
     /// Market event queue
-    #[prost(bytes="vec", tag="12")]
+    #[prost(bytes="vec", tag="13")]
     pub market_coin_vault: ::prost::alloc::vec::Vec<u8>,
     /// Market pc vault (quote)
-    #[prost(bytes="vec", tag="13")]
+    #[prost(bytes="vec", tag="14")]
     pub market_pc_vault: ::prost::alloc::vec::Vec<u8>,
     /// Market vault-signer PDA
-    #[prost(bytes="vec", tag="14")]
+    #[prost(bytes="vec", tag="15")]
     pub market_vault_signer: ::prost::alloc::vec::Vec<u8>,
     /// User source ATA (base token)
-    #[prost(bytes="vec", tag="15")]
+    #[prost(bytes="vec", tag="16")]
     pub user_token_source: ::prost::alloc::vec::Vec<u8>,
     /// User destination ATA (quote token)
-    #[prost(bytes="vec", tag="16")]
+    #[prost(bytes="vec", tag="17")]
     pub user_token_destination: ::prost::alloc::vec::Vec<u8>,
     /// User wallet (authority & fee-payer)
-    #[prost(bytes="vec", tag="17")]
+    #[prost(bytes="vec", tag="18")]
     pub user_source_owner: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -191,76 +194,5 @@ pub struct SwapBaseOutLog {
     pub pool_pc: u64,
     #[prost(uint64, tag="7")]
     pub deduct_in: u64,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct InitLog {
-    #[prost(uint32, tag="1")]
-    pub pc_decimals: u32,
-    #[prost(uint32, tag="2")]
-    pub coin_decimals: u32,
-    #[prost(uint64, tag="3")]
-    pub pc_lot_size: u64,
-    #[prost(uint64, tag="4")]
-    pub coin_lot_size: u64,
-    #[prost(uint64, tag="5")]
-    pub pc_amount: u64,
-    #[prost(uint64, tag="6")]
-    pub coin_amount: u64,
-    /// 32-byte Pubkey
-    #[prost(bytes="vec", tag="7")]
-    pub market: ::prost::alloc::vec::Vec<u8>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct DepositLog {
-    #[prost(uint64, tag="1")]
-    pub max_coin: u64,
-    #[prost(uint64, tag="2")]
-    pub max_pc: u64,
-    #[prost(uint64, tag="3")]
-    pub base: u64,
-    #[prost(uint64, tag="4")]
-    pub pool_coin: u64,
-    #[prost(uint64, tag="5")]
-    pub pool_pc: u64,
-    #[prost(uint64, tag="6")]
-    pub pool_lp: u64,
-    /// UInt128 as decimal string
-    #[prost(string, tag="7")]
-    pub calc_pnl_x: ::prost::alloc::string::String,
-    /// UInt128 as decimal string
-    #[prost(string, tag="8")]
-    pub calc_pnl_y: ::prost::alloc::string::String,
-    #[prost(uint64, tag="9")]
-    pub deduct_coin: u64,
-    #[prost(uint64, tag="10")]
-    pub deduct_pc: u64,
-    #[prost(uint64, tag="11")]
-    pub mint_lp: u64,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct WithdrawLog {
-    #[prost(uint64, tag="1")]
-    pub withdraw_lp: u64,
-    #[prost(uint64, tag="2")]
-    pub user_lp: u64,
-    #[prost(uint64, tag="3")]
-    pub pool_coin: u64,
-    #[prost(uint64, tag="4")]
-    pub pool_pc: u64,
-    #[prost(uint64, tag="5")]
-    pub pool_lp: u64,
-    /// UInt128 as decimal string
-    #[prost(string, tag="6")]
-    pub calc_pnl_x: ::prost::alloc::string::String,
-    /// UInt128 as decimal string
-    #[prost(string, tag="7")]
-    pub calc_pnl_y: ::prost::alloc::string::String,
-    #[prost(uint64, tag="8")]
-    pub out_coin: u64,
-    #[prost(uint64, tag="9")]
-    pub out_pc: u64,
 }
 // @@protoc_insertion_point(module)
