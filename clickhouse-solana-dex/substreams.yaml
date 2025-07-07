@@ -12,11 +12,10 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # DEXs
-  # pumpfun: https://github.com/0xbolt/solana-substreams/releases/download/v0.1.4/pumpfun-events-v0.1.4.spkg
-  raydium: https://github.com/pinax-network/substreams-solana/releases/download/raydium-v0.1.1/raydium-amm-v4-v0.1.1.spkg
-
-  # # SPL Token
-  spl_token_transfers: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-transfers-v0.1.0.spkg
+  pumpfun: ../pumpfun/substreams.yaml
+  raydium_amm_v4: ../raydium-amm-v4/substreams.yaml
+  jupiter_v4: ../jupiter-v4/substreams.yaml
+  jupiter_v6: ../jupiter-v6/substreams.yaml
 
 binaries:
   default:
@@ -30,9 +29,10 @@ modules:
       - source: sf.substreams.v1.Clock
 
       # DEXs
-      - map: raydium:map_events
-      - map: spl_token_transfers:map_events
-      # - map: pumpfun:pumpfun_events
+      - map: pumpfun:map_events
+      - map: raydium_amm_v4:map_events
+      - map: jupiter_v4:map_events
+      - map: jupiter_v6:map_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges

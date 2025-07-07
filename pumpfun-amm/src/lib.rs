@@ -1,14 +1,12 @@
 use common::solana::{get_fee_payer, get_signers};
 use proto::pb::pumpfun::amm::v1 as pb;
 use substreams::errors::Error;
-use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
+use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
 use substreams_solana_idls::pumpfun::amm as pumpfun;
 
 #[substreams::handlers::map]
-fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
+fn map_events(block: Block) -> Result<pb::Events, Error> {
     let mut events = pb::Events::default();
-
-    let matcher: substreams::ExprMatcher<'_> = substreams::expr_matcher(&params);
 
     // transactions
     for tx in block.transactions() {

@@ -1,4 +1,4 @@
-use common::clickhouse::{common_key_v2, set_clock, set_jupiter_instruction_v2, set_jupiter_transaction_v2};
+use common::clickhouse::{common_key_v2, set_clock, set_pumpfun_instruction_v2, set_pumpfun_transaction_v2};
 use proto::pb::pumpfun::v1 as pb;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
@@ -6,10 +6,17 @@ use substreams_solana::base58;
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
         for (instruction_index, instruction) in transaction.instructions.iter().enumerate() {
+            // Get TradeEvent from the next instruction
+            let event = match transaction.instructions[instruction_index + 1].instruction {
+                Some(pb::instruction::Instruction::Trade(ref event)) => event,
+                _ => panic!("{} signature: {}", instruction_index, base58::encode(&transaction.signature)), // Skip if not a TradeEvent
+            };
+
             match &instruction.instruction {
-                Some(pb::instruction::Instruction::Trade(event)) => {
-                    handle_buy(tables, clock, transaction, instruction, event, transaction_index, instruction_index);
+                Some(pb::instruction::Instruction::Buy(data)) => {
+                    handle_buy(tables, clock, transaction, instruction, data, event, transaction_index, instruction_index);
                 }
+
                 _ => {}
             }
         }
@@ -22,6 +29,7 @@ fn handle_buy(
     transaction: &pb::Transaction,
     instruction: &pb::Instruction,
     data: &pb::BuyInstruction,
+    event: &pb::TradeEvent,
     transaction_index: usize,
     instruction_index: usize,
 ) {
@@ -42,28 +50,33 @@ fn handle_buy(
         .set("user", base58::encode(&accounts.user))
         .set("creator_vault", base58::encode(&accounts.creator_vault))
         // data
-        .set("amount", data.amount.to_string())
-        .set("max_sol_cost", data.max_sol_cost.to_string())
+        .set("amount", data.amount)
+        .set("max_sol_cost", data.max_sol_cost)
         // event
         .set("mint", base58::encode(&event.mint))
-        .set("sol_amount", event.sol_amount.to_string())
-        .set("token_amount", event.token_amount.to_string())
-        .set("is_buy", event.is_buy.to_string())
+        .set("sol_amount", event.sol_amount)
+        .set("token_amount", event.token_amount)
+        .set("is_buy", event.is_buy)
         .set("user", base58::encode(&event.user))
-        .set("timestamp", event.timestamp.to_string())
-        .set("virtual_sol_reserves", event.virtual_sol_reserves.to_string())
-        .set("virtual_token_reserves", event.virtual_token_reserves.to_string())
-        .set("real_sol_reserves", event.real_sol_reserves.to_string())
-        .set("real_token_reserves", event.real_token_reserves.to_string())
-        .set("fee_recipient", base58::encode(&event.fee_recipient))
-        .set("fee_basis_points", event.fee_basis_points.to_string())
-        .set("fee", event.fee.to_string())
-        .set("creator", base58::encode(&event.creator))
-        .set("creator_fee_basis_points", event.creator_fee_basis_points.to_string())
-        .set("creator_fee", event.creator_fee.to_string());
+        .set("timestamp", event.timestamp)
+        .set("virtual_sol_reserves", event.virtual_sol_reserves)
+        .set("virtual_token_reserves", event.virtual_token_reserves)
+        .set("real_sol_reserves", event.real_sol_reserves)
+        .set("real_token_reserves", event.real_token_reserves)
+        // optional fields
+        .set(
+            "fee_recipient",
+            event.fee_recipient.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)),
+        )
+        .set("fee_basis_points", event.fee_basis_points.unwrap_or(0))
+        .set("fee", event.fee.unwrap_or(0))
+        // .set("creator", base58::encode(&event.creator))
+        .set("creator", event.creator.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)))
+        .set("creator_fee_basis_points", event.creator_fee_basis_points.unwrap_or(0))
+        .set("creator_fee", event.creator_fee.unwrap_or(0));
 
-    set_jupiter_instruction_v2(instruction, row);
-    set_jupiter_transaction_v2(transaction, row);
+    set_pumpfun_instruction_v2(instruction, row);
+    set_pumpfun_transaction_v2(transaction, row);
     set_clock(clock, row);
 }
 

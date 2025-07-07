@@ -24,18 +24,12 @@ modules:
   - name: map_events
     kind: map
     inputs:
-      - params: string
       - map: solana_common:blocks_without_votes
     blockFilter:
       module: solana_common:program_ids_without_votes
       query:
-        params: true
+        string: "program:pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"
     output:
       type: proto:pumpfun.amm.v1.Events
 
 network: solana
-
-params:
-  # Bonding‑Curve: 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P
-  # PumpSwap AMM: pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA
-  map_events: "program:pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"

@@ -24,18 +24,12 @@ modules:
   - name: map_events
     kind: map
     inputs:
-      - params: string
       - map: solana_common:blocks_without_votes
     blockFilter:
       module: solana_common:program_ids_without_votes
       query:
-        params: true
+        string: "program:JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"
     output:
       type: proto:jupiter.v1.Events
 
 network: solana
-
-params:
-  # V4: JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB
-  # V6: JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4
-  map_events: "program:JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"
