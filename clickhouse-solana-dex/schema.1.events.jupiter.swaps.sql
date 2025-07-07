@@ -36,4 +36,4 @@ CREATE TABLE IF NOT EXISTS jupiter_swap (
     INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 4
 )
 ENGINE = ReplacingMergeTree
-ORDER BY (block_hash, transaction_index, instruction_index);
+ORDER BY (block_hash, program_id, transaction_index, instruction_index);
