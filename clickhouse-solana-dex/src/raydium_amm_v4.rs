@@ -1,6 +1,7 @@
 use common::clickhouse::{common_key_v2, set_clock, set_raydium_instruction_v2 as set_instruction_v2, set_raydium_transaction_v2 as set_transaction_v2};
 use proto::pb::raydium::amm::v1 as pb;
 use substreams::pb::substreams::Clock;
+use substreams_database_change::tables::Row;
 use substreams_solana::base58;
 
 use crate::enums::Direction;
@@ -74,31 +75,13 @@ fn handle_swap_base_in(
         .set("amount_in", data.amount_in)
         .set("amount_out", log.out_amount)
         .set("minimum_amount_out", data.minimum_amount_out)
-        // -- accounts --
-        .set("token_program", base58::encode(&accounts.token_program))
-        .set("amm", base58::encode(&accounts.amm))
-        .set("amm_authority", base58::encode(&accounts.amm_authority))
-        .set("amm_open_orders", base58::encode(&accounts.amm_open_orders))
-        .set("amm_target_orders", base58::encode(&accounts.amm_target_orders))
-        .set("amm_coin_vault", base58::encode(&accounts.amm_coin_vault))
-        .set("amm_pc_vault", base58::encode(&accounts.amm_pc_vault))
-        .set("market_program", base58::encode(&accounts.market_program))
-        .set("market", base58::encode(&accounts.market))
-        .set("market_bids", base58::encode(&accounts.market_bids))
-        .set("market_asks", base58::encode(&accounts.market_asks))
-        .set("market_event_queue", base58::encode(&accounts.market_event_queue))
-        .set("market_coin_vault", base58::encode(&accounts.market_coin_vault))
-        .set("market_pc_vault", base58::encode(&accounts.market_pc_vault))
-        .set("market_vault_signer", base58::encode(&accounts.market_vault_signer))
-        .set("user_token_source", base58::encode(&accounts.user_token_source))
-        .set("user_token_destination", base58::encode(&accounts.user_token_destination))
-        .set("user_source_owner", base58::encode(&accounts.user_source_owner))
         // -- log --
         .set("direction", Direction::try_from(log.direction).unwrap().as_str())
         .set("user_source", log.user_source)
         .set("pool_coin", log.pool_coin)
         .set("pool_pc", log.pool_pc);
 
+    set_swap_accounts(accounts, row);
     set_instruction_v2(instruction, row);
     set_transaction_v2(transaction, row);
     set_clock(clock, row);
@@ -131,13 +114,25 @@ fn handle_swap_base_out(
         .set("amount_in", log.deduct_in)
         .set("amount_out", data.amount_out)
         .set("max_amount_in", data.max_amount_in)
-        // -- accounts --
-        .set("token_program", base58::encode(&accounts.token_program))
+        // -- log --
+        .set("direction", Direction::try_from(log.direction).unwrap().as_str())
+        .set("user_source", log.user_source)
+        .set("pool_coin", log.pool_coin)
+        .set("pool_pc", log.pool_pc);
+
+    set_swap_accounts(accounts, row);
+    set_instruction_v2(instruction, row);
+    set_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn set_swap_accounts(accounts: &pb::SwapAccounts, row: &mut Row) {
+    row.set("token_program", base58::encode(&accounts.token_program))
         .set("amm", base58::encode(&accounts.amm))
         .set("amm_authority", base58::encode(&accounts.amm_authority))
         .set("amm_open_orders", base58::encode(&accounts.amm_open_orders))
-        .set("amm_target_orders", base58::encode(&accounts.amm_target_orders))
         .set("amm_coin_vault", base58::encode(&accounts.amm_coin_vault))
+        .set("amm_pc_vault", base58::encode(&accounts.amm_pc_vault))
         .set("market_program", base58::encode(&accounts.market_program))
         .set("market", base58::encode(&accounts.market))
         .set("market_bids", base58::encode(&accounts.market_bids))
@@ -149,13 +144,9 @@ fn handle_swap_base_out(
         .set("user_token_source", base58::encode(&accounts.user_token_source))
         .set("user_token_destination", base58::encode(&accounts.user_token_destination))
         .set("user_source_owner", base58::encode(&accounts.user_source_owner))
-        // -- log --
-        .set("direction", Direction::try_from(log.direction).unwrap().as_str())
-        .set("user_source", log.user_source)
-        .set("pool_coin", log.pool_coin)
-        .set("pool_pc", log.pool_pc);
-
-    set_instruction_v2(instruction, row);
-    set_transaction_v2(transaction, row);
-    set_clock(clock, row);
+        // optional fields
+        .set(
+            "amm_target_orders",
+            accounts.amm_target_orders.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)),
+        );
 }
