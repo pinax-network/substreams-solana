@@ -1,4 +1,4 @@
-use common::clickhouse::{common_key_v2, set_clock, set_instruction_v2, set_transaction_v2};
+use common::clickhouse::{common_key_v2, set_clock, set_raydium_instruction_v2 as set_instruction_v2, set_raydium_transaction_v2 as set_transaction_v2};
 use proto::pb::raydium::amm::v1 as pb;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
@@ -72,6 +72,7 @@ fn handle_swap_base_in(
         .create_row("raydium_amm_v4_swap_base_in", key)
         // -- data --
         .set("amount_in", data.amount_in)
+        .set("amount_out", log.out_amount)
         .set("minimum_amount_out", data.minimum_amount_out)
         // -- accounts --
         .set("token_program", base58::encode(&accounts.token_program))
@@ -95,8 +96,7 @@ fn handle_swap_base_in(
         .set("direction", Direction::try_from(log.direction).unwrap().as_str())
         .set("user_source", log.user_source)
         .set("pool_coin", log.pool_coin)
-        .set("pool_pc", log.pool_pc)
-        .set("out_amount", log.out_amount);
+        .set("pool_pc", log.pool_pc);
 
     set_instruction_v2(instruction, row);
     set_transaction_v2(transaction, row);
@@ -127,6 +127,7 @@ fn handle_swap_base_out(
     let row = tables
         .create_row("raydium_amm_v4_swap_base_out", key)
         // -- data --
+        .set("amount_in", log.deduct_in)
         .set("amount_out", data.amount_out)
         .set("max_amount_in", data.max_amount_in)
         // -- accounts --
@@ -151,8 +152,7 @@ fn handle_swap_base_out(
         .set("direction", Direction::try_from(log.direction).unwrap().as_str())
         .set("user_source", log.user_source)
         .set("pool_coin", log.pool_coin)
-        .set("pool_pc", log.pool_pc)
-        .set("deduct_in", log.deduct_in);
+        .set("pool_pc", log.pool_pc);
 
     set_instruction_v2(instruction, row);
     set_transaction_v2(transaction, row);

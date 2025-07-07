@@ -8,10 +8,8 @@ CREATE TABLE IF NOT EXISTS swaps (
     timestamp               DateTime(0, 'UTC'),
 
     -- ordering --
-    execution_index         UInt32,
     transaction_index       UInt32,
     instruction_index       UInt32,
-    global_sequence         UInt64, -- (block_num << 32) | execution_index
 
     -- transaction --
     signature               FixedString(88),                    -- EVM aka `tx_hash`
@@ -25,9 +23,11 @@ CREATE TABLE IF NOT EXISTS swaps (
     token1                  FixedString(44),                    -- Solana aka `output_mint`
     amount1                 Int128,                             -- Solana aka `output_amount`
     price                   Float64,
-    protocol                LowCardinality(String), -- 'raydium_amm_v4' | 'pumpfun'
+    protocol                Enum8('raydium_amm_v4' = 1, 'pumpfun' = 2, 'pumpfun_amm' = 3, 'jupiter_v4' = 4, 'jupiter_v6' = 5),
 
     -- indexes --
+    INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 4,
+    INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 4,
     INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4,
     INDEX idx_pool              (pool)              TYPE set(128)       GRANULARITY 4,
     INDEX idx_sender            (sender)            TYPE bloom_filter   GRANULARITY 4,
@@ -39,4 +39,4 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_protocol          (protocol)          TYPE set(4)         GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
-ORDER BY (timestamp, block_num, execution_index, block_hash, protocol);
+ORDER BY (block_hash, transaction_index, instruction_index);

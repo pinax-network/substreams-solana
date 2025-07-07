@@ -16,7 +16,7 @@ imports:
   raydium: https://github.com/pinax-network/substreams-solana/releases/download/raydium-v0.1.1/raydium-amm-v4-v0.1.1.spkg
 
   # # SPL Token
-  # spl_token_transfers: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-transfers-v0.1.0.spkg
+  spl_token_transfers: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-transfers-v0.1.0.spkg
 
 binaries:
   default:
@@ -31,7 +31,7 @@ modules:
 
       # DEXs
       - map: raydium:map_events
-      # - map: spl_token_transfers:map_events
+      - map: spl_token_transfers:map_events
       # - map: pumpfun:pumpfun_events
 
     output:

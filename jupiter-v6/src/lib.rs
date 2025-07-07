@@ -29,7 +29,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, substreams::er
             let program_id = instruction.program_id().0;
 
             // Skip instructions
-            if !matcher.matches_keys(&vec![format!("program:{}", base58::encode(&program_id))]) {
+            if program_id != &jupiter::v6::PROGRAM_ID.to_vec() {
                 continue;
             }
             let mut base = pb::Instruction {
@@ -38,9 +38,9 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, substreams::er
                 instruction: None,
             };
             // -- Events --
-            match jupiter::v6::events::unpack(instruction.data()) {
+            match jupiter::v6::anchor_self_cpi::unpack(instruction.data()) {
                 // -- Swap --
-                Ok(jupiter::v6::events::JupiterV6Event::Swap(event)) => {
+                Ok(jupiter::v6::anchor_self_cpi::JupiterV6Event::Swap(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::SwapEvent(pb::SwapEvent {
                         amm: event.amm.to_bytes().to_vec(),
                         input_mint: event.input_mint.to_bytes().to_vec(),
@@ -51,7 +51,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, substreams::er
                     transaction.instructions.push(base.clone());
                 }
                 // -- Fee --
-                Ok(jupiter::v6::events::JupiterV6Event::Fee(event)) => {
+                Ok(jupiter::v6::anchor_self_cpi::JupiterV6Event::Fee(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::FeeEvent(pb::FeeEvent {
                         account: event.account.to_bytes().to_vec(),
                         mint: event.mint.to_bytes().to_vec(),

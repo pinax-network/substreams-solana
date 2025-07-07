@@ -10,8 +10,8 @@ LIMIT 10
 
 -- OHLC Prices by Pool --
 WITH (
-      9 AS decimals0, -- JOIN contracts
-      6 AS decimals1, -- JOIN contracts
+      9 AS decimals0, -- JOIN solana-tokens::initialize_mints
+      6 AS decimals1, -- JOIN solana-tokens::initialize_mints
       2 AS precision -- user defined
 ) SELECT
       timestamp,

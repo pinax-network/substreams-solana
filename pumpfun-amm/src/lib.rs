@@ -30,7 +30,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
             let program_id = instruction.program_id().0;
 
             // Skip instructions
-            if !matcher.matches_keys(&vec![format!("program:{}", base58::encode(&program_id))]) {
+            if program_id != &pumpfun::PROGRAM_ID.to_vec() {
                 continue;
             }
 
@@ -83,9 +83,9 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                 _ => {}
             }
             // -- Events --
-            match pumpfun::events::unpack(instruction.data()) {
+            match pumpfun::anchor_self_cpi::unpack(instruction.data()) {
                 // -- Buy V2 --
-                Ok(pumpfun::events::PumpFunAmmEvent::BuyEventV2(event)) => {
+                Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::BuyEventV2(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::BuyEvent(pb::BuyEvent {
                         timestamp: event.timestamp,
                         base_amount_out: event.base_amount_out,
@@ -114,7 +114,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                     transaction.instructions.push(base.clone());
                 }
                 // -- Sell V2 --
-                Ok(pumpfun::events::PumpFunAmmEvent::SellEventV2(event)) => {
+                Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::SellEventV2(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
                         timestamp: event.timestamp,
                         base_amount_in: event.base_amount_in,
@@ -143,7 +143,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                     transaction.instructions.push(base.clone());
                 }
                 // -- CreatePool V1 --
-                Ok(pumpfun::events::PumpFunAmmEvent::CreatePoolEventV1(event)) => {
+                Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::CreatePoolEventV1(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
                         timestamp: event.timestamp,
                         index: event.index as u32,
@@ -169,7 +169,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                     transaction.instructions.push(base.clone());
                 }
                 // -- CreatePool V2 --
-                Ok(pumpfun::events::PumpFunAmmEvent::CreatePoolEventV2(event)) => {
+                Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::CreatePoolEventV2(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
                         timestamp: event.timestamp,
                         index: event.index as u32,

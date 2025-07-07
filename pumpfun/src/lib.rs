@@ -31,7 +31,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
             let program_id = instruction.program_id().0;
 
             // Skip instructions
-            if !matcher.matches_keys(&vec![format!("program:{}", base58::encode(&program_id))]) {
+            if program_id != &pumpfun::PROGRAM_ID.to_vec() {
                 continue;
             }
 
@@ -100,9 +100,9 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                 _ => {}
             }
             // -- Events --
-            match pumpfun::events::unpack(instruction.data()) {
+            match pumpfun::anchor_self_cpi::unpack(instruction.data()) {
                 // -- TradeV1 --
-                Ok(pumpfun::events::PumpFunEvent::TradeV1(event)) => {
+                Ok(pumpfun::anchor_self_cpi::PumpFunEvent::TradeV1(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
                         mint: event.mint.to_bytes().to_vec(),
                         sol_amount: event.sol_amount,
@@ -124,7 +124,7 @@ fn map_events(params: String, block: Block) -> Result<pb::Events, Error> {
                     transaction.instructions.push(base.clone());
                 }
                 // -- TradeV2 --
-                Ok(pumpfun::events::PumpFunEvent::TradeV2(event)) => {
+                Ok(pumpfun::anchor_self_cpi::PumpFunEvent::TradeV2(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
                         mint: event.mint.to_bytes().to_vec(),
                         sol_amount: event.sol_amount,

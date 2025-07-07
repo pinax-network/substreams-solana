@@ -55,9 +55,9 @@ fn map_events(block: Block) -> Result<pb::Events, substreams::errors::Error> {
 
             if let Some(data) = parse_program_data(&log_message) {
                 // -- Events --
-                match jupiter::v4::events::unpack(data.as_slice()) {
+                match jupiter::v4::anchor_self_cpi::unpack(data.as_slice()) {
                     // -- Swap --
-                    Ok(jupiter::v4::events::JupiterV4Event::Swap(event)) => {
+                    Ok(jupiter::v4::anchor_self_cpi::JupiterV4Event::Swap(event)) => {
                         base.instruction = Some(pb::instruction::Instruction::SwapEvent(pb::SwapEvent {
                             amm: event.amm.to_bytes().to_vec(),
                             input_mint: event.input_mint.to_bytes().to_vec(),
