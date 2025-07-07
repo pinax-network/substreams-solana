@@ -24,34 +24,33 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
     stack_height                UInt32,
 
     -- accounts --
-    token_program               FixedString(44) COMMENT 'Token program (usually SPL Token)',
-    amm                         FixedString(44) COMMENT 'AMM pool account (Raydium V4 liquidity-state)',
-    amm_authority               FixedString(44) COMMENT 'AMM authority PDA',
-    amm_open_orders             FixedString(44) COMMENT 'AMM open-orders',
-    amm_target_orders           FixedString(44) COMMENT 'AMM target-orders',
-    amm_coin_vault              FixedString(44) COMMENT 'AMM coin vault (base-token vault)',
-    market_program              FixedString(44) COMMENT 'AMM pc vault (quote-token vault)',
-    market                      FixedString(44) COMMENT 'OpenBook (or Serum) DEX program',
-    market_bids                 FixedString(44) COMMENT 'Market account',
-    market_asks                 FixedString(44) COMMENT 'Market bids slab',
-    market_event_queue          FixedString(44) COMMENT 'Market asks slab',
-    market_coin_vault           FixedString(44) COMMENT 'Market event queue',
-    market_pc_vault             FixedString(44) COMMENT 'Market pc vault (quote)',
-    market_vault_signer         FixedString(44) COMMENT 'Market vault-signer PDA',
-    user_token_source           FixedString(44) COMMENT 'User source ATA (base token)',
-    user_token_destination      FixedString(44) COMMENT 'User destination ATA (quote token)',
-    user_source_owner           FixedString(44) COMMENT 'User wallet (authority & fee-payer)',
+    global                      FixedString(44),
+    fee_recipient               FixedString(44),
+    mint                        FixedString(44),
+    bonding_curve               FixedString(44),
+    associated_bonding_curve    FixedString(44),
+    associated_user             FixedString(44),
+    user                        FixedString(44),
+    creator_vault               FixedString(44),
 
     -- data --
-    amount_in                   UInt64,
-    minimum_amount_out          UInt64,
+    amount                      UInt64,
+    max_sol_cost                UInt64,
 
-    -- log --
-    amount_out                  UInt64,
-    direction                   Enum8('PC2Coin' = 1, 'Coin2PC' = 2),
-    user_source                 UInt64,
-    pool_coin                   UInt64,
-    pool_pc                     UInt64,
+    -- event --
+    sol_amount                  UInt64,
+    token_amount                UInt64,
+    is_buy                      Bool,
+    virtual_sol_reserves        UInt64,
+    virtual_token_reserves      UInt64,
+    real_sol_reserves           UInt64,
+    real_token_reserves         UInt64,
+    protocol_fee_recipient      FixedString(44) DEFAULT '',
+    protocol_fee_basis_points   UInt64 DEFAULT 0, -- basis-points, 1 bp = 0.01 %
+    protocol_fee                UInt64 DEFAULT 0, -- lamports
+    creator                     FixedString(44) DEFAULT '',
+    creator_fee_basis_points    UInt64 DEFAULT 0,
+    creator_fee                 UInt64 DEFAULT 0, -- lamports
 
     -- indexes --
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
@@ -60,3 +59,6 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
 )
 ENGINE = ReplacingMergeTree
 ORDER BY (block_hash, transaction_index, instruction_index);
+
+CREATE TABLE pumpfun_sell AS pumpfun_buy;
+ALTER TABLE pumpfun_sell RENAME COLUMN max_sol_cost TO min_sol_output;

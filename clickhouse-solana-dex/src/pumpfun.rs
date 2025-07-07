@@ -12,14 +12,12 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
                     let Some(event) = get_trade_event(transaction, instruction_index) else {
                         continue;
                     };
-                    substreams::log::info!("buy [{}]: {:?}", instruction_index, base58::encode(&transaction.signature));
                     handle_buy(tables, clock, transaction, instruction, data, event, transaction_index, instruction_index);
                 }
                 Some(pb::instruction::Instruction::Sell(data)) => {
                     let Some(event) = get_trade_event(transaction, instruction_index) else {
                         continue;
                     };
-                    substreams::log::info!("sell [{}]: {:?}", instruction_index, base58::encode(&transaction.signature));
                     handle_sell(tables, clock, transaction, instruction, data, event, transaction_index, instruction_index);
                 }
 
@@ -114,11 +112,11 @@ fn set_trade_event(event: &pb::TradeEvent, accounts: &pb::TradeAccounts, row: &m
         .set("real_token_reserves", event.real_token_reserves)
         // optional fields
         .set(
-            "fee_recipient",
+            "protocol_fee_recipient",
             event.fee_recipient.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)),
         )
-        .set("fee_basis_points", event.fee_basis_points.unwrap_or(0))
-        .set("fee", event.fee.unwrap_or(0))
+        .set("protocol_fee_basis_points", event.fee_basis_points.unwrap_or(0))
+        .set("protocol_fee", event.fee.unwrap_or(0))
         .set("creator", event.creator.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)))
         .set("creator_fee_basis_points", event.creator_fee_basis_points.unwrap_or(0))
         .set("creator_fee", event.creator_fee.unwrap_or(0));
