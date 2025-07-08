@@ -12,11 +12,11 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # DEXs
-  pumpfun: ../pumpfun/substreams.yaml
-  pumpfun_amm: ../pumpfun-amm/substreams.yaml
-  raydium_amm_v4: ../raydium-amm-v4/substreams.yaml
-  jupiter_v4: ../jupiter-v4/substreams.yaml
-  jupiter_v6: ../jupiter-v6/substreams.yaml
+  pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/pumpfun-v0.2.0.spkg
+  pumpfun_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/pumpfun-amm-v0.2.0.spkg
+  raydium_amm_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-amm-v4-v0.2.0.spkg
+  jupiter_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v4-v0.2.0.spkg
+  jupiter_v6: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v6-v0.2.0.spkg
 
 binaries:
   default:
