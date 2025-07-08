@@ -82,68 +82,137 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
             }
             // -- Events --
             match pumpfun::anchor_self_cpi::unpack(instruction.data()) {
+                // -- Buy V1 --
+                Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::BuyEventV1(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::BuyEvent(pb::BuyEvent {
+                        base_amount_out: event.base_amount_out,
+                        max_quote_amount_in: event.max_quote_amount_in,
+                        quote_amount_in: event.quote_amount_in,
+                        quote_amount_in_with_lp_fee: event.quote_amount_in_with_lp_fee,
+                        user_quote_amount_in: event.user_quote_amount_in,
+
+                        // Trade details
+                        trade: Some(pb::TradeDetails {
+                            user_base_token_reserves: event.user_base_token_reserves,
+                            user_quote_token_reserves: event.user_quote_token_reserves,
+                            pool_base_token_reserves: event.pool_base_token_reserves,
+                            pool_quote_token_reserves: event.pool_quote_token_reserves,
+                            lp_fee_basis_points: event.lp_fee_basis_points,
+                            lp_fee: event.lp_fee,
+                            protocol_fee_basis_points: event.protocol_fee_basis_points,
+                            protocol_fee: event.protocol_fee,
+                            pool: event.pool.to_bytes().to_vec(),
+                            user: event.user.to_bytes().to_vec(),
+                            user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
+                            user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
+                            protocol_fee_recipient: event.protocol_fee_recipient.to_bytes().to_vec(),
+                            protocol_fee_recipient_token_account: event.protocol_fee_recipient_token_account.to_bytes().to_vec(),
+                            coin_creator: None,
+                            coin_creator_fee_basis_points: None,
+                            coin_creator_fee: None,
+                        }),
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
+                // -- Sell V1 --
+                Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::SellEventV1(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
+                        base_amount_in: event.base_amount_in,
+                        min_quote_amount_out: event.min_quote_amount_out,
+                        quote_amount_out: event.quote_amount_out,
+                        quote_amount_out_without_lp_fee: event.quote_amount_out_without_lp_fee,
+                        user_quote_amount_out: event.user_quote_amount_out,
+
+                        // Trade details
+                        trade: Some(pb::TradeDetails {
+                            user_base_token_reserves: event.user_base_token_reserves,
+                            user_quote_token_reserves: event.user_quote_token_reserves,
+                            pool_base_token_reserves: event.pool_base_token_reserves,
+                            pool_quote_token_reserves: event.pool_quote_token_reserves,
+                            lp_fee_basis_points: event.lp_fee_basis_points,
+                            lp_fee: event.lp_fee,
+                            protocol_fee_basis_points: event.protocol_fee_basis_points,
+                            protocol_fee: event.protocol_fee,
+                            pool: event.pool.to_bytes().to_vec(),
+                            user: event.user.to_bytes().to_vec(),
+                            user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
+                            user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
+                            protocol_fee_recipient: event.protocol_fee_recipient.to_bytes().to_vec(),
+                            protocol_fee_recipient_token_account: event.protocol_fee_recipient_token_account.to_bytes().to_vec(),
+                            coin_creator: None,
+                            coin_creator_fee_basis_points: None,
+                            coin_creator_fee: None,
+                        }),
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
                 // -- Buy V2 --
                 Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::BuyEventV2(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::BuyEvent(pb::BuyEvent {
-                        timestamp: event.timestamp,
                         base_amount_out: event.base_amount_out,
                         max_quote_amount_in: event.max_quote_amount_in,
-                        user_base_token_reserves: event.user_base_token_reserves,
-                        user_quote_token_reserves: event.user_quote_token_reserves,
-                        pool_base_token_reserves: event.pool_base_token_reserves,
-                        pool_quote_token_reserves: event.pool_quote_token_reserves,
                         quote_amount_in: event.quote_amount_in,
-                        lp_fee_basis_points: event.lp_fee_basis_points,
-                        lp_fee: event.lp_fee,
-                        protocol_fee_basis_points: event.protocol_fee_basis_points,
-                        protocol_fee: event.protocol_fee,
                         quote_amount_in_with_lp_fee: event.quote_amount_in_with_lp_fee,
                         user_quote_amount_in: event.user_quote_amount_in,
-                        pool: event.pool.to_bytes().to_vec(),
-                        user: event.user.to_bytes().to_vec(),
-                        user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
-                        user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
-                        protocol_fee_recipient: event.protocol_fee_recipient.to_bytes().to_vec(),
-                        protocol_fee_recipient_token_account: event.protocol_fee_recipient_token_account.to_bytes().to_vec(),
-                        coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
-                        coin_creator_fee_basis_points: Some(event.coin_creator_fee_basis_points),
-                        coin_creator_fee: Some(event.coin_creator_fee),
+
+                        // Trade details
+                        trade: Some(pb::TradeDetails {
+                            user_base_token_reserves: event.user_base_token_reserves,
+                            user_quote_token_reserves: event.user_quote_token_reserves,
+                            pool_base_token_reserves: event.pool_base_token_reserves,
+                            pool_quote_token_reserves: event.pool_quote_token_reserves,
+                            lp_fee_basis_points: event.lp_fee_basis_points,
+                            lp_fee: event.lp_fee,
+                            protocol_fee_basis_points: event.protocol_fee_basis_points,
+                            protocol_fee: event.protocol_fee,
+                            pool: event.pool.to_bytes().to_vec(),
+                            user: event.user.to_bytes().to_vec(),
+                            user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
+                            user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
+                            protocol_fee_recipient: event.protocol_fee_recipient.to_bytes().to_vec(),
+                            protocol_fee_recipient_token_account: event.protocol_fee_recipient_token_account.to_bytes().to_vec(),
+                            coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
+                            coin_creator_fee_basis_points: Some(event.coin_creator_fee_basis_points),
+                            coin_creator_fee: Some(event.coin_creator_fee),
+                        }),
                     }));
                     transaction.instructions.push(base.clone());
                 }
                 // -- Sell V2 --
                 Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::SellEventV2(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
-                        timestamp: event.timestamp,
                         base_amount_in: event.base_amount_in,
                         min_quote_amount_out: event.min_quote_amount_out,
-                        user_base_token_reserves: event.user_base_token_reserves,
-                        user_quote_token_reserves: event.user_quote_token_reserves,
-                        pool_base_token_reserves: event.pool_base_token_reserves,
-                        pool_quote_token_reserves: event.pool_quote_token_reserves,
                         quote_amount_out: event.quote_amount_out,
-                        lp_fee_basis_points: event.lp_fee_basis_points,
-                        lp_fee: event.lp_fee,
-                        protocol_fee_basis_points: event.protocol_fee_basis_points,
-                        protocol_fee: event.protocol_fee,
                         quote_amount_out_without_lp_fee: event.quote_amount_out_without_lp_fee,
                         user_quote_amount_out: event.user_quote_amount_out,
-                        pool: event.pool.to_bytes().to_vec(),
-                        user: event.user.to_bytes().to_vec(),
-                        user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
-                        user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
-                        protocol_fee_recipient: event.protocol_fee_recipient.to_bytes().to_vec(),
-                        protocol_fee_recipient_token_account: event.protocol_fee_recipient_token_account.to_bytes().to_vec(),
-                        coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
-                        coin_creator_fee_basis_points: Some(event.coin_creator_fee_basis_points),
-                        coin_creator_fee: Some(event.coin_creator_fee),
+
+                        // Trade details
+                        trade: Some(pb::TradeDetails {
+                            user_base_token_reserves: event.user_base_token_reserves,
+                            user_quote_token_reserves: event.user_quote_token_reserves,
+                            pool_base_token_reserves: event.pool_base_token_reserves,
+                            pool_quote_token_reserves: event.pool_quote_token_reserves,
+                            lp_fee_basis_points: event.lp_fee_basis_points,
+                            lp_fee: event.lp_fee,
+                            protocol_fee_basis_points: event.protocol_fee_basis_points,
+                            protocol_fee: event.protocol_fee,
+                            pool: event.pool.to_bytes().to_vec(),
+                            user: event.user.to_bytes().to_vec(),
+                            user_base_token_account: event.user_base_token_account.to_bytes().to_vec(),
+                            user_quote_token_account: event.user_quote_token_account.to_bytes().to_vec(),
+                            protocol_fee_recipient: event.protocol_fee_recipient.to_bytes().to_vec(),
+                            protocol_fee_recipient_token_account: event.protocol_fee_recipient_token_account.to_bytes().to_vec(),
+                            coin_creator: Some(event.coin_creator.to_bytes().to_vec()),
+                            coin_creator_fee_basis_points: Some(event.coin_creator_fee_basis_points),
+                            coin_creator_fee: Some(event.coin_creator_fee),
+                        }),
                     }));
                     transaction.instructions.push(base.clone());
                 }
                 // -- CreatePool V1 --
                 Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::CreatePoolEventV1(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
-                        timestamp: event.timestamp,
                         index: event.index as u32,
                         creator: event.creator.to_bytes().to_vec(),
                         base_mint: event.base_mint.to_bytes().to_vec(),
@@ -169,7 +238,6 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                 // -- CreatePool V2 --
                 Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::CreatePoolEventV2(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
-                        timestamp: event.timestamp,
                         index: event.index as u32,
                         creator: event.creator.to_bytes().to_vec(),
                         base_mint: event.base_mint.to_bytes().to_vec(),

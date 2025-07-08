@@ -1,8 +1,8 @@
 -- ──────────────────────────────────────────────────────────────────────────
--- Pump.fun Bonding Curve
+-- Pump.fun AMM Swap
 -- ──────────────────────────────────────────────────────────────────────────
 -- Buy --
-CREATE TABLE IF NOT EXISTS pumpfun_buy (
+CREATE TABLE IF NOT EXISTS pumpfun_amm_buy (
     -- block --
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -24,34 +24,29 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
     program_id                  LowCardinality(FixedString(44)),
     stack_height                UInt32,
 
-    -- accounts --
-    global                      FixedString(44),
-    fee_recipient               FixedString(44),
-    mint                        FixedString(44),
-    bonding_curve               FixedString(44),
-    associated_bonding_curve    FixedString(44),
-    associated_user             FixedString(44),
-    user                        FixedString(44),
-    creator_vault               FixedString(44),
-
     -- data --
-    amount                      UInt64,
-    max_sol_cost                UInt64,
+    base_amount_out             UInt64,
+    max_quote_amount_in         UInt64,
+
+    -- accounts --
+    pool                                    FixedString(44),
+    user                                    FixedString(44),
+    global_config                           FixedString(44),
+    base_mint                               FixedString(44),
+    quote_mint                              FixedString(44),
+    user_base_token_account                 FixedString(44),
+    user_quote_token_account                FixedString(44),
+    pool_base_token_account                 FixedString(44),
+    pool_quote_token_account                FixedString(44),
+    protocol_fee_recipient                  FixedString(44),
+    protocol_fee_recipient_token_account    FixedString(44),
+    coin_creator_vault_ata                  FixedString(44) DEFAULT '',
+    coin_creator_vault_authority            FixedString(44) DEFAULT '',
 
     -- event --
-    sol_amount                  UInt64,
-    token_amount                UInt64,
-    is_buy                      Bool,
-    virtual_sol_reserves        UInt64,
-    virtual_token_reserves      UInt64,
-    real_sol_reserves           UInt64,
-    real_token_reserves         UInt64,
-    protocol_fee_recipient      FixedString(44) DEFAULT '',
-    protocol_fee_basis_points   UInt64 DEFAULT 0, -- basis-points, 1 bp = 0.01 %
-    protocol_fee                UInt64 DEFAULT 0, -- lamports
-    creator                     FixedString(44) DEFAULT '',
-    creator_fee_basis_points    UInt64 DEFAULT 0,
-    creator_fee                 UInt64 DEFAULT 0, -- lamports
+    quote_amount_in             UInt64,
+    quote_amount_in_with_lp_fee UInt64,
+    user_quote_amount_in        UInt64,
 
     -- indexes --
     INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
@@ -62,5 +57,9 @@ ENGINE = ReplacingMergeTree
 ORDER BY (block_hash, transaction_index, instruction_index);
 
 -- Sell --
-CREATE TABLE IF NOT EXISTS pumpfun_sell AS pumpfun_buy;
-ALTER TABLE pumpfun_sell RENAME COLUMN IF EXISTS max_sol_cost TO min_sol_output;
+CREATE TABLE IF NOT EXISTS pumpfun_amm_sell AS pumpfun_amm_buy;
+ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS base_amount_out TO base_amount_in;
+ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS max_quote_amount_in TO min_quote_amount_out;
+ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS quote_amount_in TO quote_amount_out;
+ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS quote_amount_in_with_lp_fee TO quote_amount_out_without_lp_fee;
+ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS user_quote_amount_in TO user_quote_amount_out;

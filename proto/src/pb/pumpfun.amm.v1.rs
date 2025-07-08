@@ -34,7 +34,7 @@ pub struct Instruction {
     pub program_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint32, tag="2")]
     pub stack_height: u32,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 20, 21, 22")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -42,18 +42,20 @@ pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
+        /// Instructions
         #[prost(message, tag="10")]
-        BuyEvent(super::BuyEvent),
-        #[prost(message, tag="11")]
         BuyInstruction(super::BuyInstruction),
-        #[prost(message, tag="12")]
-        SellEvent(super::SellEvent),
-        #[prost(message, tag="13")]
+        #[prost(message, tag="11")]
         SellInstruction(super::SellInstruction),
-        #[prost(message, tag="14")]
-        CreatePoolEvent(super::CreatePoolEvent),
-        #[prost(message, tag="15")]
+        #[prost(message, tag="12")]
         CreatePoolInstruction(super::CreatePoolInstruction),
+        /// Events
+        #[prost(message, tag="20")]
+        BuyEvent(super::BuyEvent),
+        #[prost(message, tag="21")]
+        SellEvent(super::SellEvent),
+        #[prost(message, tag="22")]
+        CreatePoolEvent(super::CreatePoolEvent),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -131,160 +133,108 @@ pub struct TradeAccounts {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TradeDetails {
+    /// User's base token reserves.
+    #[prost(uint64, tag="4")]
+    pub user_base_token_reserves: u64,
+    /// User's quote token reserves.
+    #[prost(uint64, tag="5")]
+    pub user_quote_token_reserves: u64,
+    /// Pool's base token reserves.
+    #[prost(uint64, tag="6")]
+    pub pool_base_token_reserves: u64,
+    /// Pool's quote token reserves.
+    #[prost(uint64, tag="7")]
+    pub pool_quote_token_reserves: u64,
+    /// LP fee in basis points.
+    #[prost(uint64, tag="9")]
+    pub lp_fee_basis_points: u64,
+    /// LP fee in lamports.
+    #[prost(uint64, tag="10")]
+    pub lp_fee: u64,
+    /// Protocol fee in basis points.
+    #[prost(uint64, tag="11")]
+    pub protocol_fee_basis_points: u64,
+    /// Protocol fee in lamports.
+    #[prost(uint64, tag="12")]
+    pub protocol_fee: u64,
+    /// Pool account address.
+    #[prost(bytes="vec", tag="15")]
+    pub pool: ::prost::alloc::vec::Vec<u8>,
+    /// User account address.
+    #[prost(bytes="vec", tag="16")]
+    pub user: ::prost::alloc::vec::Vec<u8>,
+    /// User's base token account address.
+    #[prost(bytes="vec", tag="17")]
+    pub user_base_token_account: ::prost::alloc::vec::Vec<u8>,
+    /// User's quote token account address.
+    #[prost(bytes="vec", tag="18")]
+    pub user_quote_token_account: ::prost::alloc::vec::Vec<u8>,
+    /// Protocol fee recipient account address.
+    #[prost(bytes="vec", tag="19")]
+    pub protocol_fee_recipient: ::prost::alloc::vec::Vec<u8>,
+    /// Protocol fee recipient token account address.
+    #[prost(bytes="vec", tag="20")]
+    pub protocol_fee_recipient_token_account: ::prost::alloc::vec::Vec<u8>,
+    /// V2 specific fields
+    ///
+    /// Coin creator account address.
+    #[prost(bytes="vec", optional, tag="21")]
+    pub coin_creator: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    /// Coin creator fee in basis points
+    #[prost(uint64, optional, tag="22")]
+    pub coin_creator_fee_basis_points: ::core::option::Option<u64>,
+    /// Coin creator fee in lamports.
+    #[prost(uint64, optional, tag="23")]
+    pub coin_creator_fee: ::core::option::Option<u64>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BuyEvent {
-    /// Timestamp of the event.
-    #[prost(int64, tag="1")]
-    pub timestamp: i64,
     /// Amount of base token out.
     #[prost(uint64, tag="2")]
     pub base_amount_out: u64,
     /// Maximum amount of quote token in.
     #[prost(uint64, tag="3")]
     pub max_quote_amount_in: u64,
-    /// User's base token reserves.
-    #[prost(uint64, tag="4")]
-    pub user_base_token_reserves: u64,
-    /// User's quote token reserves.
-    #[prost(uint64, tag="5")]
-    pub user_quote_token_reserves: u64,
-    /// Pool's base token reserves.
-    #[prost(uint64, tag="6")]
-    pub pool_base_token_reserves: u64,
-    /// Pool's quote token reserves.
-    #[prost(uint64, tag="7")]
-    pub pool_quote_token_reserves: u64,
     /// Amount of quote token in.
     #[prost(uint64, tag="8")]
     pub quote_amount_in: u64,
-    /// LP fee in basis points.
-    #[prost(uint64, tag="9")]
-    pub lp_fee_basis_points: u64,
-    /// LP fee in lamports.
-    #[prost(uint64, tag="10")]
-    pub lp_fee: u64,
-    /// Protocol fee in basis points.
-    #[prost(uint64, tag="11")]
-    pub protocol_fee_basis_points: u64,
-    /// Protocol fee in lamports.
-    #[prost(uint64, tag="12")]
-    pub protocol_fee: u64,
     /// Quote amount in with LP fee applied.
     #[prost(uint64, tag="13")]
     pub quote_amount_in_with_lp_fee: u64,
     /// User's quote amount in after fees.
     #[prost(uint64, tag="14")]
     pub user_quote_amount_in: u64,
-    /// Pool account address.
-    #[prost(bytes="vec", tag="15")]
-    pub pool: ::prost::alloc::vec::Vec<u8>,
-    /// User account address.
-    #[prost(bytes="vec", tag="16")]
-    pub user: ::prost::alloc::vec::Vec<u8>,
-    /// User's base token account address.
-    #[prost(bytes="vec", tag="17")]
-    pub user_base_token_account: ::prost::alloc::vec::Vec<u8>,
-    /// User's quote token account address.
-    #[prost(bytes="vec", tag="18")]
-    pub user_quote_token_account: ::prost::alloc::vec::Vec<u8>,
-    /// Protocol fee recipient account address.
-    #[prost(bytes="vec", tag="19")]
-    pub protocol_fee_recipient: ::prost::alloc::vec::Vec<u8>,
-    /// Protocol fee recipient token account address.
-    #[prost(bytes="vec", tag="20")]
-    pub protocol_fee_recipient_token_account: ::prost::alloc::vec::Vec<u8>,
-    /// V2 specific fields
-    ///
-    /// Coin creator account address.
-    #[prost(bytes="vec", optional, tag="21")]
-    pub coin_creator: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
-    /// Coin creator fee in basis points
-    #[prost(uint64, optional, tag="22")]
-    pub coin_creator_fee_basis_points: ::core::option::Option<u64>,
-    /// Coin creator fee in lamports.
-    #[prost(uint64, optional, tag="23")]
-    pub coin_creator_fee: ::core::option::Option<u64>,
+    /// Trade event details.
+    #[prost(message, optional, tag="4")]
+    pub trade: ::core::option::Option<TradeDetails>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SellEvent {
-    /// Timestamp of the event.
-    #[prost(int64, tag="1")]
-    pub timestamp: i64,
     /// Amount of base token in.
     #[prost(uint64, tag="2")]
     pub base_amount_in: u64,
     /// Minimum amount of quote token out.
     #[prost(uint64, tag="3")]
     pub min_quote_amount_out: u64,
-    /// User's base token reserves.
-    #[prost(uint64, tag="4")]
-    pub user_base_token_reserves: u64,
-    /// User's quote token reserves.
-    #[prost(uint64, tag="5")]
-    pub user_quote_token_reserves: u64,
-    /// Pool's base token reserves.
-    #[prost(uint64, tag="6")]
-    pub pool_base_token_reserves: u64,
-    /// Pool's quote token reserves.
-    #[prost(uint64, tag="7")]
-    pub pool_quote_token_reserves: u64,
     /// Amount of quote token out.
     #[prost(uint64, tag="8")]
     pub quote_amount_out: u64,
-    /// LP fee in basis points.
-    #[prost(uint64, tag="9")]
-    pub lp_fee_basis_points: u64,
-    /// LP fee in lamports.
-    #[prost(uint64, tag="10")]
-    pub lp_fee: u64,
-    /// Protocol fee in basis points.
-    #[prost(uint64, tag="11")]
-    pub protocol_fee_basis_points: u64,
-    /// Protocol fee in lamports.
-    #[prost(uint64, tag="12")]
-    pub protocol_fee: u64,
     /// Quote amount out without LP fee applied.
     #[prost(uint64, tag="13")]
     pub quote_amount_out_without_lp_fee: u64,
     /// User's quote amount out after fees.
     #[prost(uint64, tag="14")]
     pub user_quote_amount_out: u64,
-    /// Pool account address.
-    #[prost(bytes="vec", tag="15")]
-    pub pool: ::prost::alloc::vec::Vec<u8>,
-    /// User account address.
-    #[prost(bytes="vec", tag="16")]
-    pub user: ::prost::alloc::vec::Vec<u8>,
-    /// User's base token account address.
-    #[prost(bytes="vec", tag="17")]
-    pub user_base_token_account: ::prost::alloc::vec::Vec<u8>,
-    /// User's quote token account address.
-    #[prost(bytes="vec", tag="18")]
-    pub user_quote_token_account: ::prost::alloc::vec::Vec<u8>,
-    /// Protocol fee recipient account address.
-    #[prost(bytes="vec", tag="19")]
-    pub protocol_fee_recipient: ::prost::alloc::vec::Vec<u8>,
-    /// Protocol fee recipient token account address.
-    #[prost(bytes="vec", tag="20")]
-    pub protocol_fee_recipient_token_account: ::prost::alloc::vec::Vec<u8>,
-    /// V2 specific fields
-    ///
-    /// Coin creator account address.
-    #[prost(bytes="vec", optional, tag="21")]
-    pub coin_creator: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
-    /// Coin creator fee in basis points
-    #[prost(uint64, optional, tag="22")]
-    pub coin_creator_fee_basis_points: ::core::option::Option<u64>,
-    /// Coin creator fee in lamports.
-    #[prost(uint64, optional, tag="23")]
-    pub coin_creator_fee: ::core::option::Option<u64>,
+    /// Trade event details.
+    #[prost(message, optional, tag="4")]
+    pub trade: ::core::option::Option<TradeDetails>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreatePoolEvent {
-    /// Timestamp of the event.
-    #[prost(int64, tag="1")]
-    pub timestamp: i64,
     /// Index of the pool.
     #[prost(uint32, tag="2")]
     pub index: u32,

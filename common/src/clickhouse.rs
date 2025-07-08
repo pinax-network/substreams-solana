@@ -1,4 +1,5 @@
 use proto::pb::jupiter::v1 as jupiter;
+use proto::pb::pumpfun::amm::v1 as pumpfun_amm;
 use proto::pb::pumpfun::v1 as pumpfun;
 use proto::pb::raydium::amm::v1 as raydium;
 use substreams::pb::substreams::Clock;
@@ -61,6 +62,19 @@ pub fn set_pumpfun_transaction_v2(transaction: &pumpfun::Transaction, row: &mut 
 }
 
 pub fn set_pumpfun_instruction_v2(instruction: &pumpfun::Instruction, row: &mut Row) {
+    row.set("program_id", base58::encode(instruction.program_id.to_vec()))
+        .set("stack_height", instruction.stack_height);
+}
+
+pub fn set_pumpfun_amm_transaction_v2(transaction: &pumpfun_amm::Transaction, row: &mut Row) {
+    row.set("signature", base58::encode(transaction.signature.to_vec()))
+        .set("fee_payer", base58::encode(transaction.fee_payer.to_vec()))
+        .set("signers_raw", transaction.signers.iter().map(base58::encode).collect::<Vec<_>>().join(","))
+        .set("fee", transaction.fee)
+        .set("compute_units_consumed", transaction.compute_units_consumed);
+}
+
+pub fn set_pumpfun_amm_instruction_v2(instruction: &pumpfun_amm::Instruction, row: &mut Row) {
     row.set("program_id", base58::encode(instruction.program_id.to_vec()))
         .set("stack_height", instruction.stack_height);
 }

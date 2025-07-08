@@ -20,12 +20,15 @@ message Instruction {
     bytes program_id = 1;
     uint32 stack_height = 2;
     oneof instruction {
-        BuyEvent buy_event = 10;
-        BuyInstruction buy_instruction = 11;
-        SellEvent sell_event = 12;
-        SellInstruction sell_instruction = 13;
-        CreatePoolEvent create_pool_event = 14;
-        CreatePoolInstruction create_pool_instruction = 15;
+        // Instructions
+        BuyInstruction buy_instruction = 10;
+        SellInstruction sell_instruction = 11;
+        CreatePoolInstruction create_pool_instruction = 12;
+
+        // Events
+        BuyEvent buy_event = 20;
+        SellEvent sell_event = 21;
+        CreatePoolEvent create_pool_event = 22;
     }
 }
 
@@ -60,63 +63,47 @@ message TradeAccounts {
     optional bytes coin_creator_vault_authority = 19; // Coin creator vault authority account address.
 }
 
-message BuyEvent {
-    int64 timestamp = 1; // Timestamp of the event.
-    uint64 base_amount_out = 2; // Amount of base token out.
-    uint64 max_quote_amount_in = 3; // Maximum amount of quote token in.
+message TradeDetails {
     uint64 user_base_token_reserves = 4; // User's base token reserves.
     uint64 user_quote_token_reserves = 5; // User's quote token reserves.
     uint64 pool_base_token_reserves = 6; // Pool's base token reserves.
     uint64 pool_quote_token_reserves = 7; // Pool's quote token reserves.
-    uint64 quote_amount_in = 8; // Amount of quote token in.
     uint64 lp_fee_basis_points = 9; // LP fee in basis points.
     uint64 lp_fee = 10; // LP fee in lamports.
     uint64 protocol_fee_basis_points = 11; // Protocol fee in basis points.
     uint64 protocol_fee = 12; // Protocol fee in lamports.
-    uint64 quote_amount_in_with_lp_fee = 13; // Quote amount in with LP fee applied.
-    uint64 user_quote_amount_in = 14; // User's quote amount in after fees.
     bytes pool = 15; // Pool account address.
     bytes user = 16; // User account address.
     bytes user_base_token_account = 17; // User's base token account address.
     bytes user_quote_token_account = 18; // User's quote token account address.
     bytes protocol_fee_recipient = 19; // Protocol fee recipient account address.
     bytes protocol_fee_recipient_token_account = 20; // Protocol fee recipient token account address.
+
     // V2 specific fields
     optional bytes coin_creator = 21; // Coin creator account address.
     optional uint64 coin_creator_fee_basis_points = 22; // Coin creator fee in basis points
     optional uint64 coin_creator_fee = 23; // Coin creator fee in lamports.
+}
+
+message BuyEvent {
+    uint64 base_amount_out = 2; // Amount of base token out.
+    uint64 max_quote_amount_in = 3; // Maximum amount of quote token in.
+    uint64 quote_amount_in = 8; // Amount of quote token in.
+    uint64 quote_amount_in_with_lp_fee = 13; // Quote amount in with LP fee applied.
+    uint64 user_quote_amount_in = 14; // User's quote amount in after fees.
+    TradeDetails trade = 4; // Trade event details.
 }
 
 message SellEvent {
-    int64 timestamp = 1; // Timestamp of the event.
     uint64 base_amount_in = 2; // Amount of base token in.
     uint64 min_quote_amount_out = 3; // Minimum amount of quote token out.
-    uint64 user_base_token_reserves = 4; // User's base token reserves.
-    uint64 user_quote_token_reserves = 5; // User's quote token reserves.
-    uint64 pool_base_token_reserves = 6; // Pool's base token reserves.
-    uint64 pool_quote_token_reserves = 7; // Pool's quote token reserves.
     uint64 quote_amount_out = 8; // Amount of quote token out.
-    uint64 lp_fee_basis_points = 9; // LP fee in basis points.
-    uint64 lp_fee = 10; // LP fee in lamports.
-    uint64 protocol_fee_basis_points = 11; // Protocol fee in basis points.
-    uint64 protocol_fee = 12; // Protocol fee in lamports.
     uint64 quote_amount_out_without_lp_fee = 13; // Quote amount out without LP fee applied.
     uint64 user_quote_amount_out = 14; // User's quote amount out after fees.
-    bytes pool = 15; // Pool account address.
-    bytes user = 16; // User account address.
-    bytes user_base_token_account = 17; // User's base token account address.
-    bytes user_quote_token_account = 18; // User's quote token account address.
-    bytes protocol_fee_recipient = 19; // Protocol fee recipient account address.
-    bytes protocol_fee_recipient_token_account = 20; // Protocol fee recipient token account address.
-
-    // V2 specific fields
-    optional bytes coin_creator = 21; // Coin creator account address.
-    optional uint64 coin_creator_fee_basis_points = 22; // Coin creator fee in basis points
-    optional uint64 coin_creator_fee = 23; // Coin creator fee in lamports.
+    TradeDetails trade = 4; // Trade event details.
 }
 
 message CreatePoolEvent {
-    int64 timestamp = 1; // Timestamp of the event.
     uint32 index = 2; // Index of the pool.
     bytes creator = 3; // Creator's account address.
     bytes base_mint = 4; // Base mint address.
