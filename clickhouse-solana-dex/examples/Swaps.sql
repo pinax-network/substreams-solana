@@ -25,4 +25,15 @@ FROM swaps
 WHERE amm_pool = '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2' LIMIT 20;
 
 -- Query Swap --
-SELECT amm_name, input_amount, input_mint, output_amount, output_mint FROM swaps LIMIT 20;
+SELECT
+    amm_name,
+    input_amount,
+    input_mint,
+    output_amount,
+    output_mint
+FROM swaps
+ORDER BY timestamp DESC
+LIMIT 20
+
+-- Query Pump.fun - Detail --
+SELECT * FROM pumpfun_amm_buy LIMIT 1\G;

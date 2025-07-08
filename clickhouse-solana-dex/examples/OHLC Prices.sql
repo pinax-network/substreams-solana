@@ -1,12 +1,14 @@
--- Top Uniswap pools --
+-- Top Transactions by AMM Pool --
 SELECT
-    protocol,
-    pool,
-    count()
-FROM swaps
-GROUP BY protocol, pool
-ORDER BY count() DESC
-LIMIT 10
+      amm_name,
+      mint0,
+      mint1,
+      sum(transactions) AS transactions
+FROM ohlc_prices
+WHERE amm_pool != ''
+GROUP BY amm_name, amm_pool, mint0, mint1
+ORDER BY transactions DESC
+LIMIT 20
 
 -- OHLC Prices by Pool --
 WITH (
@@ -18,10 +20,10 @@ WITH (
       'WSOL/USDC' AS ticker,
 
       -- OHLC --
-      floor(1/argMinMerge(open0) * pow(10, decimals0 - decimals1), precision)                        AS open,
-      floor(1/quantileDeterministicMerge(0.99)(quantile0) * pow(10, decimals0 - decimals1), precision)   AS high,
-      floor(1/quantileDeterministicMerge(0.01)(quantile0) * pow(10, decimals0 - decimals1), precision)    AS low,
-      floor(1/argMaxMerge(close0) * pow(10, decimals0 - decimals1), precision)                       AS close,
+      floor(argMinMerge(open0) * pow(10, decimals0 - decimals1), precision)                        AS open,
+      floor(quantileDeterministicMerge(0.99)(quantile0) * pow(10, decimals0 - decimals1), precision)   AS high,
+      floor(quantileDeterministicMerge(0.01)(quantile0) * pow(10, decimals0 - decimals1), precision)    AS low,
+      floor(argMaxMerge(close0) * pow(10, decimals0 - decimals1), precision)                       AS close,
 
       -- volume --
       floor(sum(gross_volume0) / pow(10, decimals0), precision)         AS "gross volume (WSOL)",
