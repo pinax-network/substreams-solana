@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS swaps (
             WHEN CAST ('JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB' AS FixedString(44)) THEN 'Jupiter Aggregator v4'
             WHEN CAST ('JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4' AS FixedString(44)) THEN 'Jupiter Aggregator v6'
 
-            -- extras --
+            -- Jupiter V4 & V6 --
             WHEN CAST ('dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN' AS FixedString(44)) THEN 'Meteora Dynamic Bonding Curve Program'
             WHEN CAST ('whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc' AS FixedString(44)) THEN 'Whirlpools Program'
             WHEN CAST ('LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo' AS FixedString(44)) THEN 'Meteora DLMM Program'
@@ -114,6 +114,8 @@ ORDER BY (program_id, timestamp, block_num, block_hash, transaction_index, instr
    ────────────────────────────────────────────────────────────────────────── */
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_amm_v4_swap_base_in
 TO swaps AS
+WITH
+    (direction = 'PC2Coin') AS pc2coin
 SELECT
     -- block --
     block_num,
@@ -129,14 +131,52 @@ SELECT
 
     -- common fields --
     user_source_owner       AS user,
-    program_id              AS amm,
-    amm                     AS amm_pool,
-    amm_coin_vault          AS input_mint, -- must JOIN with SPL Token to get the real mint address
+    s.program_id            AS amm,
+    s.amm                   AS amm_pool,
+
+    -- must JOIN with SPL Token to get the real mint address --
+    -- vaults & amounts mapped by direction --
+    if (pc2coin, amm_pc_vault,  amm_coin_vault)  AS input_mint,
     amount_in               AS input_amount,
-    amm_pc_vault            AS output_mint,  -- must JOIN with SPL Token to get the real mint address
+
+    if (pc2coin, amm_coin_vault, amm_pc_vault)   AS output_mint,
     amount_out              AS output_amount
 
 FROM raydium_amm_v4_swap_base_in AS s
+-- ignore dust swaps (typically trying to disort the price)
+WHERE input_amount > 1 AND output_amount > 1;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_amm_v4_swap_base_out
+TO swaps AS
+WITH
+    (direction = 'PC2Coin') AS pc2coin
+SELECT
+    -- block --
+    block_num,
+    block_hash,
+    timestamp,
+    -- ordering --
+    transaction_index,
+    instruction_index,
+
+    -- transaction --
+    signature,
+    program_id,
+
+    -- common fields --
+    user_source_owner       AS user,
+    s.program_id            AS amm,
+    s.amm                   AS amm_pool,
+
+    -- must JOIN with SPL Token to get the real mint address --
+    -- vaults & amounts mapped by direction --
+    if(pc2coin, amm_pc_vault,  amm_coin_vault)  AS input_mint,
+    amount_in                                   AS input_amount,
+
+    if(pc2coin, amm_coin_vault, amm_pc_vault)   AS output_mint,
+    amount_out                                  AS output_amount
+
+FROM raydium_amm_v4_swap_base_out AS s
 -- ignore dust swaps (typically trying to disort the price)
 WHERE input_amount > 1 AND output_amount > 1;
 
@@ -160,7 +200,7 @@ SELECT
 
     -- common fields --
     fee_payer               AS user, -- Jupiter does not use user wallets, so we use fee_payer as a placeholder
-    amm                     AS amm,
+    amm,
     ''                      AS amm_pool, -- Jupiter does not use AMM pools, so we leave it empty
     input_mint,
     input_amount,
@@ -194,7 +234,7 @@ SELECT
     program_id,
 
     -- common fields --
-    user                AS user,
+    user,
     program_id          AS amm,
     bonding_curve       AS amm_pool,
     input_mint,
@@ -226,7 +266,7 @@ SELECT
     program_id,
 
     -- common fields --
-    user                AS user,
+    user,
     program_id          AS amm,
     bonding_curve       AS amm_pool,
     mint                AS input_mint,
@@ -248,6 +288,7 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
@@ -257,7 +298,7 @@ SELECT
     program_id,
 
     -- common fields --
-    user                AS user,
+    user,
     program_id          AS amm,
     pool                AS amm_pool,
     quote_mint          AS input_mint,
@@ -276,6 +317,7 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
@@ -285,7 +327,7 @@ SELECT
     program_id,
 
     -- common fields --
-    user                AS user,
+    user,
     program_id          AS amm,
     pool                AS amm_pool,
     base_mint           AS input_mint,
