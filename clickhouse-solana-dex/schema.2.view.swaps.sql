@@ -83,6 +83,8 @@ CREATE TABLE IF NOT EXISTS swaps (
             WHEN CAST ('DSwpgjMvXhtGn6BsbqmacdBZyfLj6jSWf3HJpdJtmg6N' AS FixedString(44)) THEN 'Dexlab Swap'
             WHEN CAST ('PSwapMdSai8tjrEXcxFeQth87xC4rRsa4VA5mhGhXkP' AS FixedString(44)) THEN 'Penguin Finance'
             WHEN CAST ('AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6' AS FixedString(44)) THEN 'Aldrin AMM'
+            WHEN CAST ('WooFif76YGRNjk1pA8wCsN67aQsD9f9iLsz4NcJ1AVb' AS FixedString(44)) THEN 'WOOFi'
+            WHEN CAST ('CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR' AS FixedString(44)) THEN 'Crema Finance Program'
             ELSE 'Unknown'
         END,
     amm_pool                    LowCardinality(FixedString(44)) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',

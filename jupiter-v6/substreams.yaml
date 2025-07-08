@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: jupiter_v6
-  version: v0.1.0
+  version: v0.2.0
   url: https://github.com/pinax-network/substreams-solana
   description: Jupiter Aggregator V6
   image: ../image.png

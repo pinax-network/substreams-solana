@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: solana_dex
-  version: v0.1.0
+  version: v0.2.0
   url: https://github.com/pinax-network/substreams-solana
   description: DEXs for Solana.
   image: ../image.png
