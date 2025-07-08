@@ -37,18 +37,3 @@ WHERE amm_pool = '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2' -- Raydium V4 WS
 GROUP BY amm_pool, mint0, mint1, timestamp
 ORDER BY timestamp DESC
 LIMIT 10;
-
-
--- Price by Pool --
-WITH (
-    input_mint <= output_mint AS dir,
-    input_amount / output_amount AS px
-)
-SELECT
-    input_amount,
-    output_amount,
-    input_mint,
-    output_mint,
-    if (dir, px, 1 / px) AS price
-FROM swaps
-WHERE amm_pool = '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2'
