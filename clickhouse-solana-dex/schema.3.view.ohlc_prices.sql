@@ -54,13 +54,15 @@ WITH
     (input_mint <= output_mint) AS dir,
     if (dir, input_mint,  output_mint) AS mint0,
     if (dir, output_mint, input_mint) AS mint1,
-    if (dir, input_amount,  output_amount) AS amt0,
-    if (dir, output_amount, input_amount) AS amt1,
-    toFloat64(amt0) / amt1 AS px,
-    abs(amt0) AS gv0,
-    abs(amt1) AS gv1,
-    if (dir,  toInt128(input_amount), -toInt128(output_amount)) AS nf0,
-    if (dir,  toInt128(output_amount), -toInt128(input_amount)) AS nf1
+    if (dir, input_amount,  output_amount) AS amount0,
+    if (dir, output_amount, input_amount) AS amount1,
+    toFloat64(amount1) / amount0 AS price,
+    abs(amount0) AS gv0,
+    abs(amount1) AS gv1,
+    -- net flow of mint0: +in, -out
+    if(dir, toInt128(input_amount), -toInt128(output_amount))  AS nf0,
+    -- net flow of mint1: +in, -out (signs flipped vs. your original)
+    if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1
 
 SELECT
     toStartOfHour(timestamp)                               AS timestamp,
@@ -68,9 +70,9 @@ SELECT
     mint0, mint1,
 
     /* OHLC */
-    argMinState(px,  toUInt64(block_num))                  AS open0,
-    quantileDeterministicState(px, toUInt64(block_num))    AS quantile0,
-    argMaxState(px,  toUInt64(block_num))                  AS close0,
+    argMinState(price,  toUInt64(block_num))                  AS open0,
+    quantileDeterministicState(price, toUInt64(block_num))    AS quantile0,
+    argMaxState(price,  toUInt64(block_num))                  AS close0,
 
     /* volumes & flows (all in canonical orientation) */
     sum(gv0)                                               AS gross_volume0,
