@@ -114,6 +114,8 @@ ORDER BY (program_id, timestamp, block_num, block_hash, transaction_index, instr
    ────────────────────────────────────────────────────────────────────────── */
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_amm_v4_swap_base_in
 TO swaps AS
+WITH
+    direction = 'PC2Coin' AS PC2Coin
 SELECT
     -- block --
     block_num,
@@ -134,10 +136,10 @@ SELECT
 
     -- must JOIN with SPL Token to get the real mint address --
     -- vaults & amounts mapped by direction --
-    if (direction = 'PC2Coin', amm_pc_vault,  amm_coin_vault)  AS input_mint,
+    if (PC2Coin, amm_pc_vault,  amm_coin_vault)  AS input_mint,
     amount_in               AS input_amount,
 
-    if (direction = 'PC2Coin', amm_coin_vault, amm_pc_vault)   AS output_mint,
+    if (PC2Coin, amm_coin_vault, amm_pc_vault)   AS output_mint,
     amount_out              AS output_amount
 
 FROM raydium_amm_v4_swap_base_in AS s
@@ -146,6 +148,8 @@ WHERE input_amount > 1 AND output_amount > 1;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_amm_v4_swap_base_out
 TO swaps AS
+WITH
+    direction = 'PC2Coin' AS PC2Coin
 SELECT
     -- block --
     block_num,
@@ -166,10 +170,10 @@ SELECT
 
     -- must JOIN with SPL Token to get the real mint address --
     -- vaults & amounts mapped by direction --
-    if (direction = 'PC2Coin', amm_pc_vault,  amm_coin_vault)  AS input_mint,
+    if (PC2Coin, amm_pc_vault,  amm_coin_vault)  AS input_mint,
     amount_in                                   AS input_amount,
 
-    if (direction = 'PC2Coin', amm_coin_vault, amm_pc_vault)   AS output_mint,
+    if (PC2Coin, amm_coin_vault, amm_pc_vault)   AS output_mint,
     amount_out                                  AS output_amount
 
 FROM raydium_amm_v4_swap_base_out AS s
@@ -212,10 +216,9 @@ WHERE input_amount > 1 AND output_amount > 1;
    ────────────────────────────────────────────────────────────────────────── */
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pumpfun_buy
 TO swaps AS
-WITH (
+WITH
     sol_amount + protocol_fee + creator_fee AS input_amount,
     'So11111111111111111111111111111111111111111' AS input_mint
-)
 SELECT
     -- block --
     block_num,
@@ -244,10 +247,9 @@ WHERE input_amount > 1 AND output_amount > 1;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pumpfun_sell
 TO swaps AS
-WITH (
+WITH
     sol_amount + protocol_fee + creator_fee AS output_amount,
     'So11111111111111111111111111111111111111111' AS output_mint
-)
 SELECT
     -- block --
     block_num,

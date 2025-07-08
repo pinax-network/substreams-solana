@@ -70,9 +70,9 @@ SELECT
     mint0, mint1,
 
     /* OHLC */
-    argMinState(price,  toUInt64(block_num))                  AS open0,
-    quantileDeterministicState(price, toUInt64(block_num))    AS quantile0,
-    argMaxState(price,  toUInt64(block_num))                  AS close0,
+    argMinState(price,  toUInt64(timestamp))                  AS open0,
+    quantileDeterministicState(price, toUInt64(timestamp))    AS quantile0,
+    argMaxState(price,  toUInt64(timestamp))                  AS close0,
 
     /* volumes & flows (all in canonical orientation) */
     sum(gv0)                                               AS gross_volume0,

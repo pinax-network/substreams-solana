@@ -39,3 +39,14 @@ WHERE amm_pool = '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2' -- Raydium V4 WS
 GROUP BY amm_pool, mint0, mint1, timestamp
 ORDER BY timestamp DESC
 LIMIT 10;
+
+-- Minimal OHLC Prices --
+SELECT
+      timestamp,
+      argMinMerge(open0) * 1000) AS open * 1000,
+      argMaxMerge(close0) AS close * 1000
+FROM ohlc_prices
+WHERE amm_pool = '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2' -- Raydium V4 WSOL/USDC
+GROUP BY amm_pool, timestamp
+ORDER BY timestamp DESC
+LIMIT 10;
