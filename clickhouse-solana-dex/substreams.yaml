@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: solana_dex
-  version: v0.2.0
+  version: v0.2.1
   url: https://github.com/pinax-network/substreams-solana
   description: DEXs for Solana.
   image: ../image.png
@@ -13,7 +13,7 @@ imports:
 
   # DEXs
   pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/pumpfun-v0.2.0.spkg
-  pumpfun_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/pumpfun-amm-v0.2.0.spkg
+  pumpfun_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.1/pumpfun-amm-v0.2.1.spkg
   raydium_amm_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-amm-v4-v0.2.0.spkg
   jupiter_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v4-v0.2.0.spkg
   jupiter_v6: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v6-v0.2.0.spkg

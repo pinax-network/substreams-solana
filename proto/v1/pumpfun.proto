@@ -97,9 +97,16 @@ message TradeEvent {
 
   uint64 virtual_sol_reserves       = 7;
   uint64 virtual_token_reserves     = 8;
-  uint64 real_sol_reserves          = 9;
-  uint64 real_token_reserves        = 10;
 
+  // TradeEventV1
+  // Real reserves are the actual balances of the vaults.
+  // They are used to calculate the current price of the bonding curve.
+  // They are not used in the bonding curve calculations.
+  // They are used for reference and to calculate the current price.
+  optional uint64 real_sol_reserves          = 9;
+  optional uint64 real_token_reserves        = 10;
+
+  // TradeEventV2
   // Protocol-fee recipient (32 bytes).
   optional bytes  fee_recipient              = 11;
   optional uint64 fee_basis_points           = 12; // basis-points, 1 bp = 0.01 %

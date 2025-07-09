@@ -108,9 +108,10 @@ fn set_trade_event(event: &pb::TradeEvent, accounts: &pb::TradeAccounts, row: &m
         .set("timestamp", event.timestamp)
         .set("virtual_sol_reserves", event.virtual_sol_reserves)
         .set("virtual_token_reserves", event.virtual_token_reserves)
-        .set("real_sol_reserves", event.real_sol_reserves)
-        .set("real_token_reserves", event.real_token_reserves)
-        // optional fields
+        // (optional) TradeEventV1
+        .set("real_sol_reserves", event.real_sol_reserves.unwrap_or(0))
+        .set("real_token_reserves", event.real_token_reserves.unwrap_or(0))
+        // (optional) TradeEventV2
         .set(
             "protocol_fee_recipient",
             event.fee_recipient.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)),
