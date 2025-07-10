@@ -9,7 +9,8 @@ ALTER TABLE transfers
 
 -- create the index description (metadata only)
 ALTER TABLE transfers ON CLUSTER 'tokenapis-b'
-    ADD INDEX idx_mint (mint) TYPE set(512) GRANULARITY 1;
+    ADD INDEX idx_mint (mint) TYPE set(512) GRANULARITY 1
+    SETTINGS mutations_sync = 2;   -- wait until finished on all replicas
 
 -- How to Let the Process Run for Longer
 SET distributed_ddl_task_timeout = 600; -- sets timeout to 10 minutes
