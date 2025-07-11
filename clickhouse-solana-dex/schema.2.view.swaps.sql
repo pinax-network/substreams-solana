@@ -85,6 +85,19 @@ CREATE TABLE IF NOT EXISTS swaps (
             WHEN CAST ('AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6' AS FixedString(44)) THEN 'Aldrin AMM'
             WHEN CAST ('WooFif76YGRNjk1pA8wCsN67aQsD9f9iLsz4NcJ1AVb' AS FixedString(44)) THEN 'WOOFi'
             WHEN CAST ('CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR' AS FixedString(44)) THEN 'Crema Finance Program'
+            WHEN CAST ('EewxydAPCCVuNEyrVN68PuSYdQ7wKn27V9Gjeoi8dy3S' AS FixedString(44)) THEN 'Lifinity Swap'
+            WHEN CAST ('srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX' AS FixedString(44)) THEN 'OpenBook'
+            WHEN CAST ('GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn' AS FixedString(44)) THEN 'GooseFX V2'
+            WHEN CAST ('MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD' AS FixedString(44)) THEN 'Marinade Finance'
+            WHEN CAST ('2KehYt3KsEQR53jYcxjbQp2d2kCp4AkuQW68atufRwSr' AS FixedString(44)) THEN 'Symmetry Engine'
+            WHEN CAST ('D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag' AS FixedString(44)) THEN 'Sentre Swap'
+            WHEN CAST ('cysPXAjehMpVKUapzbMCCnpFxUFFryEWEaLgnb9NrR8' AS FixedString(44)) THEN 'Cykura Swap'
+            WHEN CAST ('dp2waEWSBy5yKmq65ergoU3G6qRLmqa6K7We4rZSKph' AS FixedString(44)) THEN 'Dradex Program'
+            WHEN CAST ('7WduLbRfYhTJktjLw5FDEyrqoEv61aTTCuGAetgLjzN5' AS FixedString(44)) THEN 'GooseFX SSL'
+            WHEN CAST ('C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr' AS FixedString(44)) THEN 'Clone'
+            WHEN CAST ('1MooN32fuBBgApc8ujknKJw5sef3BVwPGgz3pto1BAh' AS FixedString(44)) THEN '1Sol'
+            WHEN CAST ('9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin' AS FixedString(44)) THEN 'Serum DEX V3'
+
             ELSE 'Unknown'
         END,
     amm_pool                    LowCardinality(FixedString(44)) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',
@@ -247,9 +260,10 @@ WHERE input_amount > 1 AND output_amount > 1;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pumpfun_sell
 TO swaps AS
-WITH
+WITH (
     sol_amount + protocol_fee + creator_fee AS output_amount,
     'So11111111111111111111111111111111111111111' AS output_mint
+)
 SELECT
     -- block --
     block_num,
