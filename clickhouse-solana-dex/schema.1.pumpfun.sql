@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
     is_buy                      Bool,
     virtual_sol_reserves        UInt64,
     virtual_token_reserves      UInt64,
-    real_sol_reserves           UInt64,
-    real_token_reserves         UInt64,
+    real_sol_reserves           UInt64 DEFAULT 0,
+    real_token_reserves         UInt64 DEFAULT 0,
     protocol_fee_recipient      FixedString(44) DEFAULT '',
     protocol_fee_basis_points   UInt64 DEFAULT 0, -- basis-points, 1 bp = 0.01 %
     protocol_fee                UInt64 DEFAULT 0, -- lamports

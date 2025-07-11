@@ -99,6 +99,28 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
             }
             // -- Events --
             match pumpfun::anchor_self_cpi::unpack(instruction.data()) {
+                // -- TradeV0 --
+                Ok(pumpfun::anchor_self_cpi::PumpFunEvent::TradeV0(event)) => {
+                    base.instruction = Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
+                        mint: event.mint.to_bytes().to_vec(),
+                        sol_amount: event.sol_amount,
+                        token_amount: event.token_amount,
+                        is_buy: event.is_buy,
+                        user: event.user.to_bytes().to_vec(),
+                        timestamp: event.timestamp,
+                        virtual_sol_reserves: event.virtual_sol_reserves,
+                        virtual_token_reserves: event.virtual_token_reserves,
+                        real_sol_reserves: None,
+                        real_token_reserves: None,
+                        fee_recipient: None,
+                        fee_basis_points: None,
+                        fee: None,
+                        creator: None,
+                        creator_fee_basis_points: None,
+                        creator_fee: None,
+                    }));
+                    transaction.instructions.push(base.clone());
+                }
                 // -- TradeV1 --
                 Ok(pumpfun::anchor_self_cpi::PumpFunEvent::TradeV1(event)) => {
                     base.instruction = Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
@@ -110,8 +132,8 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                         timestamp: event.timestamp,
                         virtual_sol_reserves: event.virtual_sol_reserves,
                         virtual_token_reserves: event.virtual_token_reserves,
-                        real_sol_reserves: event.real_sol_reserves,
-                        real_token_reserves: event.real_token_reserves,
+                        real_sol_reserves: Some(event.real_sol_reserves),
+                        real_token_reserves: Some(event.real_token_reserves),
                         fee_recipient: None,
                         fee_basis_points: None,
                         fee: None,
@@ -132,8 +154,8 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                         timestamp: event.timestamp,
                         virtual_sol_reserves: event.virtual_sol_reserves,
                         virtual_token_reserves: event.virtual_token_reserves,
-                        real_sol_reserves: event.real_sol_reserves,
-                        real_token_reserves: event.real_token_reserves,
+                        real_sol_reserves: Some(event.real_sol_reserves),
+                        real_token_reserves: Some(event.real_token_reserves),
                         fee_recipient: Some(event.fee_recipient.to_bytes().to_vec()),
                         fee_basis_points: Some(event.fee_basis_points),
                         fee: Some(event.fee),

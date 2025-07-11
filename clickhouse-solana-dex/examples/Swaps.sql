@@ -10,6 +10,16 @@ GROUP BY
 ORDER BY count() DESC
 LIMIT 50;
 
+-- Find all AMMs with Unknown name --
+SELECT
+    amm,
+    count()
+FROM swaps
+WHERE amm_name = 'Unknown'
+GROUP BY amm
+ORDER BY count() DESC
+LIMIT 100
+
 -- Price by Pool WSOL/USDC --
 WITH (
     input_mint <= output_mint AS dir,

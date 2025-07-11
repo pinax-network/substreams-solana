@@ -181,10 +181,16 @@ pub struct TradeEvent {
     pub virtual_sol_reserves: u64,
     #[prost(uint64, tag="8")]
     pub virtual_token_reserves: u64,
-    #[prost(uint64, tag="9")]
-    pub real_sol_reserves: u64,
-    #[prost(uint64, tag="10")]
-    pub real_token_reserves: u64,
+    /// TradeEventV1
+    /// Real reserves are the actual balances of the vaults.
+    /// They are used to calculate the current price of the bonding curve.
+    /// They are not used in the bonding curve calculations.
+    /// They are used for reference and to calculate the current price.
+    #[prost(uint64, optional, tag="9")]
+    pub real_sol_reserves: ::core::option::Option<u64>,
+    #[prost(uint64, optional, tag="10")]
+    pub real_token_reserves: ::core::option::Option<u64>,
+    /// TradeEventV2
     /// Protocol-fee recipient (32 bytes).
     #[prost(bytes="vec", optional, tag="11")]
     pub fee_recipient: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
