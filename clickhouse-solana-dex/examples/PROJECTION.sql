@@ -7,7 +7,6 @@ WHERE database = currentDatabase()
   AND table    = 'swaps'
 GROUP BY name;
 
-
 -- Make the optimiser show its hand with EXPLAIN
 EXPLAIN PLAN indexes=1
 SELECT *

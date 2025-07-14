@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1,
 
     -- projections --
-    PROJECTION prj_timestamp ( SELECT * ORDER BY (timestamp, block_num) )
+    PROJECTION prj_timestamp ( SELECT timestamp, block_num, _part_offset ORDER BY (timestamp, block_num) )
 )
 ENGINE = MergeTree
 ORDER BY (
