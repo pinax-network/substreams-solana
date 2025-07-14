@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS verified_tokens  (
+CREATE TABLE IF NOT EXISTS verified_programs  (
     program_id           FixedString(44),
     description          String
 )
@@ -6,7 +6,7 @@ ENGINE = ReplacingMergeTree
 ORDER BY (program_id);
 
 -- Main Program IDs for supported DEX AMMs
-INSERT INTO verified_tokens (program_id, description) VALUES
+INSERT INTO verified_programs (program_id, description) VALUES
     ('675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8', 'Raydium Liquidity Pool V4'),
     ('6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P', 'Pump.fun'),
     ('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA', 'Pump.fun AMM'),
@@ -14,7 +14,7 @@ INSERT INTO verified_tokens (program_id, description) VALUES
     ('JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4', 'Jupiter Aggregator v6');
 
 -- Program IDs derived from the Jupiter V4/V6 aggregator
-INSERT INTO verified_tokens (program_id, description) VALUES
+INSERT INTO verified_programs (program_id, description) VALUES
     ('dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN', 'Meteora Dynamic Bonding Curve Program'),
     ('whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc', 'Whirlpools Program'),
     ('LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo', 'Meteora DLMM Program'),
