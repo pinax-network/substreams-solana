@@ -30,10 +30,33 @@ WHERE status != 'Finished'
 
 -- detect how many unique values
 WITH t AS (
-    SELECT mint, source, destination, authority FROM transfers LIMIT 8192 OFFSET 120000
+    SELECT * FROM swaps LIMIT 8192 OFFSET 120000
 ) SELECT
-    uniq(mint),
-    uniq(source),
-    uniq(destination),
-    uniq(authority)
+    uniq(amm),
+    uniq(amm_pool),
+    uniq(user),
+    uniq(input_mint),
+    uniq(output_mint)
 FROM t
+
+-- check the index sizes
+SELECT
+    name,
+    formatReadableSize(data_compressed_bytes) AS on_disk,
+    type,
+    granularity
+FROM system.data_skipping_indices
+WHERE table = 'swaps'
+ORDER BY data_compressed_bytes DESC;
+
+
+SYSTEM FLUSH LOGS;       -- zero the deltas
+-- run a representative INSERT batch
+SELECT event, value
+FROM system.events
+WHERE event IN (
+    'MergeTreeDataProjectionWriterProjectionsCalculationMicroseconds',
+    'MergeTreeDataWriterSkipIndicesCalculationMicroseconds',
+    'MergeTreeDataProjectionWriterUncompressedBytes',
+    'MergeTreeDataWriterUncompressedBytes',
+    'InsertQueryTimeMicroseconds');
