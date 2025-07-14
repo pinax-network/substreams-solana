@@ -114,8 +114,8 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_program_id        (program_id)        TYPE set(8)         GRANULARITY 4, -- 5 unique programs per granule
     INDEX idx_amm               (amm)               TYPE set(128)       GRANULARITY 2, -- 50 unique AMMs per 2x granules when using Jupiter V6
     INDEX idx_amm_pool          (amm_pool)          TYPE set(512)       GRANULARITY 1, -- 300 unique pools per granule
-    INDEX idx_input_mint        (input_mint)        TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
-    INDEX idx_output_mint       (output_mint)       TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_input_mint        (input_mint)        TYPE set(2048)      GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_output_mint       (output_mint)       TYPE set(2048)      GRANULARITY 1, -- 500 unique mints per granule
     INDEX idx_input_amount      (input_amount)      TYPE minmax         GRANULARITY 4,
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 4,
 
@@ -123,7 +123,10 @@ CREATE TABLE IF NOT EXISTS swaps (
     PROJECTION prj_timestamp ( SELECT * ORDER BY (timestamp, block_num) )
 )
 ENGINE = MergeTree
-ORDER BY (program_id, amm, amm_pool, user, block_hash, transaction_index, instruction_index)
+ORDER BY (
+    program_id, amm, amm_pool, user,
+    block_hash, transaction_index, instruction_index
+)
 COMMENT 'Solana DEX Swaps';
 
 /* ──────────────────────────────────────────────────────────────────────────
