@@ -3,74 +3,47 @@ syntax = "proto3";
 package solana.spl.token.transfers.v1;
 
 message Events {
-  // https://github.com/solana-program/token-2022
-  repeated Transfer transfers = 1;
-  repeated Transfer mints = 2;
-  repeated Transfer burns = 3;
-  repeated InitializeMint initialize_mints = 4;
-  repeated InitializeAccount initialize_accounts = 5;
-  repeated Approve approves = 6;
-  repeated Revoke revokes = 7;
+  repeated Transaction transactions = 1;
 }
 
-enum Instructions {
-  INSTRUCTIONS_UNSPECIFIED = 0;
-  INSTRUCTIONS_TRANSFER_CHECKED = 1;
-  INSTRUCTIONS_TRANSFER = 2;
-  INSTRUCTIONS_MINT_TO_CHECKED = 3;
-  INSTRUCTIONS_MINT_TO = 4;
-  INSTRUCTIONS_BURN = 5;
-  INSTRUCTIONS_BURN_CHECKED = 6;
-  INSTRUCTIONS_INITIALIZE_MINT = 7;
-  INSTRUCTIONS_INITIALIZE_MINT_2 = 8;
-  INSTRUCTIONS_INITIALIZE_ACCOUNT = 9;
-  INSTRUCTIONS_INITIALIZE_ACCOUNT2 = 10;
-  INSTRUCTIONS_INITIALIZE_ACCOUNT3 = 11;
-  INSTRUCTIONS_APPROVE = 12;
-  INSTRUCTIONS_APPROVE_CHECKED = 13;
-  INSTRUCTIONS_REVOKE = 14;
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    bool is_root = 3; // Indicates if this instruction is a root instruction.
+    oneof instruction {
+        // https://github.com/solana-program/token-2022
+        Transfer transfer = 10;
+        Transfer mint = 11;
+        Transfer burn = 12;
+        InitializeMint initialize_mint = 13;
+        InitializeAccount initialize_account = 14;
+        Approve approve = 15;
+        Revoke revoke = 16;
+    }
 }
 
 message Transfer {
-  // -- transaction --
-  bytes tx_hash = 1;
-
-  // -- ordering --
-  uint32 execution_index = 2;
-  uint32 instruction_index = 3;
-  uint32 inner_instruction_index = 4;
-  uint32 stack_height = 5; // instruction.stack_height()
-
-  // -- instruction --
-  bytes program_id = 6; // instruction.program_id()
-  Instructions instruction = 7; // enum
-
   // -- authority --
   bytes authority = 8;
   repeated bytes multisig_authority = 9;
-
-  // -- event --
   bytes source = 10;
   bytes destination = 11;
   uint64 amount = 12;
+  // SPL-2022
   optional bytes mint = 13;
   optional uint32 decimals = 14; // uint8
 }
 
 message InitializeMint {
-  // -- transaction --
-  bytes tx_hash = 1;
-
-  // -- ordering --
-  uint32 execution_index = 2;
-  uint32 instruction_index = 3;
-  uint32 inner_instruction_index = 4;
-  uint32 stack_height = 5; // instruction.stack_height()
-
-  // -- instruction --
-  bytes program_id = 6; // instruction.program_id()
-  Instructions instruction = 7; // enum
-
   // -- event --
   bytes mint = 10;
   bytes mint_authority = 11;
