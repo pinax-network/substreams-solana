@@ -21,7 +21,6 @@ fn map_events(block: Block) -> Result<Events, Error> {
             Some(meta) => {
                 for balance in meta.post_token_balances.iter() {
                     let account = tx.account_at(balance.account_index as u8);
-
                     execution_index += 1;
 
                     // only include SPL-Token instructions

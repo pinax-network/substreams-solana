@@ -15,25 +15,13 @@ pub fn is_spl_token_program(instruction: &InstructionView) -> bool {
 fn map_events(block: Block) -> Result<Events, Error> {
     let mut events: Events = Events::default();
 
-    // running counter of every SPL-Token instruction encountered across the whole block, incremented each time one is processed.
-    let mut execution_index = 0;
-
     // transactions
     for tx in block.transactions() {
-        // position of the current instruction inside its transaction (root + inner), counted from the start of that transaction.
-        let mut instruction_index = 0;
-        // position of the instruction among inner (non-root) instructions within the same transaction; stays 0 for root instructions and increments only for nested ones.
-        let mut inner_instruction_index = 0;
-
         // instructions
         // Iterates over all instructions, including inner instructions, of the transaction.
         // The iteration starts with the first compiled instruction and then goes through all its inner instructions, if any.
         // Then it moves to the next compiled instruction and so on recursively.
         for instruction in tx.walk_instructions() {
-            // increment indexes
-            // apply to all instructions to ensure consistent indexing across the block.
-            execution_index += 1;
-            instruction_index += 1;
             if !instruction.is_root() {
                 inner_instruction_index += 1;
             }

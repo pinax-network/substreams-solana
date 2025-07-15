@@ -1,31 +1,31 @@
-use common::clickhouse::{common_key, set_authority, set_clock, set_instruction, set_ordering};
+use common::clickhouse::{common_key, set_authority, set_clock, set_instruction, set_ordering, set_pumpfun_amm_instruction_v2};
 use proto::pb::solana::spl;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
 
 pub fn process_spl_token_transfers(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: spl::token::transfers::v1::Events) {
-    // -- Transfers --
-    for event in events.transfers {
-        handle_transfer(tables, clock, event);
-    }
-    for event in events.mints {
-        handle_transfer(tables, clock, event);
-    }
-    for event in events.burns {
-        handle_transfer(tables, clock, event);
-    }
     for event in events.initialize_accounts {
         handle_initialize_account(tables, clock, event);
     }
     for event in events.initialize_mints {
         handle_initialize_mint(tables, clock, event);
     }
-    for event in events.approves {
-        handle_approve(tables, clock, event);
+    // for event in events.approves {
+    //     handle_approve(tables, clock, event);
+    // }
+    // for event in events.revokes {
+    //     handle_revoke(tables, clock, event);
+    // }
+    // -- Transfers --
+    for event in events.transfers {
+        handle_transfer(tables, clock, event);
     }
-    for event in events.revokes {
-        handle_revoke(tables, clock, event);
-    }
+    // for event in events.mints {
+    //     handle_transfer(tables, clock, event);
+    // }
+    // for event in events.burns {
+    //     handle_transfer(tables, clock, event);
+    // }
 }
 
 fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::Transfer) {
@@ -41,7 +41,7 @@ fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, cloc
         None => "".to_string(),
     };
     let row = tables
-        .create_row("transfers", key)
+        .create_row("transfers_raw", key)
         .set("source", base58::encode(event.source))
         .set("destination", base58::encode(event.destination))
         .set("amount", event.amount.to_string())
@@ -51,14 +51,16 @@ fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, cloc
 
     set_instruction(event.tx_hash, event.program_id, instruction, row);
     set_authority(event.authority, event.multisig_authority, row);
-    set_ordering(
-        event.execution_index,
-        event.instruction_index,
-        event.inner_instruction_index,
-        event.stack_height,
-        clock,
-        row,
-    );
+    set_pumpfun_amm_instruction_v2(instruction, row);
+    set_pumpfun_amm_transaction_v2(transaction, row);
+    // set_ordering(
+    //     event.execution_index,
+    //     event.instruction_index,
+    //     event.inner_instruction_index,
+    //     event.stack_height,
+    //     clock,
+    //     row,
+    // );
     set_clock(clock, row);
 }
 
