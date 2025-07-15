@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1,
 
     -- projections --
-    PROJECTION prj_timestamp ( SELECT timestamp, block_num, _part_offset ORDER BY (timestamp, block_num) )
+    -- PROJECTION prj_timestamp ( SELECT timestamp, block_num, _part_offset ORDER BY (timestamp, block_num) )
 )
 ENGINE = MergeTree
 ORDER BY (
@@ -266,12 +266,8 @@ FROM pumpfun_buy AS s
 WHERE input_amount > 1 AND output_amount > 1;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pumpfun_sell
-TO swaps AS
-WITH (
-    sol_amount + protocol_fee + creator_fee AS output_amount,
-    'So11111111111111111111111111111111111111111' AS output_mint
-)
-SELECT
+TO swaps
+AS SELECT
     -- block --
     block_num,
     block_hash,
@@ -286,12 +282,12 @@ SELECT
 
     -- common fields --
     user,
-    program_id          AS amm,
-    bonding_curve       AS amm_pool,
-    mint                AS input_mint,
-    token_amount        AS input_amount,
-    output_mint,
-    output_amount
+    program_id AS amm,
+    bonding_curve AS amm_pool,
+    mint AS input_mint,
+    token_amount AS input_amount,
+    'So11111111111111111111111111111111111111111' AS output_mint,
+    (sol_amount + protocol_fee + creator_fee) AS output_amount
 
 FROM pumpfun_sell AS s
 -- ignore dust swaps (typically trying to disort the price)
