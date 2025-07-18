@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     -- projections --
     PROJECTION prj_timestamp ( SELECT timestamp, block_num, _part_offset ORDER BY (timestamp, block_num) ),
     PROJECTION prj_user ( SELECT user, _part_offset ORDER BY (user) ),
+    PROJECTION prj_signature ( SELECT signature, _part_offset ORDER BY (user) ),
     PROJECTION prj_input_mint ( SELECT input_mint, output_mint, _part_offset ORDER BY (input_mint, output_mint) ),
     PROJECTION prj_output_mint ( SELECT input_mint, output_mint, _part_offset ORDER BY (output_mint, input_mint) )
 )
