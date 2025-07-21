@@ -156,7 +156,6 @@ SELECT *
 FROM swaps
 WHERE user = (SELECT user FROM swaps ORDER BY rand() LIMIT 1);
 
-
 EXPLAIN indexes =1
 SELECT *
 FROM swaps
@@ -197,9 +196,30 @@ SELECT * FROM swaps
 WHERE timestamp <= (SELECT min(timestamp) + 100 FROM swaps)
 ORDER BY timestamp DESC LIMIT 10;
 
-
 EXPLAIN projections = 1
 SELECT * FROM swaps
 WHERE program_id = (SELECT program_id FROM swaps ORDER BY rand() LIMIT 1)
 AND timestamp <= (SELECT min(timestamp) + 100 FROM swaps)
 ORDER BY timestamp DESC LIMIT 10;
+
+
+EXPLAIN indexes = 1
+SELECT _part_starting_offset + _part_offset
+FROM swaps
+WHERE
+    input_mint = (SELECT input_mint FROM swaps ORDER BY rand() LIMIT 1)
+
+
+EXPLAIN indexes =1
+SELECT *
+FROM swaps
+WHERE _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM swaps
+    WHERE input_mint = (SELECT input_mint FROM swaps ORDER BY rand() LIMIT 1)
+) AND _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM swaps
+    WHERE amm = (SELECT amm FROM swaps ORDER BY rand() LIMIT 1)
+)
+SETTINGS enable_shared_storage_snapshot_in_query = 1;

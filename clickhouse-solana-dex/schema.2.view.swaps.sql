@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS swaps (
 ENGINE = MergeTree
 -- optimal for ordering latest/oldest swaps per DEX AMM program and pool
 ORDER BY (
-    program_id, amm, amm_pool, user, fee_payer, signer,
+    program_id, amm, amm_pool, user, fee_payer,
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Solana DEX Swaps';
