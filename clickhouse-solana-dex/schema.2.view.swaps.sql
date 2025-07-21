@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS swaps (
 
     -- indexes -
     INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 8,  -- always unique
-    INDEX idx_fee_payer         (fee_payer)         TYPE set(2048)      GRANULARITY 1,
-    INDEX idx_signer            (signer)            TYPE set(2048)      GRANULARITY 1,
+    INDEX idx_fee_payer         (fee_payer)         TYPE set(4096)      GRANULARITY 1,
+    INDEX idx_signer            (signer)            TYPE set(4096)      GRANULARITY 1,
     INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 1,
     INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 1,
     INDEX idx_program_id        (program_id)        TYPE set(8)         GRANULARITY 1, -- 5 unique programs per granule
