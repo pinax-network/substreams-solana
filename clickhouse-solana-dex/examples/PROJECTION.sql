@@ -129,10 +129,34 @@ WHERE name IN (
 3. │ query_plan_optimize_projection    │ 1     │
    └───────────────────────────────────┴───────┘
 
-EXPLAIN projections = 1
-SELECT user
+EXPLAIN indexes = 1
+SELECT *
 FROM swaps
 WHERE user = (SELECT user FROM swaps ORDER BY rand() LIMIT 1);
 
+EXPLAIN indexes = 1
+SELECT * FROM swaps
+WHERE program_id = (SELECT program_id FROM swaps ORDER BY rand() LIMIT 1)
+ORDER BY timestamp DESC LIMIT 10;
 
-EXPLAIn indexes = 1 SELECT * FROM swaps WHERE timestamp <= (SELECT min(timestamp) + 100 FROM swaps) ORDER BY timestamp DESC LIMIT 10
+EXPLAIN indexes = 1
+SELECT * FROM swaps
+WHERE amm = (SELECT amm FROM swaps ORDER BY rand() LIMIT 1)
+ORDER BY timestamp DESC LIMIT 10;
+
+EXPLAIN indexes = 1
+SELECT * FROM swaps
+WHERE amm_pool = (SELECT amm_pool FROM swaps WHERE amm_pool !=''  ORDER BY rand() LIMIT 1)
+ORDER BY timestamp DESC LIMIT 10;
+
+EXPLAIN indexes = 1
+SELECT * FROM swaps
+WHERE timestamp <= (SELECT min(timestamp) + 100 FROM swaps)
+ORDER BY timestamp DESC LIMIT 10;
+
+
+EXPLAIN projections = 1
+SELECT * FROM swaps
+WHERE program_id = (SELECT program_id FROM swaps ORDER BY rand() LIMIT 1)
+AND timestamp <= (SELECT min(timestamp) + 100 FROM swaps)
+ORDER BY timestamp DESC LIMIT 10;
