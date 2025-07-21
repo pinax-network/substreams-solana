@@ -96,12 +96,6 @@ EXPLAIN PIPELINE
 SELECT ...;
 
 -- Query signature
-EXPLAIN indexes=1
-SELECT *
-FROM swaps_min
-WHERE signature = (SELECT signature FROM swaps_min ORDER BY rand() LIMIT 1);
-
-
 EXPLAIN indexes = 1
 SELECT signature
 FROM swaps

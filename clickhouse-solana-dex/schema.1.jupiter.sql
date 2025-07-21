@@ -31,13 +31,15 @@ CREATE TABLE IF NOT EXISTS jupiter_swap (
     output_mint                 FixedString(44) COMMENT 'Output token mint address',
     output_amount               UInt64 COMMENT 'Amount of output tokens received',
 
-    -- indexes -
-    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 1,
-    INDEX idx_fee_payer         (fee_payer)          TYPE bloom_filter     GRANULARITY 1,
-    INDEX idx_signer            (signer)             TYPE bloom_filter     GRANULARITY 1
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_timestamp   (SELECT timestamp,      _part_offset ORDER BY timestamp),
+    PROJECTION prj_part_block_num   (SELECT block_num,      _part_offset ORDER BY block_num),
+    PROJECTION prj_part_fee_payer   (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer      (SELECT signer,         _part_offset ORDER BY signer)
 )
 ENGINE = MergeTree
 ORDER BY (
-    timestamp, block_num,
+    signature,
     block_hash, transaction_index, instruction_index
 );

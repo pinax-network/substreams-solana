@@ -63,10 +63,10 @@ CREATE TABLE IF NOT EXISTS swaps (
     -- projections (parts) --
     -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
     PROJECTION prj_part_block_num   (SELECT block_num,   _part_offset ORDER BY block_num),
-    PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user),
     PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature),
     PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer),
     PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer),
+    PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user),
     PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint),
     PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
 )
