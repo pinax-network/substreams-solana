@@ -5,16 +5,26 @@ CREATE TABLE IF NOT EXISTS swaps (
     -- block --
     block_num               UInt32,
     block_hash              FixedString(44),
-    timestamp               DateTime(0, 'UTC'),
+    timestamp               UInt32,
+    datetime                DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
 
     -- ordering --
     transaction_index       UInt32,
     instruction_index       UInt32,
 
     -- transaction --
-    signature               FixedString(88),
+    signature                   FixedString(88),
+    fee_payer                   FixedString(44),
+    signers_raw                 String,
+    signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
+    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
+    fee                         UInt64 DEFAULT 0,
+    compute_units_consumed      UInt64 DEFAULT 0,
+
+    -- instruction --
     program_id              LowCardinality(FixedString(44)),
     program_name            LowCardinality(String) MATERIALIZED program_names(program_id),
+    stack_height                UInt32,
 
     -- common fields --
     user                        FixedString(44)                 COMMENT 'User wallet address',
@@ -26,13 +36,17 @@ CREATE TABLE IF NOT EXISTS swaps (
     output_mint                 LowCardinality(FixedString(44)) COMMENT 'Output token mint address',
     output_amount               UInt64                          COMMENT 'Amount of output tokens received',
 
-    -- indexes --
-    INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 4,
-    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 1, -- always unique
-    INDEX idx_user              (user)              TYPE bloom_filter   GRANULARITY 1, -- 2500 unique users per granule
+    -- indexes -
+    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 1,  -- always unique
+    INDEX idx_fee_payer         (fee_payer)         TYPE bloom_filter   GRANULARITY 1,
+    INDEX idx_signer            (signer)            TYPE bloom_filter   GRANULARITY 1,
+    INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 1,
+    INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 1,
     INDEX idx_program_id        (program_id)        TYPE set(8)         GRANULARITY 4, -- 5 unique programs per granule
     INDEX idx_program_name      (program_name)      TYPE set(8)         GRANULARITY 4,
+
+    -- indexes for common fields --
+    INDEX idx_user              (user)              TYPE bloom_filter   GRANULARITY 1, -- 2500 unique users per granule
     INDEX idx_amm               (amm)               TYPE set(128)       GRANULARITY 2, -- 50 unique AMMs per 2x granules when using Jupiter V6
     INDEX idx_amm_name          (amm_name)          TYPE set(128)       GRANULARITY 2,
     INDEX idx_amm_pool          (amm_pool)          TYPE set(512)       GRANULARITY 1, -- 300 unique pools per granule
@@ -42,15 +56,14 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1,
 
     -- projections --
-    PROJECTION prj_timestamp ( SELECT timestamp, block_num, _part_offset ORDER BY (timestamp, block_num) ),
-    PROJECTION prj_user ( SELECT user, _part_offset ORDER BY (user) ),
-    PROJECTION prj_signature ( SELECT signature, _part_offset ORDER BY (user) ),
-    PROJECTION prj_input_mint ( SELECT input_mint, output_mint, _part_offset ORDER BY (input_mint, output_mint) ),
-    PROJECTION prj_output_mint ( SELECT input_mint, output_mint, _part_offset ORDER BY (output_mint, input_mint) )
+    PROJECTION prj_timestamp(SELECT * ORDER BY timestamp),
+    PROJECTION prj_user(SELECT * ORDER BY user)
 )
 ENGINE = MergeTree
+-- optimal for ordering latest/oldest swaps per DEX AMM program and pool
 ORDER BY (
-    program_id, amm, amm_pool, input_mint, output_mint, user,
+    program_id, amm, amm_pool,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Solana DEX Swaps';
@@ -67,13 +80,21 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user_source_owner       AS user,
@@ -101,13 +122,21 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user_source_owner       AS user,
@@ -136,16 +165,24 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
-    fee_payer               AS user, -- Jupiter does not use user wallets, so we use fee_payer as a placeholder
+    s.fee_payer             AS user, -- Jupiter does not use user wallets, so we use fee_payer as a placeholder
     amm,
     ''                      AS amm_pool, -- Jupiter does not use AMM pools, so we leave it empty
     input_mint,
@@ -170,13 +207,21 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
@@ -198,13 +243,21 @@ AS SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
@@ -236,7 +289,14 @@ SELECT
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
@@ -265,11 +325,18 @@ SELECT
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
-    program_id          AS amm,
+    s.program_id        AS amm,
     pool                AS amm_pool,
     base_mint           AS input_mint,
     base_amount_in      AS input_amount,

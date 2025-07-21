@@ -1,6 +1,7 @@
 -- OHLCV prices --
 CREATE TABLE IF NOT EXISTS ohlc_prices (
-    timestamp               DateTime(0, 'UTC') COMMENT 'beginning of the bar',
+    timestamp               UInt32 COMMENT 'beginning of the bar',
+    datetime                DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
 
     -- OrderBy --
     program_id              LowCardinality(FixedString(44)),
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     transactions            SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window',
 
     -- indexes --
+    INDEX idx_timestamp         (timestamp)                 TYPE minmax         GRANULARITY 1,
     INDEX idx_program_id        (program_id)                TYPE set(8)         GRANULARITY 4,
     INDEX idx_amm               (amm)                       TYPE set(128)       GRANULARITY 2,
     INDEX idx_amm_pool          (amm_pool)                  TYPE set(512)       GRANULARITY 1,
@@ -39,13 +41,13 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     INDEX idx_gross_volume1     (gross_volume1)             TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow0         (net_flow0)                 TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1,
+    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1
 )
 ENGINE = AggregatingMergeTree
-ORDER BY (program_id, amm, amm_pool, mint0, mint1);
+ORDER BY (program_id, amm, amm_pool, mint0, mint1, timestamp);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
-REFRESH EVERY 11 MINUTE APPEND
+REFRESH EVERY 1 MINUTE APPEND
 TO ohlc_prices
 AS
 WITH
@@ -63,7 +65,7 @@ WITH
     if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1
 
 SELECT
-    toStartOfHour(timestamp)    AS timestamp,
+    toStartOfHour(datetime)    AS timestamp,
     program_id, amm, amm_pool, mint0, mint1,
 
     /* OHLC */

@@ -60,3 +60,7 @@ WHERE event IN (
     'MergeTreeDataProjectionWriterUncompressedBytes',
     'MergeTreeDataWriterUncompressedBytes',
     'InsertQueryTimeMicroseconds');
+
+-- drop the index
+ALTER TABLE swaps
+DROP INDEX idx_block_num;

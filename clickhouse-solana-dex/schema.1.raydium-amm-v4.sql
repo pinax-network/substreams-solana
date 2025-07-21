@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     fee_payer                   FixedString(44),
     signers_raw                 String,
     signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
+    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
     fee                         UInt64 DEFAULT 0,
     compute_units_consumed      UInt64 DEFAULT 0,
 
@@ -55,13 +56,16 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     pool_coin                   UInt64,
     pool_pc                     UInt64,
 
-    -- indexes --
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 4
+    -- indexes -
+    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 1,
+    INDEX idx_fee_payer         (fee_payer)          TYPE bloom_filter     GRANULARITY 1,
+    INDEX idx_signer            (signer)             TYPE bloom_filter     GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
-ORDER BY (block_hash, transaction_index, instruction_index);
+ENGINE = MergeTree
+ORDER BY (
+    timestamp, block_num,
+    block_hash, transaction_index, instruction_index
+);
 
 --- SwapBaseOut --
 CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in;

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS pumpfun_amm_buy (
     fee_payer                   FixedString(44),
     signers_raw                 String,
     signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
+    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
     fee                         UInt64 DEFAULT 0,
     compute_units_consumed      UInt64 DEFAULT 0,
 
@@ -48,13 +49,16 @@ CREATE TABLE IF NOT EXISTS pumpfun_amm_buy (
     quote_amount_in_with_lp_fee UInt64,
     user_quote_amount_in        UInt64,
 
-    -- indexes --
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 4
+    -- indexes -
+    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 1,
+    INDEX idx_fee_payer         (fee_payer)          TYPE bloom_filter     GRANULARITY 1,
+    INDEX idx_signer            (signer)             TYPE bloom_filter     GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree
-ORDER BY (block_hash, transaction_index, instruction_index);
+ENGINE = MergeTree
+ORDER BY (
+    timestamp, block_num,
+    block_hash, transaction_index, instruction_index
+);
 
 -- Sell --
 CREATE TABLE IF NOT EXISTS pumpfun_amm_sell AS pumpfun_amm_buy;
