@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1,
 
     -- projections --
-    PROJECTION prj_timestamp(SELECT * ORDER BY timestamp),
-    PROJECTION prj_user(SELECT * ORDER BY user)
+    PROJECTION prj_timestamp (SELECT * ORDER BY timestamp),
+    PROJECTION prj_user (SELECT * ORDER BY user)
 )
 ENGINE = MergeTree
 -- optimal for ordering latest/oldest swaps per DEX AMM program and pool

@@ -1,11 +1,30 @@
 /* How many active projection parts exist?  */
 SELECT name,
-       sum(rows)  AS rows_in_proj,
-       sum(data_compressed_bytes) / 1e6 AS size_mb
+    sum(rows) AS total_rows,
+    formatReadableSize(sum(data_compressed_bytes)) AS on_disk
 FROM system.projection_parts
 WHERE database = currentDatabase()
-  AND table    = 'swaps'
+  AND table    = 'swaps' AND active = 1
 GROUP BY name;
+
+-- Table size --
+SELECT
+    table,
+    sum(rows) AS total_rows,
+    formatReadableSize(sum(data_compressed_bytes)) AS on_disk
+FROM system.parts
+WHERE table = 'swaps' AND active
+GROUP BY table;
+
+-- check the index sizes
+SELECT
+    name,
+    formatReadableSize(data_compressed_bytes) AS on_disk,
+    type,
+    granularity
+FROM system.data_skipping_indices
+WHERE table = 'swaps'
+ORDER BY data_compressed_bytes DESC;
 
 -- Make the optimiser show its hand with EXPLAIN
 EXPLAIN PLAN indexes=1
