@@ -3,14 +3,14 @@
    ────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE IF NOT EXISTS swaps (
     -- block --
-    block_num               UInt32,
-    block_hash              FixedString(44),
-    timestamp               UInt32,
-    datetime                DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
+    block_num                   UInt32,
+    block_hash                  FixedString(44),
+    timestamp                   UInt32,
+    datetime                    DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
 
     -- ordering --
-    transaction_index       UInt32,
-    instruction_index       UInt32,
+    transaction_index           UInt32,
+    instruction_index           UInt32,
 
     -- transaction --
     signature                   FixedString(88),
@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS swaps (
     compute_units_consumed      UInt64 DEFAULT 0,
 
     -- instruction --
-    program_id              LowCardinality(FixedString(44)),
-    program_name            LowCardinality(String) MATERIALIZED program_names(program_id),
+    program_id                  LowCardinality(FixedString(44)),
+    program_name                LowCardinality(String) MATERIALIZED program_names(program_id),
     stack_height                UInt32,
 
     -- common fields --
@@ -37,33 +37,43 @@ CREATE TABLE IF NOT EXISTS swaps (
     output_amount               UInt64                          COMMENT 'Amount of output tokens received',
 
     -- indexes -
-    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 1,  -- always unique
-    INDEX idx_fee_payer         (fee_payer)         TYPE bloom_filter   GRANULARITY 1,
-    INDEX idx_signer            (signer)            TYPE bloom_filter   GRANULARITY 1,
+    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 8,  -- always unique
+    INDEX idx_fee_payer         (fee_payer)         TYPE set(2048)      GRANULARITY 1,
+    INDEX idx_signer            (signer)            TYPE set(2048)      GRANULARITY 1,
     INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 1,
     INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 1,
     INDEX idx_program_id        (program_id)        TYPE set(8)         GRANULARITY 1, -- 5 unique programs per granule
     INDEX idx_program_name      (program_name)      TYPE set(8)         GRANULARITY 1,
 
     -- indexes for common fields --
-    INDEX idx_user              (user)              TYPE bloom_filter   GRANULARITY 1, -- 2500 unique users per granule
-    INDEX idx_amm               (amm)               TYPE set(128)       GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
-    INDEX idx_amm_name          (amm_name)          TYPE set(128)       GRANULARITY 1,
-    INDEX idx_amm_pool          (amm_pool)          TYPE set(512)       GRANULARITY 1, -- 300 unique pools per granule
-    INDEX idx_input_mint        (input_mint)        TYPE set(2048)      GRANULARITY 1, -- 500 unique mints per granule
-    INDEX idx_output_mint       (output_mint)       TYPE set(2048)      GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_user              (user)              TYPE set(4096)      GRANULARITY 1, -- 2500 unique users per granule
+    INDEX idx_amm               (amm)               TYPE set(64)        GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
+    INDEX idx_amm_name          (amm_name)          TYPE set(64)        GRANULARITY 1,
+    INDEX idx_amm_pool          (amm_pool)          TYPE set(256)       GRANULARITY 1, -- 300 unique pools per granule
+    INDEX idx_input_mint        (input_mint)        TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_output_mint       (output_mint)       TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
     INDEX idx_input_amount      (input_amount)      TYPE minmax         GRANULARITY 1,
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1,
 
-    -- projections --
-    PROJECTION prj_timestamp (SELECT * ORDER BY timestamp),
-    PROJECTION prj_user (SELECT * ORDER BY user)
+    -- projections (full) --
+    -- all the data from the original table will be duplicated
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection
+    PROJECTION prj_timestamp        (SELECT * ORDER BY timestamp),
+
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_block_num   (SELECT block_num,   _part_offset ORDER BY block_num),
+    PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user),
+    PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer),
+    PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint),
+    PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
 )
 ENGINE = MergeTree
 -- optimal for ordering latest/oldest swaps per DEX AMM program and pool
 ORDER BY (
-    program_id, amm, amm_pool,
-    timestamp, block_num,
+    program_id, amm, amm_pool, user, fee_payer, signer,
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Solana DEX Swaps';

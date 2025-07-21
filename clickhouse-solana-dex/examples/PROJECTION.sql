@@ -5,7 +5,8 @@ SELECT name,
 FROM system.projection_parts
 WHERE database = currentDatabase()
   AND table    = 'swaps' AND active = 1
-GROUP BY name;
+GROUP BY name
+ORDER BY sum(data_compressed_bytes) DESC;
 
 -- Table size --
 SELECT
@@ -14,7 +15,8 @@ SELECT
     formatReadableSize(sum(data_compressed_bytes)) AS on_disk
 FROM system.parts
 WHERE table = 'swaps' AND active
-GROUP BY table;
+GROUP BY table
+ORDER BY sum(data_compressed_bytes) DESC;
 
 -- check the index sizes
 SELECT
@@ -139,7 +141,8 @@ WHERE name IN (
   'query_plan_optimize_projection',
   'optimize_use_implicit_projections',
   'allow_experimental_projection_optimization',
-  'use_skip_indexes'
+  'use_skip_indexes',
+  'enable_shared_storage_snapshot_in_query'
 );
 
    ┌─name──────────────────────────────┬─value─┐
@@ -152,6 +155,27 @@ EXPLAIN indexes = 1
 SELECT *
 FROM swaps
 WHERE user = (SELECT user FROM swaps ORDER BY rand() LIMIT 1);
+
+
+EXPLAIN indexes =1
+SELECT *
+FROM swaps
+WHERE _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM swaps
+    WHERE user = (SELECT user FROM swaps ORDER BY rand() LIMIT 1)
+)
+SETTINGS enable_shared_storage_snapshot_in_query = 1;
+
+EXPLAIN indexes =1
+SELECT *
+FROM swaps
+WHERE _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM swaps
+    WHERE signature = (SELECT signature FROM swaps ORDER BY rand() LIMIT 1)
+)
+SETTINGS enable_shared_storage_snapshot_in_query = 1;
 
 EXPLAIN indexes = 1
 SELECT * FROM swaps
