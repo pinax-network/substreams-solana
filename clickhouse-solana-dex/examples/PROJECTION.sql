@@ -74,14 +74,22 @@ ADD PROJECTION prj_timestamp
 );
 
 ALTER TABLE swaps
-ADD PROJECTION prj_timestamp
+ADD PROJECTION prj_part_signature
 (
-  SELECT timestamp, _part_offset
-  ORDER BY timestamp
+  SELECT signature, _part_offset
+  ORDER BY signature
+);
+
+ALTER TABLE swaps
+ADD PROJECTION prj_part_user
+(
+  SELECT user, _part_offset
+  ORDER BY user
 );
 
 -- Materialise existing data (one‑off, runs in the background)
-ALTER TABLE swaps MATERIALIZE PROJECTION prj_timestamp;
+ALTER TABLE swaps MATERIALIZE PROJECTION prj_part_signature;
+ALTER TABLE swaps MATERIALIZE PROJECTION prj_part_user;
 
 -- Check the projection settings
 SELECT
