@@ -1,13 +1,3 @@
-/* How many active projection parts exist?  */
-SELECT name,
-    sum(rows) AS total_rows,
-    formatReadableSize(sum(data_compressed_bytes)) AS on_disk
-FROM system.projection_parts
-WHERE database = currentDatabase()
-  AND table    = 'swaps' AND active = 1
-GROUP BY name
-ORDER BY sum(data_compressed_bytes) DESC;
-
 -- Table size --
 SELECT
     table,
@@ -16,6 +6,16 @@ SELECT
 FROM system.parts
 WHERE table = 'swaps' AND active
 GROUP BY table
+ORDER BY sum(data_compressed_bytes) DESC;
+
+/* How many active projection parts exist?  */
+SELECT name,
+    sum(rows) AS total_rows,
+    formatReadableSize(sum(data_compressed_bytes)) AS on_disk
+FROM system.projection_parts
+WHERE database = currentDatabase()
+  AND table    = 'swaps' AND active = 1
+GROUP BY name
 ORDER BY sum(data_compressed_bytes) DESC;
 
 -- check the index sizes

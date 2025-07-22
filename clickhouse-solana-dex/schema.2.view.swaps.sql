@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     output_amount               UInt64                          COMMENT 'Amount of output tokens received',
 
     -- indexes -
-    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 8,  -- always unique
+    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4,  -- always unique
     INDEX idx_fee_payer         (fee_payer)         TYPE set(4096)      GRANULARITY 1,
     INDEX idx_signer            (signer)            TYPE set(4096)      GRANULARITY 1,
     INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 1,
@@ -73,8 +73,9 @@ CREATE TABLE IF NOT EXISTS swaps (
     PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
 )
 ENGINE = MergeTree
+-- Optimized for swaps by AMM DEXs ordered by latest/oldest timestamp
 ORDER BY (
-    timestamp, block_num,
+    program_id, amm, amm_pool, timestamp, block_num,
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Swaps, used by all AMMs and DEXs';
