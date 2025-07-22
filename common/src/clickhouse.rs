@@ -2,6 +2,8 @@ use proto::pb::jupiter::v1 as jupiter;
 use proto::pb::pumpfun::amm::v1 as pumpfun_amm;
 use proto::pb::pumpfun::v1 as pumpfun;
 use proto::pb::raydium::amm::v1 as raydium;
+use proto::pb::solana::spl::token::balances::v1 as balances;
+use proto::pb::solana::spl::token::transfers::v1 as transfers;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::tables::Row;
 use substreams_solana::base58;
@@ -79,7 +81,7 @@ pub fn set_pumpfun_amm_instruction_v2(instruction: &pumpfun_amm::Instruction, ro
         .set("stack_height", instruction.stack_height);
 }
 
-pub fn set_spl_transaction_v2(transaction: &spl::Transaction, row: &mut Row) {
+pub fn set_spl_balances_transaction_v2(transaction: &balances::Transaction, row: &mut Row) {
     row.set("signature", base58::encode(transaction.signature.to_vec()))
         .set("fee_payer", base58::encode(transaction.fee_payer.to_vec()))
         .set("signers_raw", transaction.signers.iter().map(base58::encode).collect::<Vec<_>>().join(","))
@@ -87,7 +89,15 @@ pub fn set_spl_transaction_v2(transaction: &spl::Transaction, row: &mut Row) {
         .set("compute_units_consumed", transaction.compute_units_consumed);
 }
 
-pub fn set_spl_instruction_v2(instruction: &spl::Instruction, row: &mut Row) {
+pub fn set_spl_transfers_transaction_v2(transaction: &transfers::Transaction, row: &mut Row) {
+    row.set("signature", base58::encode(transaction.signature.to_vec()))
+        .set("fee_payer", base58::encode(transaction.fee_payer.to_vec()))
+        .set("signers_raw", transaction.signers.iter().map(base58::encode).collect::<Vec<_>>().join(","))
+        .set("fee", transaction.fee)
+        .set("compute_units_consumed", transaction.compute_units_consumed);
+}
+
+pub fn set_spl_transfers_instruction_v2(instruction: &transfers::Instruction, row: &mut Row) {
     row.set("program_id", base58::encode(instruction.program_id.to_vec()))
         .set("stack_height", instruction.stack_height);
 }

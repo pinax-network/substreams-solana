@@ -1,14 +1,13 @@
 specVersion: v0.1.0
 package:
   name: spl_token_balances
-  version: v0.1.0
+  version: v0.2.0
   url: https://github.com/pinax-network/substreams-solana
   description: SPL Token Balances
   image: ../image.png
 
 imports:
   solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
-  # solana_accounts: https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-accounts-v0.1.0/solana-accounts-foundational-v0.1.0.spkg
 
 binaries:
   default:
@@ -28,9 +27,10 @@ modules:
     doc: SPL Tokens Balances
     inputs:
       - map: solana_common:blocks_without_votes
-    # inputs:
-    #   - source: sf.solana.type.v1.AccountBlock
-    #   - map: solana_accounts:filtered_accounts
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA || program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
     output:
       type: proto:solana.spl.token.balances.v1.Events
 

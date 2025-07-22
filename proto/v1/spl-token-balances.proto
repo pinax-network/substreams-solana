@@ -1,25 +1,26 @@
 syntax = "proto3";
 
 package solana.spl.token.balances.v1;
+// https://github.com/solana-program/token-2022
 
 message Events {
-  // https://github.com/solana-program/token-2022
-  repeated Balance balances = 1;
+  repeated Transaction transactions = 1;
 }
 
-message Balance {
-  // -- transaction --
-  bytes tx_hash = 1;
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated TokenBalance pre_token_balances = 6; // Token balances before the transaction.
+    repeated TokenBalance post_token_balances = 7; // Token balances after the transaction.
+}
 
-  // -- indexes --
-  uint32 execution_index = 2;
-
-  // -- account --
-  bytes program_id = 10;
-
-  // -- event --
-  bytes owner = 11;
-  bytes mint = 12;
-  uint64 amount = 13;
-  uint32 decimals = 14; // uint8
+message TokenBalance {
+    bytes program_id = 1;
+    bytes account = 2;
+    bytes mint = 3;
+    uint64 amount = 4;
+    uint32 decimals = 5; // uint8
 }

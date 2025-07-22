@@ -32,10 +32,16 @@ CREATE TABLE IF NOT EXISTS balance_changes  (
     owner               FixedString(44),
     mint                FixedString(44),
     amount              UInt64,
-    decimals            UInt8
+    decimals            UInt8,
+
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
 ENGINE = MergeTree
 ORDER BY (
-    program_id, mint, owner,
-    block_hash, transaction_index, post_token_balances_index
+    timestamp, block_num,
+    block_hash, transaction_index, instruction_index
 );

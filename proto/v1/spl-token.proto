@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package solana.spl.token.transfers.v1;
+package solana.spl.token.v1;
 
 message Events {
   repeated Transaction transactions = 1;
@@ -13,6 +13,16 @@ message Transaction {
     uint64 fee = 4; // Lamports paid for this instruction.
     uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
     repeated Instruction instructions = 6; // Instructions executed in this transaction.
+    repeated TokenBalance pre_token_balances = 7; // Token balances before the transaction.
+    repeated TokenBalance post_token_balances = 8; // Token balances after the transaction.
+}
+
+message TokenBalance {
+  bytes program_id = 1;
+  bytes account = 2;
+  bytes mint = 3;
+  uint64 amount = 4;
+  uint32 decimals = 5; // uint8
 }
 
 message Instruction {
@@ -33,8 +43,10 @@ message Instruction {
 
 message Transfer {
   // -- authority --
-  bytes authority = 8;
-  repeated bytes multisig_authority = 9;
+  bytes authority = 1;
+  repeated bytes multisig_authority = 2;
+
+  // -- event --
   bytes source = 10;
   bytes destination = 11;
   uint64 amount = 12;
@@ -44,50 +56,22 @@ message Transfer {
 }
 
 message InitializeMint {
-  // -- event --
-  bytes mint = 10;
-  bytes mint_authority = 11;
-  optional bytes freeze_authority = 12;
-  uint32 decimals = 13; // uint8
+  bytes mint = 1;
+  bytes mint_authority = 2;
+  optional bytes freeze_authority = 3;
+  uint32 decimals = 4; // uint8
 }
 
 message InitializeAccount {
-  // -- transaction --
-  bytes tx_hash = 1;
-
-  // -- ordering --
-  uint32 execution_index = 2;
-  uint32 instruction_index = 3;
-  uint32 inner_instruction_index = 4;
-  uint32 stack_height = 5; // instruction.stack_height()
-
-  // -- instruction --
-  bytes program_id = 6; // instruction.program_id()
-  Instructions instruction = 7; // enum
-
-  // -- event --
-  bytes account = 10;
-  bytes mint = 11;
-  bytes owner = 12;
+  bytes account = 1;
+  bytes mint = 2;
+  bytes owner = 3;
 }
 
 message Approve {
-  // -- transaction --
-  bytes tx_hash = 1;
-
-  // -- ordering --
-  uint32 execution_index = 2;
-  uint32 instruction_index = 3;
-  uint32 inner_instruction_index = 4;
-  uint32 stack_height = 5; // instruction.stack_height()
-
-  // -- instruction --
-  bytes program_id = 6; // instruction.program_id()
-  Instructions instruction = 7; // enum
-
   // -- authority --
-  bytes authority = 8;
-  repeated bytes multisig_authority = 9;
+  bytes authority = 1;
+  repeated bytes multisig_authority = 2;
 
   // -- event --
   bytes source = 10;
@@ -99,24 +83,11 @@ message Approve {
 }
 
 message Revoke {
-  // -- transaction --
-  bytes tx_hash = 1;
-
-  // -- ordering --
-  uint32 execution_index = 2;
-  uint32 instruction_index = 3;
-  uint32 inner_instruction_index = 4;
-  uint32 stack_height = 5; // instruction.stack_height()
-
-  // -- instruction --
-  bytes program_id = 6; // instruction.program_id()
-  Instructions instruction = 7; // enum
-
   // -- authority --
-  bytes authority = 8;
-  repeated bytes multisig_authority = 9;
+  bytes authority = 1;
+  repeated bytes multisig_authority = 2;
 
   // -- event --
   bytes source = 10;
-  bytes owner = 13;
+  bytes owner = 11;
 }

@@ -3,31 +3,51 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
-    /// <https://github.com/solana-program/token-2022>
     #[prost(message, repeated, tag="1")]
-    pub balances: ::prost::alloc::vec::Vec<Balance>,
+    pub transactions: ::prost::alloc::vec::Vec<Transaction>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Balance {
-    /// -- transaction --
+pub struct Transaction {
     #[prost(bytes="vec", tag="1")]
-    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- indexes --
-    #[prost(uint32, tag="2")]
-    pub execution_index: u32,
-    /// -- account --
-    #[prost(bytes="vec", tag="10")]
+    pub signature: ::prost::alloc::vec::Vec<u8>,
+    /// Fee payer account address.
+    #[prost(bytes="vec", tag="2")]
+    pub fee_payer: ::prost::alloc::vec::Vec<u8>,
+    /// Signers of the transaction.
+    #[prost(bytes="vec", repeated, tag="3")]
+    pub signers: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    /// Lamports paid for this instruction.
+    #[prost(uint64, tag="4")]
+    pub fee: u64,
+    /// Compute units consumed by this instruction.
+    #[prost(uint64, tag="5")]
+    pub compute_units_consumed: u64,
+    /// Token balances before the transaction.
+    #[prost(message, repeated, tag="6")]
+    pub pre_token_balances: ::prost::alloc::vec::Vec<TokenBalance>,
+    /// Token balances after the transaction.
+    #[prost(message, repeated, tag="7")]
+    pub post_token_balances: ::prost::alloc::vec::Vec<TokenBalance>,
+    /// Accounts involved in the transaction.
+    #[prost(bytes="vec", repeated, tag="8")]
+    pub accounts: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TokenBalance {
+    #[prost(bytes="vec", tag="1")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// -- event --
-    #[prost(bytes="vec", tag="11")]
-    pub owner: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="12")]
+    #[prost(bytes="vec", tag="2")]
+    pub account: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag="3")]
+    pub account_index: u32,
+    #[prost(bytes="vec", tag="4")]
     pub mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag="13")]
+    #[prost(uint64, tag="5")]
     pub amount: u64,
     /// uint8
-    #[prost(uint32, tag="14")]
+    #[prost(uint32, tag="6")]
     pub decimals: u32,
 }
 // @@protoc_insertion_point(module)

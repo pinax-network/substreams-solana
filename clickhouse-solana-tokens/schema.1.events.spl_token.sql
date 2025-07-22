@@ -45,11 +45,17 @@ CREATE TABLE IF NOT EXISTS approves (
     mint_raw                    String, -- can be empty
     mint                        Nullable(FixedString(44)) MATERIALIZED accurateCastOrNull(nullIf(mint_raw, ''), 'FixedString(44)'),
     decimals_raw                String, -- can be empty
-    decimals                    Nullable(UInt8) MATERIALIZED toUInt8OrNull(nullIf(decimals_raw, ''))
+    decimals                    Nullable(UInt8) MATERIALIZED toUInt8OrNull(nullIf(decimals_raw, '')),
+
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
 ENGINE = MergeTree
 ORDER BY (
-    program_id, mint, source, delegate, owner,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );
 
@@ -92,10 +98,16 @@ CREATE TABLE IF NOT EXISTS revokes (
 
     -- event --
     source                      FixedString(44),
-    owner                       FixedString(44)
+    owner                       FixedString(44),
+
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
 ENGINE = MergeTree
 ORDER BY (
-    program_id, mint, source, owner,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );

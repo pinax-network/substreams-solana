@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: spl_token_transfers
-  version: v0.1.0
+  version: v0.2.0
   url: https://github.com/pinax-network/substreams-solana
   description: SPL Token transfers
   image: ../image.png
@@ -26,6 +26,10 @@ modules:
     doc: SPL Tokens transfers
     inputs:
       - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA || program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
     output:
       type: proto:solana.spl.token.transfers.v1.Events
 

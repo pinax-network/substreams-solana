@@ -3,50 +3,72 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
-    /// <https://github.com/solana-program/token-2022>
     #[prost(message, repeated, tag="1")]
-    pub transfers: ::prost::alloc::vec::Vec<Transfer>,
-    #[prost(message, repeated, tag="2")]
-    pub mints: ::prost::alloc::vec::Vec<Transfer>,
-    #[prost(message, repeated, tag="3")]
-    pub burns: ::prost::alloc::vec::Vec<Transfer>,
-    #[prost(message, repeated, tag="4")]
-    pub initialize_mints: ::prost::alloc::vec::Vec<InitializeMint>,
-    #[prost(message, repeated, tag="5")]
-    pub initialize_accounts: ::prost::alloc::vec::Vec<InitializeAccount>,
+    pub transactions: ::prost::alloc::vec::Vec<Transaction>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Transaction {
+    #[prost(bytes="vec", tag="1")]
+    pub signature: ::prost::alloc::vec::Vec<u8>,
+    /// Fee payer account address.
+    #[prost(bytes="vec", tag="2")]
+    pub fee_payer: ::prost::alloc::vec::Vec<u8>,
+    /// Signers of the transaction.
+    #[prost(bytes="vec", repeated, tag="3")]
+    pub signers: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    /// Lamports paid for this instruction.
+    #[prost(uint64, tag="4")]
+    pub fee: u64,
+    /// Compute units consumed by this instruction.
+    #[prost(uint64, tag="5")]
+    pub compute_units_consumed: u64,
+    /// Instructions executed in this transaction.
     #[prost(message, repeated, tag="6")]
-    pub approves: ::prost::alloc::vec::Vec<Approve>,
-    #[prost(message, repeated, tag="7")]
-    pub revokes: ::prost::alloc::vec::Vec<Revoke>,
+    pub instructions: ::prost::alloc::vec::Vec<Instruction>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Instruction {
+    #[prost(bytes="vec", tag="1")]
+    pub program_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag="2")]
+    pub stack_height: u32,
+    /// Indicates if this instruction is a root instruction.
+    #[prost(bool, tag="3")]
+    pub is_root: bool,
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16")]
+    pub instruction: ::core::option::Option<instruction::Instruction>,
+}
+/// Nested message and enum types in `Instruction`.
+pub mod instruction {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Instruction {
+        /// <https://github.com/solana-program/token-2022>
+        #[prost(message, tag="10")]
+        Transfer(super::Transfer),
+        #[prost(message, tag="11")]
+        Mint(super::Transfer),
+        #[prost(message, tag="12")]
+        Burn(super::Transfer),
+        #[prost(message, tag="13")]
+        InitializeMint(super::InitializeMint),
+        #[prost(message, tag="14")]
+        InitializeAccount(super::InitializeAccount),
+        #[prost(message, tag="15")]
+        Approve(super::Approve),
+        #[prost(message, tag="16")]
+        Revoke(super::Revoke),
+    }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transfer {
-    /// -- transaction --
-    #[prost(bytes="vec", tag="1")]
-    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    #[prost(uint32, tag="2")]
-    pub execution_index: u32,
-    #[prost(uint32, tag="3")]
-    pub instruction_index: u32,
-    #[prost(uint32, tag="4")]
-    pub inner_instruction_index: u32,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="5")]
-    pub stack_height: u32,
-    /// -- instruction --
-    ///
-    /// instruction.program_id()
-    #[prost(bytes="vec", tag="6")]
-    pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// enum
-    #[prost(enumeration="Instructions", tag="7")]
-    pub instruction: i32,
     /// -- authority --
-    #[prost(bytes="vec", tag="8")]
+    #[prost(bytes="vec", tag="1")]
     pub authority: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", repeated, tag="9")]
+    #[prost(bytes="vec", repeated, tag="2")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     /// -- event --
     #[prost(bytes="vec", tag="10")]
@@ -55,6 +77,7 @@ pub struct Transfer {
     pub destination: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint64, tag="12")]
     pub amount: u64,
+    /// SPL-2022
     #[prost(bytes="vec", optional, tag="13")]
     pub mint: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// uint8
@@ -64,98 +87,33 @@ pub struct Transfer {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct InitializeMint {
-    /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    #[prost(uint32, tag="2")]
-    pub execution_index: u32,
-    #[prost(uint32, tag="3")]
-    pub instruction_index: u32,
-    #[prost(uint32, tag="4")]
-    pub inner_instruction_index: u32,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="5")]
-    pub stack_height: u32,
-    /// -- instruction --
-    ///
-    /// instruction.program_id()
-    #[prost(bytes="vec", tag="6")]
-    pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// enum
-    #[prost(enumeration="Instructions", tag="7")]
-    pub instruction: i32,
-    /// -- event --
-    #[prost(bytes="vec", tag="10")]
     pub mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="11")]
+    #[prost(bytes="vec", tag="2")]
     pub mint_authority: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", optional, tag="12")]
+    #[prost(bytes="vec", optional, tag="3")]
     pub freeze_authority: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// uint8
-    #[prost(uint32, tag="13")]
+    #[prost(uint32, tag="4")]
     pub decimals: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct InitializeAccount {
-    /// -- transaction --
     #[prost(bytes="vec", tag="1")]
-    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    #[prost(uint32, tag="2")]
-    pub execution_index: u32,
-    #[prost(uint32, tag="3")]
-    pub instruction_index: u32,
-    #[prost(uint32, tag="4")]
-    pub inner_instruction_index: u32,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="5")]
-    pub stack_height: u32,
-    /// -- instruction --
-    ///
-    /// instruction.program_id()
-    #[prost(bytes="vec", tag="6")]
-    pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// enum
-    #[prost(enumeration="Instructions", tag="7")]
-    pub instruction: i32,
-    /// -- event --
-    #[prost(bytes="vec", tag="10")]
     pub account: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="11")]
+    #[prost(bytes="vec", tag="2")]
     pub mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="12")]
+    #[prost(bytes="vec", tag="3")]
     pub owner: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Approve {
-    /// -- transaction --
-    #[prost(bytes="vec", tag="1")]
-    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    #[prost(uint32, tag="2")]
-    pub execution_index: u32,
-    #[prost(uint32, tag="3")]
-    pub instruction_index: u32,
-    #[prost(uint32, tag="4")]
-    pub inner_instruction_index: u32,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="5")]
-    pub stack_height: u32,
-    /// -- instruction --
-    ///
-    /// instruction.program_id()
-    #[prost(bytes="vec", tag="6")]
-    pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// enum
-    #[prost(enumeration="Instructions", tag="7")]
-    pub instruction: i32,
     /// -- authority --
-    #[prost(bytes="vec", tag="8")]
+    #[prost(bytes="vec", tag="1")]
     pub authority: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", repeated, tag="9")]
+    #[prost(bytes="vec", repeated, tag="2")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     /// -- event --
     #[prost(bytes="vec", tag="10")]
@@ -175,101 +133,15 @@ pub struct Approve {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Revoke {
-    /// -- transaction --
-    #[prost(bytes="vec", tag="1")]
-    pub tx_hash: ::prost::alloc::vec::Vec<u8>,
-    /// -- ordering --
-    #[prost(uint32, tag="2")]
-    pub execution_index: u32,
-    #[prost(uint32, tag="3")]
-    pub instruction_index: u32,
-    #[prost(uint32, tag="4")]
-    pub inner_instruction_index: u32,
-    /// instruction.stack_height()
-    #[prost(uint32, tag="5")]
-    pub stack_height: u32,
-    /// -- instruction --
-    ///
-    /// instruction.program_id()
-    #[prost(bytes="vec", tag="6")]
-    pub program_id: ::prost::alloc::vec::Vec<u8>,
-    /// enum
-    #[prost(enumeration="Instructions", tag="7")]
-    pub instruction: i32,
     /// -- authority --
-    #[prost(bytes="vec", tag="8")]
+    #[prost(bytes="vec", tag="1")]
     pub authority: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", repeated, tag="9")]
+    #[prost(bytes="vec", repeated, tag="2")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
     /// -- event --
     #[prost(bytes="vec", tag="10")]
     pub source: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="13")]
+    #[prost(bytes="vec", tag="11")]
     pub owner: ::prost::alloc::vec::Vec<u8>,
-}
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum Instructions {
-    Unspecified = 0,
-    TransferChecked = 1,
-    Transfer = 2,
-    MintToChecked = 3,
-    MintTo = 4,
-    Burn = 5,
-    BurnChecked = 6,
-    InitializeMint = 7,
-    InitializeMint2 = 8,
-    InitializeAccount = 9,
-    InitializeAccount2 = 10,
-    InitializeAccount3 = 11,
-    Approve = 12,
-    ApproveChecked = 13,
-    Revoke = 14,
-}
-impl Instructions {
-    /// String value of the enum field names used in the ProtoBuf definition.
-    ///
-    /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
-    pub fn as_str_name(&self) -> &'static str {
-        match self {
-            Instructions::Unspecified => "INSTRUCTIONS_UNSPECIFIED",
-            Instructions::TransferChecked => "INSTRUCTIONS_TRANSFER_CHECKED",
-            Instructions::Transfer => "INSTRUCTIONS_TRANSFER",
-            Instructions::MintToChecked => "INSTRUCTIONS_MINT_TO_CHECKED",
-            Instructions::MintTo => "INSTRUCTIONS_MINT_TO",
-            Instructions::Burn => "INSTRUCTIONS_BURN",
-            Instructions::BurnChecked => "INSTRUCTIONS_BURN_CHECKED",
-            Instructions::InitializeMint => "INSTRUCTIONS_INITIALIZE_MINT",
-            Instructions::InitializeMint2 => "INSTRUCTIONS_INITIALIZE_MINT_2",
-            Instructions::InitializeAccount => "INSTRUCTIONS_INITIALIZE_ACCOUNT",
-            Instructions::InitializeAccount2 => "INSTRUCTIONS_INITIALIZE_ACCOUNT2",
-            Instructions::InitializeAccount3 => "INSTRUCTIONS_INITIALIZE_ACCOUNT3",
-            Instructions::Approve => "INSTRUCTIONS_APPROVE",
-            Instructions::ApproveChecked => "INSTRUCTIONS_APPROVE_CHECKED",
-            Instructions::Revoke => "INSTRUCTIONS_REVOKE",
-        }
-    }
-    /// Creates an enum from field names used in the ProtoBuf definition.
-    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
-        match value {
-            "INSTRUCTIONS_UNSPECIFIED" => Some(Self::Unspecified),
-            "INSTRUCTIONS_TRANSFER_CHECKED" => Some(Self::TransferChecked),
-            "INSTRUCTIONS_TRANSFER" => Some(Self::Transfer),
-            "INSTRUCTIONS_MINT_TO_CHECKED" => Some(Self::MintToChecked),
-            "INSTRUCTIONS_MINT_TO" => Some(Self::MintTo),
-            "INSTRUCTIONS_BURN" => Some(Self::Burn),
-            "INSTRUCTIONS_BURN_CHECKED" => Some(Self::BurnChecked),
-            "INSTRUCTIONS_INITIALIZE_MINT" => Some(Self::InitializeMint),
-            "INSTRUCTIONS_INITIALIZE_MINT_2" => Some(Self::InitializeMint2),
-            "INSTRUCTIONS_INITIALIZE_ACCOUNT" => Some(Self::InitializeAccount),
-            "INSTRUCTIONS_INITIALIZE_ACCOUNT2" => Some(Self::InitializeAccount2),
-            "INSTRUCTIONS_INITIALIZE_ACCOUNT3" => Some(Self::InitializeAccount3),
-            "INSTRUCTIONS_APPROVE" => Some(Self::Approve),
-            "INSTRUCTIONS_APPROVE_CHECKED" => Some(Self::ApproveChecked),
-            "INSTRUCTIONS_REVOKE" => Some(Self::Revoke),
-            _ => None,
-        }
-    }
 }
 // @@protoc_insertion_point(module)

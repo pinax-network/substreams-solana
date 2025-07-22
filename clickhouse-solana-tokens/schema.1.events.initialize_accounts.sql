@@ -1,5 +1,5 @@
--- SPL Token-2022 & Classic Initialize Mints --
-CREATE TABLE IF NOT EXISTS initialize_mints (
+-- SPL Token-2022 & Classic Initialize Accounts --
+CREATE TABLE IF NOT EXISTS initialize_accounts (
     -- block --
     block_num                   UInt32,
     block_hash                  FixedString(44),
@@ -31,13 +31,18 @@ CREATE TABLE IF NOT EXISTS initialize_mints (
     discriminator               FixedString(16) COMMENT 'Discriminator for the instruction, used to identify the type of instruction',
 
     -- event --
+    account                     FixedString(44),
     mint                        FixedString(44),
-    mint_authority              FixedString(44),
-    freeze_authority            FixedString(44),
-    decimals                    UInt8
+    owner                       FixedString(44),
+
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
 ENGINE = MergeTree
 ORDER BY (
-    program_id, mint,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );

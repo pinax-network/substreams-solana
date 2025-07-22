@@ -53,18 +53,34 @@ CREATE TABLE IF NOT EXISTS transfers (
     INDEX idx_program_id         (program_id)         TYPE set(2) GRANULARITY 1,
 
     -- indexes (event) --
-    INDEX idx_authority          (authority)          TYPE set(2048) GRANULARITY 1,
+    INDEX idx_authority          (authority)          TYPE set(4096) GRANULARITY 1,
     INDEX idx_source             (source)             TYPE set(4096) GRANULARITY 1,
     INDEX idx_destination        (destination)        TYPE set(4096) GRANULARITY 1,
     INDEX idx_mint               (mint)               TYPE set(2048) GRANULARITY 1,
     INDEX idx_amount             (amount)             TYPE minmax GRANULARITY 1,
     INDEX idx_decimals           (decimals)           TYPE set(8) GRANULARITY 1,
 
-    -- projections --
-    PROJECTION prj_timestamp ( SELECT timestamp, block_num, _part_offset ORDER BY (timestamp, block_num) )
+    -- projections (full) --
+    -- all the data from the original table will be duplicated
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection
+    PROJECTION prj_timestamp        (SELECT * ORDER BY timestamp),
+
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature   (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer   (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer      (SELECT signer,         _part_offset ORDER BY signer),
+    PROJECTION prj_part_block_num   (SELECT block_num,      _part_offset ORDER BY block_num),
+
+    -- projections (event) --
+    PROJECTION prj_part_source      (SELECT source,         _part_offset ORDER BY source),
+    PROJECTION prj_part_authority   (SELECT authority,      _part_offset ORDER BY authority),
+    PROJECTION prj_part_destination (SELECT destination,    _part_offset ORDER BY destination)
 )
 ENGINE = MergeTree
+-- Optimized transfers based on latest mint
 ORDER BY (
-    program_id, mint, source, destination,
+    program_id, mint,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );
