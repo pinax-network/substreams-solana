@@ -49,10 +49,11 @@ CREATE TABLE IF NOT EXISTS pumpfun_amm_buy (
     quote_amount_in_with_lp_fee UInt64,
     user_quote_amount_in        UInt64,
 
-    -- indexes --
-    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 8,  -- always unique
-    INDEX idx_fee_payer         (fee_payer)         TYPE set(4096)      GRANULARITY 1,
-    INDEX idx_signer            (signer)            TYPE set(4096)      GRANULARITY 1
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
 ENGINE = MergeTree
 ORDER BY (

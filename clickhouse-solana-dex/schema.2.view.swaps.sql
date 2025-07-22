@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     output_amount               UInt64                          COMMENT 'Amount of output tokens received',
 
     -- indexes -
-    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 8,  -- always unique
+    -- INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 8,  -- always unique
     INDEX idx_fee_payer         (fee_payer)         TYPE set(4096)      GRANULARITY 1,
     INDEX idx_signer            (signer)            TYPE set(4096)      GRANULARITY 1,
     INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 1,
@@ -63,11 +63,11 @@ CREATE TABLE IF NOT EXISTS swaps (
     -- projections (parts) --
     -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
     PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature),
-    -- PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer),
-    -- PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer),
-    -- PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user),
-    -- PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint),
-    -- PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
+    PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer),
+    PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user),
+    PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint),
+    PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
 )
 ENGINE = MergeTree
 -- optimal for ordering latest/oldest swaps per DEX AMM program and pool

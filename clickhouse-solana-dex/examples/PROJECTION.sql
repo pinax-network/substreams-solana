@@ -167,8 +167,26 @@ WHERE _part_starting_offset + _part_offset IN (
     SELECT _part_starting_offset + _part_offset
     FROM swaps
     WHERE signature = (SELECT signature FROM swaps ORDER BY rand() LIMIT 1)
-)
-SETTINGS enable_shared_storage_snapshot_in_query = 1;
+);
+
+EXPLAIN indexes =1
+SELECT *
+FROM pumpfun_amm_buy
+WHERE fee_payer = (SELECT fee_payer FROM pumpfun_amm_buy ORDER BY rand() LIMIT 1);
+
+EXPLAIN indexes =1
+SELECT *
+FROM pumpfun_amm_buy
+WHERE _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM pumpfun_amm_buy
+    WHERE signature = (SELECT signature FROM pumpfun_amm_buy ORDER BY rand() LIMIT 1)
+);
+
+EXPLAIN indexes =1
+SELECT *
+FROM swaps
+ORDER BY timestamp DESC LIMIT 10;
 
 EXPLAIN indexes = 1
 SELECT * FROM swaps
