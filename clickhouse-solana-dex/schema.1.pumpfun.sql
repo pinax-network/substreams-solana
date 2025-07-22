@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
     fee_payer                   FixedString(44),
     signers_raw                 String,
     signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
+    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
     fee                         UInt64 DEFAULT 0,
     compute_units_consumed      UInt64 DEFAULT 0,
 
@@ -53,14 +54,20 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
     creator_fee_basis_points    UInt64 DEFAULT 0,
     creator_fee                 UInt64 DEFAULT 0, -- lamports
 
-    -- indexes --
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 4
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
-ENGINE = ReplacingMergeTree
-ORDER BY (block_hash, transaction_index, instruction_index);
+ENGINE = MergeTree
+ORDER BY (
+    timestamp, block_num,
+    block_hash, transaction_index, instruction_index
+)
+COMMENT 'Pump.fun Bonding Curve Buy';
 
 -- Sell --
-CREATE TABLE IF NOT EXISTS pumpfun_sell AS pumpfun_buy;
+CREATE TABLE IF NOT EXISTS pumpfun_sell AS pumpfun_buy
+COMMENT 'Pump.fun Bonding Curve Sell';
 ALTER TABLE pumpfun_sell RENAME COLUMN IF EXISTS max_sol_cost TO min_sol_output;

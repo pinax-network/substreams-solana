@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS verified_programs  (
     description          String
 )
 ENGINE = ReplacingMergeTree
-ORDER BY (program_id);
+ORDER BY (program_id)
+COMMENT 'List of verified program IDs for Solana DEX AMMs and Swaps';
 
 -- Main Program IDs for supported DEX AMMs
 INSERT INTO verified_programs (program_id, description) VALUES

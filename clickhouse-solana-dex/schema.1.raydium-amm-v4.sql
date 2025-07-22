@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     fee_payer                   FixedString(44),
     signers_raw                 String,
     signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
+    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
     fee                         UInt64 DEFAULT 0,
     compute_units_consumed      UInt64 DEFAULT 0,
 
@@ -55,14 +56,20 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     pool_coin                   UInt64,
     pool_pc                     UInt64,
 
-    -- indexes --
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 4
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
-ENGINE = ReplacingMergeTree
-ORDER BY (block_hash, transaction_index, instruction_index);
+ENGINE = MergeTree
+ORDER BY (
+    timestamp, block_num,
+    block_hash, transaction_index, instruction_index
+)
+COMMENT 'Raydium AMM V4 Swap Base In';
 
 --- SwapBaseOut --
-CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in;
+CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in
+COMMENT 'Raydium AMM V4 Swap Base Out';
 ALTER TABLE raydium_amm_v4_swap_base_out RENAME COLUMN IF EXISTS minimum_amount_out TO max_amount_in;

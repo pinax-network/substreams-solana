@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS jupiter_swap (
     fee_payer                   FixedString(44),
     signers_raw                 String,
     signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
+    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
     fee                         UInt64 DEFAULT 0,
     compute_units_consumed      UInt64 DEFAULT 0,
 
@@ -30,10 +31,15 @@ CREATE TABLE IF NOT EXISTS jupiter_swap (
     output_mint                 FixedString(44) COMMENT 'Output token mint address',
     output_amount               UInt64 COMMENT 'Amount of output tokens received',
 
-    -- indexes --
-    INDEX idx_block_num         (block_num)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)          TYPE minmax           GRANULARITY 4,
-    INDEX idx_signature         (signature)          TYPE bloom_filter     GRANULARITY 4
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
-ENGINE = ReplacingMergeTree
-ORDER BY (program_id, block_hash, transaction_index, instruction_index);
+ENGINE = MergeTree
+ORDER BY (
+    timestamp, block_num,
+    block_hash, transaction_index, instruction_index
+)
+COMMENT 'Jupiter V4 & V6 Swaps';

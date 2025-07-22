@@ -3,131 +3,82 @@
    ────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE IF NOT EXISTS swaps (
     -- block --
-    block_num               UInt32,
-    block_hash              FixedString(44),
-    timestamp               DateTime(0, 'UTC'),
+    block_num                   UInt32,
+    block_hash                  FixedString(44),
+    timestamp                   UInt32,
+    datetime                    DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
 
     -- ordering --
-    transaction_index       UInt32,
-    instruction_index       UInt32,
+    transaction_index           UInt32,
+    instruction_index           UInt32,
 
     -- transaction --
-    signature               FixedString(88),
-    program_id              LowCardinality(FixedString(44)),
-    program_name            LowCardinality(String) MATERIALIZED
-        CASE program_id
-            WHEN CAST ('675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8' AS FixedString(44)) THEN 'Raydium Liquidity Pool V4'
-            WHEN CAST ('6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P' AS FixedString(44)) THEN 'Pump.fun'
-            WHEN CAST ('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA' AS FixedString(44)) THEN 'Pump.fun AMM'
-            WHEN CAST ('JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB' AS FixedString(44)) THEN 'Jupiter Aggregator v4'
-            WHEN CAST ('JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4' AS FixedString(44)) THEN 'Jupiter Aggregator v6'
-            ELSE 'Unknown'
-        END,
+    signature                   FixedString(88),
+    fee_payer                   FixedString(44),
+    signers_raw                 String,
+    signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
+    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
+    fee                         UInt64 DEFAULT 0,
+    compute_units_consumed      UInt64 DEFAULT 0,
+
+    -- instruction --
+    program_id                  LowCardinality(FixedString(44)),
+    program_name                LowCardinality(String) MATERIALIZED program_names(program_id),
+    stack_height                UInt32,
 
     -- common fields --
     user                        FixedString(44)                 COMMENT 'User wallet address',
     amm                         LowCardinality(FixedString(44)) COMMENT 'AMM protocol (Raydium Liquidity Pool V4)',
-    amm_name                    LowCardinality(String) MATERIALIZED
-        CASE amm
-            WHEN CAST ('675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8' AS FixedString(44)) THEN 'Raydium Liquidity Pool V4'
-            WHEN CAST ('6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P' AS FixedString(44)) THEN 'Pump.fun'
-            WHEN CAST ('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA' AS FixedString(44)) THEN 'Pump.fun AMM'
-            WHEN CAST ('JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB' AS FixedString(44)) THEN 'Jupiter Aggregator v4'
-            WHEN CAST ('JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4' AS FixedString(44)) THEN 'Jupiter Aggregator v6'
-
-            -- Jupiter V4 & V6 --
-            WHEN CAST ('dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN' AS FixedString(44)) THEN 'Meteora Dynamic Bonding Curve Program'
-            WHEN CAST ('whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc' AS FixedString(44)) THEN 'Whirlpools Program'
-            WHEN CAST ('LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo' AS FixedString(44)) THEN 'Meteora DLMM Program'
-            WHEN CAST ('SoLFiHG9TfgtdUXUjWAxi3LtvYuFyDLVhBWxdMZxyCe' AS FixedString(44)) THEN 'SolFi'
-            WHEN CAST ('CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK' AS FixedString(44)) THEN 'Raydium Concentrated Liquidity'
-            WHEN CAST ('2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c' AS FixedString(44)) THEN 'Lifinity Swap V2'
-            WHEN CAST ('cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG' AS FixedString(44)) THEN 'Meteora DAMM v2'
-            WHEN CAST ('obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y' AS FixedString(44)) THEN 'Obric V2'
-            WHEN CAST ('ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY' AS FixedString(44)) THEN 'ZeroFi'
-            WHEN CAST ('swapNyd8XiQwJ6ianp9snpu4brUqFxadzvHebnAXjJZ' AS FixedString(44)) THEN 'stabble Stable Swap'
-            WHEN CAST ('opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb' AS FixedString(44)) THEN 'Openbook V2'
-            WHEN CAST ('CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C' AS FixedString(44)) THEN 'Raydium CPMM'
-            WHEN CAST ('goonERTdGsjnkZqWuVjs73BZ3Pb9qoCUdBUL17BnS5j' AS FixedString(44)) THEN 'GoonFi'
-            WHEN CAST ('Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB' AS FixedString(44)) THEN 'Meteora Pools Program'
-            WHEN CAST ('DEXYosS6oEGvk8uCDayvwEZz4qEyDJRf9nFgYCaqPMTm' AS FixedString(44)) THEN '1Dex Program'
-            WHEN CAST ('H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt' AS FixedString(44)) THEN 'Cropper Whirlpool'
-            WHEN CAST ('GAMMA7meSFWaBXF25oSUgmGRwaW6sCMFLmBNiMSdbHVT' AS FixedString(44)) THEN 'GooseFX: GAMMA'
-            WHEN CAST ('NUMERUNsFCP3kuNmWZuXtm1AaQCPj9uw6Guv2Ekoi5P' AS FixedString(44)) THEN 'Numeraire'
-            WHEN CAST ('SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ' AS FixedString(44)) THEN 'Saber Stable Swap'
-            WHEN CAST ('swapFpHZwjELNnjvThjajtiVmkz3yPQEHjLtka2fwHW' AS FixedString(44)) THEN 'stabble Weighted Swap'
-            WHEN CAST ('HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt' AS FixedString(44)) THEN 'Invariant Swap'
-            WHEN CAST ('PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY' AS FixedString(44)) THEN 'Phoenix'
-            WHEN CAST ('LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj' AS FixedString(44)) THEN 'Raydium Launchpad'
-            WHEN CAST ('SSwapUtytfBdBn1b9NUGG6foMVPtcWgpRU32HToDUZr' AS FixedString(44)) THEN 'Saros AMM'
-            WHEN CAST ('PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu' AS FixedString(44)) THEN 'Jupiter Perpetuals'
-            WHEN CAST ('5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx' AS FixedString(44)) THEN 'Sanctum Program'
-            WHEN CAST ('9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP' AS FixedString(44)) THEN 'Orca Token Swap V2'
-            WHEN CAST ('Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1' AS FixedString(44)) THEN 'Guac Swap'
-            WHEN CAST ('BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p' AS FixedString(44)) THEN 'BonkSwap'
-            WHEN CAST ('MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG' AS FixedString(44)) THEN 'Moonit'
-            WHEN CAST ('DecZY86MU5Gj7kppfUCEmd4LbXXuyZH1yHaP2NTqdiZB' AS FixedString(44)) THEN 'Saber Decimal Wrapper'
-            WHEN CAST ('SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8' AS FixedString(44)) THEN 'Swap Program'
-            WHEN CAST ('stkitrT1Uoy18Dk1fTrgPw8W6MVzoCfYoAFT4MLsmhq' AS FixedString(44)) THEN 'Sanctum Router Program'
-            WHEN CAST ('FLUXubRmkEi2q6K3Y9kBPg9248ggaZVsoSFhtJHSrm1X' AS FixedString(44)) THEN 'Fluxbeam Program'
-            WHEN CAST ('MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky' AS FixedString(44)) THEN 'Mercurial Stable Swap'
-            WHEN CAST ('srAMMzfVHVAtgSJc8iH6CfKzuWuUTzLHVCE81QU1rgi' AS FixedString(44)) THEN 'Gavel'
-            WHEN CAST ('SSwpMgqNDsyV7mAgN9ady4bDVu5ySjmmXejXvy2vLt1' AS FixedString(44)) THEN 'Step Finance Swap Program'
-            WHEN CAST ('DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1' AS FixedString(44)) THEN 'Orca Token Swap'
-            WHEN CAST ('Dooar9JkhdZ7J3LHN3A7YCuoGRUggXhQaG4kijfLGU2j' AS FixedString(44)) THEN 'StepN DOOAR Swap'
-            WHEN CAST ('CURVGoZn8zycx6FXwwevgBTB2gVvdbGTEpvMJDbgs2t4' AS FixedString(44)) THEN 'Aldrin AMM V2'
-            WHEN CAST ('CTMAxxk34HjKWxQ3QLZK1HpaLXmBveao3ESePXbiyfzh' AS FixedString(44)) THEN 'Cropper Finance'
-            WHEN CAST ('SCHAtsf8mbjyjiv4LkhLKutTf6JnZAbdJKFkXQNMFHZ' AS FixedString(44)) THEN 'Sencha Cpamm'
-            WHEN CAST ('treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5' AS FixedString(44)) THEN 'Helium Treasury Management'
-            WHEN CAST ('9tKE7Mbmj4mxDjWatikzGAtkoWosiiZX9y6J4Hfm2R8H' AS FixedString(44)) THEN 'Oasis'
-            WHEN CAST ('DSwpgjMvXhtGn6BsbqmacdBZyfLj6jSWf3HJpdJtmg6N' AS FixedString(44)) THEN 'Dexlab Swap'
-            WHEN CAST ('PSwapMdSai8tjrEXcxFeQth87xC4rRsa4VA5mhGhXkP' AS FixedString(44)) THEN 'Penguin Finance'
-            WHEN CAST ('AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6' AS FixedString(44)) THEN 'Aldrin AMM'
-            WHEN CAST ('WooFif76YGRNjk1pA8wCsN67aQsD9f9iLsz4NcJ1AVb' AS FixedString(44)) THEN 'WOOFi'
-            WHEN CAST ('CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR' AS FixedString(44)) THEN 'Crema Finance Program'
-            WHEN CAST ('EewxydAPCCVuNEyrVN68PuSYdQ7wKn27V9Gjeoi8dy3S' AS FixedString(44)) THEN 'Lifinity Swap'
-            WHEN CAST ('srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX' AS FixedString(44)) THEN 'OpenBook'
-            WHEN CAST ('GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn' AS FixedString(44)) THEN 'GooseFX V2'
-            WHEN CAST ('MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD' AS FixedString(44)) THEN 'Marinade Finance'
-            WHEN CAST ('2KehYt3KsEQR53jYcxjbQp2d2kCp4AkuQW68atufRwSr' AS FixedString(44)) THEN 'Symmetry Engine'
-            WHEN CAST ('D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag' AS FixedString(44)) THEN 'Sentre Swap'
-            WHEN CAST ('cysPXAjehMpVKUapzbMCCnpFxUFFryEWEaLgnb9NrR8' AS FixedString(44)) THEN 'Cykura Swap'
-            WHEN CAST ('dp2waEWSBy5yKmq65ergoU3G6qRLmqa6K7We4rZSKph' AS FixedString(44)) THEN 'Dradex Program'
-            WHEN CAST ('7WduLbRfYhTJktjLw5FDEyrqoEv61aTTCuGAetgLjzN5' AS FixedString(44)) THEN 'GooseFX SSL'
-            WHEN CAST ('C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr' AS FixedString(44)) THEN 'Clone'
-            WHEN CAST ('1MooN32fuBBgApc8ujknKJw5sef3BVwPGgz3pto1BAh' AS FixedString(44)) THEN '1Sol'
-            WHEN CAST ('9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin' AS FixedString(44)) THEN 'Serum DEX V3'
-
-            ELSE 'Unknown'
-        END,
+    amm_name                    LowCardinality(String) MATERIALIZED program_names(amm),
     amm_pool                    LowCardinality(FixedString(44)) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',
     input_mint                  LowCardinality(FixedString(44)) COMMENT 'Input token mint address',
     input_amount                UInt64                          COMMENT 'Amount of input tokens swapped',
     output_mint                 LowCardinality(FixedString(44)) COMMENT 'Output token mint address',
     output_amount               UInt64                          COMMENT 'Amount of output tokens received',
 
-    -- indexes --
-    INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 4,
-    INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 4,
-    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4, -- always unique
-    INDEX idx_user              (user)              TYPE set(5120)      GRANULARITY 1, -- 2500 unique users per granule
-    INDEX idx_program_id        (program_id)        TYPE set(8)         GRANULARITY 4, -- 5 unique programs per granule
-    INDEX idx_amm               (amm)               TYPE set(128)       GRANULARITY 2, -- 50 unique AMMs per 2x granules when using Jupiter V6
-    INDEX idx_amm_pool          (amm_pool)          TYPE set(512)       GRANULARITY 1, -- 300 unique pools per granule
-    INDEX idx_input_mint        (input_mint)        TYPE set(2048)      GRANULARITY 1, -- 500 unique mints per granule
-    INDEX idx_output_mint       (output_mint)       TYPE set(2048)      GRANULARITY 1, -- 500 unique mints per granule
+    -- indexes -
+    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4,  -- always unique
+    INDEX idx_fee_payer         (fee_payer)         TYPE set(4096)      GRANULARITY 1,
+    INDEX idx_signer            (signer)            TYPE set(4096)      GRANULARITY 1,
+    INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 1,
+    INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 1,
+    INDEX idx_program_id        (program_id)        TYPE set(8)         GRANULARITY 1, -- 5 unique programs per granule
+    INDEX idx_program_name      (program_name)      TYPE set(8)         GRANULARITY 1,
+
+    -- indexes for common fields --
+    INDEX idx_user              (user)              TYPE set(4096)      GRANULARITY 1, -- 2500 unique users per granule
+    INDEX idx_amm               (amm)               TYPE set(64)        GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
+    INDEX idx_amm_name          (amm_name)          TYPE set(64)        GRANULARITY 1,
+    INDEX idx_amm_pool          (amm_pool)          TYPE set(256)       GRANULARITY 1, -- 300 unique pools per granule
+    INDEX idx_input_mint        (input_mint)        TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_output_mint       (output_mint)       TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
     INDEX idx_input_amount      (input_amount)      TYPE minmax         GRANULARITY 1,
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1,
 
-    -- projections --
-    -- PROJECTION prj_timestamp ( SELECT timestamp, block_num, _part_offset ORDER BY (timestamp, block_num) )
+    -- projections (full) --
+    -- all the data from the original table will be duplicated
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection
+    PROJECTION prj_timestamp        (SELECT * ORDER BY timestamp),
+
+    -- projections (parts) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    PROJECTION prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id),
+    PROJECTION prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm),
+    PROJECTION prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool),
+    PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature),
+    PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer),
+    PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer),
+    PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user),
+    PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint),
+    PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
 )
 ENGINE = MergeTree
+-- Optimized for swaps by AMM DEXs ordered by latest/oldest timestamp
 ORDER BY (
-    program_id, amm, amm_pool, user,
+    program_id, amm, amm_pool, timestamp, block_num,
     block_hash, transaction_index, instruction_index
 )
-COMMENT 'Solana DEX Swaps';
+COMMENT 'Swaps, used by all AMMs and DEXs';
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps
@@ -141,13 +92,21 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user_source_owner       AS user,
@@ -175,13 +134,21 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user_source_owner       AS user,
@@ -210,16 +177,24 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
-    fee_payer               AS user, -- Jupiter does not use user wallets, so we use fee_payer as a placeholder
+    s.fee_payer             AS user, -- Jupiter does not use user wallets, so we use fee_payer as a placeholder
     amm,
     ''                      AS amm_pool, -- Jupiter does not use AMM pools, so we leave it empty
     input_mint,
@@ -244,13 +219,21 @@ SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
@@ -272,13 +255,21 @@ AS SELECT
     block_num,
     block_hash,
     timestamp,
+
     -- ordering --
     transaction_index,
     instruction_index,
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
@@ -310,7 +301,14 @@ SELECT
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
@@ -339,11 +337,18 @@ SELECT
 
     -- transaction --
     signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    -- instruction --
     program_id,
+    stack_height,
 
     -- common fields --
     user,
-    program_id          AS amm,
+    s.program_id        AS amm,
     pool                AS amm_pool,
     base_mint           AS input_mint,
     base_amount_in      AS input_amount,

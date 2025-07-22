@@ -30,11 +30,13 @@ WHERE status != 'Finished'
 
 -- detect how many unique values
 WITH t AS (
-    SELECT * FROM swaps LIMIT 8192 OFFSET 120000
+    SELECT signer, * FROM swaps LIMIT 8192 OFFSET 8000000
 ) SELECT
     uniq(amm),
     uniq(amm_pool),
     uniq(user),
+    uniq(signer),
+    uniq(fee_payer),
     uniq(input_mint),
     uniq(output_mint)
 FROM t
@@ -60,3 +62,7 @@ WHERE event IN (
     'MergeTreeDataProjectionWriterUncompressedBytes',
     'MergeTreeDataWriterUncompressedBytes',
     'InsertQueryTimeMicroseconds');
+
+-- drop the index
+ALTER TABLE swaps
+DROP INDEX idx_block_num;
