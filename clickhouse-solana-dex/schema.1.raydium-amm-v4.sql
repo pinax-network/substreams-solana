@@ -66,8 +66,10 @@ ENGINE = MergeTree
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
-);
+)
+COMMENT 'Raydium AMM V4 Swap Base In';
 
 --- SwapBaseOut --
-CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in;
+CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in
+COMMENT 'Raydium AMM V4 Swap Base Out';
 ALTER TABLE raydium_amm_v4_swap_base_out RENAME COLUMN IF EXISTS minimum_amount_out TO max_amount_in;

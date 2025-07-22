@@ -8,4 +8,5 @@ CREATE TABLE IF NOT EXISTS blocks (
     INDEX idx_timestamp                  (timestamp)                TYPE minmax GRANULARITY 4
 
 ) ENGINE = ReplacingMergeTree(timestamp) -- in case of reorgs, keep the latest block by timestamp
-ORDER BY block_num;
+ORDER BY block_num
+COMMENT 'Solana blocks, used by all AMMs and DEXs';

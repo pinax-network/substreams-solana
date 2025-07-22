@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS pool_activity_summary (
     INDEX idx_transactions      (transactions)              TYPE minmax             GRANULARITY 1
 )
 ENGINE = SummingMergeTree
-ORDER BY (program_id, amm, amm_pool, mint0, mint1);
+ORDER BY (program_id, amm, amm_pool, mint0, mint1)
+COMMENT 'Summary of pool activity (transactions) for AMM pools';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pool_activity_summary
 REFRESH EVERY 1 MINUTE APPEND

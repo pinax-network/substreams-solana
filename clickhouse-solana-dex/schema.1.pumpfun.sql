@@ -64,8 +64,10 @@ ENGINE = MergeTree
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
-);
+)
+COMMENT 'Pump.fun Bonding Curve Buy';
 
 -- Sell --
-CREATE TABLE IF NOT EXISTS pumpfun_sell AS pumpfun_buy;
+CREATE TABLE IF NOT EXISTS pumpfun_sell AS pumpfun_buy
+COMMENT 'Pump.fun Bonding Curve Sell';
 ALTER TABLE pumpfun_sell RENAME COLUMN IF EXISTS max_sol_cost TO min_sol_output;

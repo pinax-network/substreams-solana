@@ -59,10 +59,12 @@ ENGINE = MergeTree
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
-);
+)
+COMMENT 'Pump.fun AMM Swap Buy';
 
 -- Sell --
-CREATE TABLE IF NOT EXISTS pumpfun_amm_sell AS pumpfun_amm_buy;
+CREATE TABLE IF NOT EXISTS pumpfun_amm_sell AS pumpfun_amm_buy
+COMMENT 'Pump.fun AMM Swap Sell';
 ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS base_amount_out TO base_amount_in;
 ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS max_quote_amount_in TO min_quote_amount_out;
 ALTER TABLE pumpfun_amm_sell RENAME COLUMN IF EXISTS quote_amount_in TO quote_amount_out;

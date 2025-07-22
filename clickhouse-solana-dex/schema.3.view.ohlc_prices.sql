@@ -44,7 +44,8 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1
 )
 ENGINE = AggregatingMergeTree
-ORDER BY (program_id, amm, amm_pool, mint0, mint1, timestamp);
+ORDER BY (program_id, amm, amm_pool, mint0, mint1, timestamp)
+COMMENT 'OHLCV prices for AMM pools, aggregated by hour';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
 REFRESH EVERY 1 MINUTE APPEND

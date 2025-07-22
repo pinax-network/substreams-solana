@@ -41,4 +41,5 @@ ENGINE = MergeTree
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
-);
+)
+COMMENT 'Jupiter V4 & V6 Swaps';

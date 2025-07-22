@@ -62,7 +62,9 @@ CREATE TABLE IF NOT EXISTS swaps (
 
     -- projections (parts) --
     -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    PROJECTION prj_part_block_num   (SELECT block_num,   _part_offset ORDER BY block_num),
+    PROJECTION prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id),
+    PROJECTION prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm),
+    PROJECTION prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool),
     PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature),
     PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer),
     PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer),
@@ -71,12 +73,11 @@ CREATE TABLE IF NOT EXISTS swaps (
     PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
 )
 ENGINE = MergeTree
--- optimal for ordering latest/oldest swaps per DEX AMM program and pool
 ORDER BY (
-    program_id, amm, amm_pool, timestamp, block_num,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 )
-COMMENT 'Solana DEX Swaps';
+COMMENT 'Swaps, used by all AMMs and DEXs';
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps
