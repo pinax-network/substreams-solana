@@ -17,7 +17,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/spl-token-balances.proto
+    - v1/spl-token.proto
   importPaths:
     - ../proto
 
@@ -32,6 +32,6 @@ modules:
       query:
         string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA || program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
     output:
-      type: proto:solana.spl.token.balances.v1.Events
+      type: proto:solana.spl.token.v1.Events
 
 network: solana

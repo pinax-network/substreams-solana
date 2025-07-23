@@ -4,6 +4,7 @@ members = [
   "clickhouse-solana-tokens",
   "spl-token-transfers",
   "spl-token-balances",
+  "spl-token-initialize",
 
   # DEXs
   "clickhouse-solana-dex",

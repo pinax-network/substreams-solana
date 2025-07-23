@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
-  name: spl_token_transfers
+  name: spl_token_initialize
   version: v0.2.0
   url: https://github.com/pinax-network/substreams-solana
-  description: SPL Token transfers
+  description: SPL Token initialize
   image: ../image.png
 
 imports:
@@ -12,7 +12,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/spl_token_transfers.wasm
+    file: ../target/wasm32-unknown-unknown/release/spl_token_initialize.wasm
 
 protobuf:
   files:
@@ -23,13 +23,13 @@ protobuf:
 modules:
   - name: map_events
     kind: map
-    doc: SPL Tokens transfers
+    doc: SPL Tokens initialize
     inputs:
       - map: solana_common:blocks_without_votes
-    # blockFilter:
-    #   module: solana_common:program_ids_without_votes
-    #   query:
-    #     string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA || program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA || program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
     output:
       type: proto:solana.spl.token.v1.Events
 

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package solana.spl.token.v1;
+// https://github.com/solana-program/token-2022
 
 message Events {
   repeated Transaction transactions = 1;
@@ -30,14 +31,15 @@ message Instruction {
     uint32 stack_height = 2;
     bool is_root = 3; // Indicates if this instruction is a root instruction.
     oneof instruction {
-        // https://github.com/solana-program/token-2022
         Transfer transfer = 10;
         Transfer mint = 11;
         Transfer burn = 12;
-        InitializeMint initialize_mint = 13;
-        InitializeAccount initialize_account = 14;
-        Approve approve = 15;
-        Revoke revoke = 16;
+        Approve approve = 13;
+        Revoke revoke = 14;
+        InitializeMint initialize_mint = 15;
+        InitializeAccount initialize_account = 16;
+        InitializeImmutableOwner initialize_immutable_owner = 17;
+        SetAuthority set_authority = 18;
     }
 }
 
@@ -68,6 +70,11 @@ message InitializeAccount {
   bytes owner = 3;
 }
 
+message InitializeImmutableOwner {
+  bytes account = 1;
+  optional bytes mint = 2;
+}
+
 message Approve {
   // -- authority --
   bytes authority = 1;
@@ -90,4 +97,29 @@ message Revoke {
   // -- event --
   bytes source = 10;
   bytes owner = 11;
+}
+
+enum AuthorityType {
+  AUTHORITY_TYPE_UNSPECIFIED = 0;
+  AUTHORITY_TYPE_MINT_TOKENS = 1; // Authority to mint new tokens
+  AUTHORITY_TYPE_FREEZE_ACCOUNT = 2; // Authority to freeze any account associated with the Mint
+  AUTHORITY_TYPE_ACCOUNT_OWNER = 3; // Owner of a given token account
+  AUTHORITY_TYPE_CLOSE_ACCOUNT = 4; // Authority to close a token account
+  AUTHORITY_TYPE_TRANSFER_FEE_CONFIG = 5; // Authority to set the transfer fee
+  AUTHORITY_TYPE_WITHHELD_WITHDRAW = 6; // Authority to withdraw withheld tokens
+  AUTHORITY_TYPE_CLOSE_MINT = 7; // Authority to close a mint account
+  AUTHORITY_TYPE_INTEREST_RATE = 8; // Authority to set the interest rate
+  AUTHORITY_TYPE_PERMANENT_DELEGATE = 9; // Authority to transfer or burn any tokens for a mint
+  AUTHORITY_TYPE_CONFIDENTIAL_TRANSFER_MINT = 10; // Authority to update confidential transfer mint and approve accounts for confidential transfers
+  AUTHORITY_TYPE_TRANSFER_HOOK_PROGRAM_ID = 11; // Authority to set the transfer hook program id
+  AUTHORITY_TYPE_CONFIDENTIAL_TRANSFER_FEE_CONFIG = 12; // Authority to set the withdraw withheld
+  AUTHORITY_TYPE_METADATA_POINTER = 13; // Authority to set the metadata address
+}
+
+message SetAuthority {
+  bytes account = 1;                    // The token account or mint to change authority on
+  AuthorityType authority_type = 2;     // Type of authority being changed
+  optional bytes new_authority = 3;     // New authority (null if removing)
+  bytes current_authority = 4;          // Current authority expected to sign
+  repeated bytes current_multisig_authority = 5; // Current multisig authority expected to sign
 }

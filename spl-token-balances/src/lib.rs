@@ -1,17 +1,12 @@
-use common::solana::{get_fee_payer, get_signers};
-use proto::pb::solana::spl::token::balances::v1 as pb;
+use core::panic;
+
+use common::solana::{get_fee_payer, get_signers, is_spl_token_program};
+use proto::pb::solana::spl::token::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
     base58,
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, TokenBalance},
 };
-
-pub const SOLANA_TOKEN_PROGRAM_KEG: &str = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
-pub const SOLANA_TOKEN_PROGRAM_ZQB: &str = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
-
-pub fn is_spl_token_program(program_id: &str) -> bool {
-    program_id == SOLANA_TOKEN_PROGRAM_KEG || program_id == SOLANA_TOKEN_PROGRAM_ZQB
-}
 
 #[substreams::handlers::map]
 fn map_events(block: Block) -> Result<pb::Events, Error> {
@@ -74,7 +69,6 @@ fn get_token_balance(tx: &ConfirmedTransaction, balance: &TokenBalance) -> Optio
     Some(pb::TokenBalance {
         program_id: base58::decode(&balance.program_id).unwrap(),
         account: account.0.to_vec(),
-        account_index: balance.account_index,
         mint: base58::decode(&balance.mint).unwrap(),
         amount,
         decimals: ui_token_amount.decimals as u32,

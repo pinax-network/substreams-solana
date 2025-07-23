@@ -2525,6 +2525,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "spl-token-initialize"
+version = "0.0.0"
+dependencies = [
+ "bs58 0.5.1",
+ "common",
+ "proto",
+ "substreams",
+ "substreams-abis",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+]
+
+[[package]]
 name = "spl-token-transfers"
 version = "0.0.0"
 dependencies = [
