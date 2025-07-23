@@ -1,18 +1,16 @@
 [package]
-name = "spl-token-transfers"
-description = "SPL Token transfers"
+name = "spl-token"
+description = "SPL Token"
 edition = { workspace = true }
 version = { workspace = true }
-authors = ["Charles Billette <billettc>", "Denis <denis@pinax.network>"]
+authors = ["Denis <denis@pinax.network>"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-bs58 = { workspace = true }
 substreams = { workspace = true }
 substreams-solana = { workspace = true }
 substreams-solana-program-instructions = { workspace = true }
-substreams-abis = { workspace = true }
 proto = { path = "../proto" }
 common = { path = "../common" }
