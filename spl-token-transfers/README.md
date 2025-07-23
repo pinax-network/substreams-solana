@@ -1,20 +1,15 @@
 # SPL Token transfers
 
-> Substreams for tracking SPL and SPL-2022 tokens transfers.
+> Token movement between accounts (with or without delegation).
 
 ## Includes
 
 - `transfers`
   - **Transfer**
   - **TransferChecked**
-- `mints` (Transfer)
+- `mints`
   - **MintTo**
   - **MintToChecked**
-- `burns` (Transfer)
+- `burns`
   - **Burn**
   - **BurnChecked**
-- `approves`
-  - **Approve**
-  - **ApproveChecked**
-- `revokes`
-  - **Revoke**

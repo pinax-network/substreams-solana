@@ -18,14 +18,6 @@ message Transaction {
     repeated TokenBalance post_token_balances = 8; // Token balances after the transaction.
 }
 
-message TokenBalance {
-  bytes program_id = 1;
-  bytes account = 2;
-  bytes mint = 3;
-  uint64 amount = 4;
-  uint32 decimals = 5; // uint8
-}
-
 message Instruction {
     bytes program_id = 1;
     uint32 stack_height = 2;
@@ -40,7 +32,18 @@ message Instruction {
         InitializeAccount initialize_account = 16;
         InitializeImmutableOwner initialize_immutable_owner = 17;
         SetAuthority set_authority = 18;
+        CloseAccount close_account = 19;
+        FreezeAccount freeze_account = 20;
+        ThawAccount thaw_account = 21;
     }
+}
+
+message TokenBalance {
+  bytes program_id = 1;
+  bytes account = 2;
+  bytes mint = 3;
+  uint64 amount = 4;
+  uint32 decimals = 5; // uint8
 }
 
 message Transfer {
@@ -72,7 +75,6 @@ message InitializeAccount {
 
 message InitializeImmutableOwner {
   bytes account = 1;
-  optional bytes mint = 2;
 }
 
 message Approve {
@@ -117,9 +119,30 @@ enum AuthorityType {
 }
 
 message SetAuthority {
-  bytes account = 1;                    // The token account or mint to change authority on
-  AuthorityType authority_type = 2;     // Type of authority being changed
-  optional bytes new_authority = 3;     // New authority (null if removing)
-  bytes current_authority = 4;          // Current authority expected to sign
-  repeated bytes current_multisig_authority = 5; // Current multisig authority expected to sign
+  bytes account = 1;                      // The token account or mint to change authority on
+  AuthorityType authority_type = 2;       // Type of authority being changed
+  optional bytes new_authority = 3;       // New authority (null if removing)
+  bytes authority = 4;                    // Current authority expected to sign
+  repeated bytes multisig_authority = 5;  // Current multisig authority expected to sign
+}
+
+message CloseAccount {
+  bytes account = 1; // The token account to close
+  bytes destination = 2; // The account to receive the closed account's balance
+  bytes authority = 3; // The authority to close the account
+  repeated bytes multisig_authority = 4; // The multisig authority to close the account
+}
+
+message FreezeAccount {
+  bytes account = 1; // The token account to freeze
+  bytes mint = 2; // The mint associated with the token account
+  bytes authority = 3; // The authority to freeze the account
+  repeated bytes multisig_authority = 4; // The multisig authority to freeze the account
+}
+
+message ThawAccount {
+  bytes account = 1; // The token account to thaw
+  bytes mint = 2; // The mint associated with the token account
+  bytes authority = 3; // The authority to thaw the account
+  repeated bytes multisig_authority = 4; // The multisig authority to thaw the account
 }

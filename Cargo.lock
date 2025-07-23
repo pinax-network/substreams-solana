@@ -2512,6 +2512,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "spl-token-accounts"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+]
+
+[[package]]
 name = "spl-token-balances"
 version = "0.0.0"
 dependencies = [
@@ -2525,14 +2536,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "spl-token-initialize"
+name = "spl-token-mints"
 version = "0.0.0"
 dependencies = [
- "bs58 0.5.1",
  "common",
  "proto",
  "substreams",
- "substreams-abis",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+]
+
+[[package]]
+name = "spl-token-permissions"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
  "substreams-solana",
  "substreams-solana-program-instructions",
 ]

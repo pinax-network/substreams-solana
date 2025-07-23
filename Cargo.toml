@@ -4,7 +4,9 @@ members = [
   "clickhouse-solana-tokens",
   "spl-token-transfers",
   "spl-token-balances",
-  "spl-token-initialize",
+  "spl-token-accounts",
+  "spl-token-mints",
+  "spl-token-permissions",    # not yet used in Clickhouse Tokens
 
   # DEXs
   "clickhouse-solana-dex",

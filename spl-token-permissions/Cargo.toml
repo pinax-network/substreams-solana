@@ -1,6 +1,6 @@
 [package]
-name = "spl-token-initialize"
-description = "SPL Token initialization"
+name = "spl-token-permissions"
+description = "SPL Token permissions"
 edition = { workspace = true }
 version = { workspace = true }
 authors = ["Denis <denis@pinax.network>"]
@@ -9,10 +9,8 @@ authors = ["Denis <denis@pinax.network>"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-bs58 = { workspace = true }
 substreams = { workspace = true }
 substreams-solana = { workspace = true }
 substreams-solana-program-instructions = { workspace = true }
-substreams-abis = { workspace = true }
 proto = { path = "../proto" }
 common = { path = "../common" }

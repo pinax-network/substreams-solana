@@ -27,7 +27,6 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
 
             // Skip instructions
             if !is_spl_token_program(&base58::encode(program_id)) {
-                substreams::log::info!("Skipping non-SPL Token instruction: {}", base58::encode(program_id));
                 continue;
             }
 
@@ -188,71 +187,6 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                             }));
                             transaction.instructions.push(base.clone());
                         }
-                    }
-                    // -- Approve --
-                    TokenInstruction::Approve { amount } => {
-                        // accounts
-                        let source = instruction.accounts()[0].0.to_vec();
-                        let delegate = instruction.accounts()[1].0.to_vec();
-                        let authority = instruction.accounts()[2].0.to_vec();
-                        let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
-
-                        base.instruction = Some(pb::instruction::Instruction::Approve(pb::Approve {
-                            // authority
-                            authority: authority.to_vec(),
-                            multisig_authority: multisig_authority.to_vec(),
-
-                            // event
-                            source,
-                            mint: None,
-                            delegate,
-                            owner: authority,
-                            amount,
-                            decimals: None,
-                        }));
-                        transaction.instructions.push(base.clone());
-                    }
-                    // -- ApproveChecked --
-                    TokenInstruction::ApproveChecked { amount, decimals } => {
-                        // accounts
-                        let source = instruction.accounts()[0].0.to_vec();
-                        let mint = instruction.accounts()[1].0.to_vec();
-                        let delegate = instruction.accounts()[2].0.to_vec();
-                        let authority = instruction.accounts()[3].0.to_vec();
-                        let multisig_authority = instruction.accounts()[4..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
-
-                        base.instruction = Some(pb::instruction::Instruction::Approve(pb::Approve {
-                            // authority
-                            authority: authority.to_vec(),
-                            multisig_authority: multisig_authority.to_vec(),
-
-                            // event
-                            source,
-                            mint: Some(mint),
-                            delegate,
-                            owner: authority,
-                            amount,
-                            decimals: Some(decimals as u32),
-                        }));
-                        transaction.instructions.push(base.clone());
-                    }
-                    // -- Revoke --
-                    TokenInstruction::Revoke {} => {
-                        // accounts
-                        let source = instruction.accounts()[0].0.to_vec();
-                        let authority = instruction.accounts()[1].0.to_vec();
-                        let multisig_authority = instruction.accounts()[2..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
-
-                        base.instruction = Some(pb::instruction::Instruction::Revoke(pb::Revoke {
-                            // authority
-                            authority: authority.to_vec(),
-                            multisig_authority: multisig_authority.to_vec(),
-
-                            // event
-                            source,
-                            owner: authority,
-                        }));
-                        transaction.instructions.push(base.clone());
                     }
                     _ => {}
                 },

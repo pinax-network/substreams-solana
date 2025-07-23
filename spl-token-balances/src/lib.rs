@@ -1,5 +1,3 @@
-use core::panic;
-
 use common::solana::{get_fee_payer, get_signers, is_spl_token_program};
 use proto::pb::solana::spl::token::v1 as pb;
 use substreams::errors::Error;

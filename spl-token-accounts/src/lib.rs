@@ -43,45 +43,6 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                 }
                 // -- TransferChecked --
                 Ok(token_instruction) => match token_instruction {
-                    // -- InitializeMint --
-                    TokenInstruction::InitializeMint {
-                        decimals,
-                        mint_authority,
-                        freeze_authority,
-                    } => {
-                        // accounts
-                        let mint = instruction.accounts()[0].0.to_vec();
-                        base.instruction = Some(pb::instruction::Instruction::InitializeMint(pb::InitializeMint {
-                            mint,
-                            mint_authority: mint_authority.to_bytes().to_vec(),
-                            freeze_authority: match freeze_authority {
-                                COption::Some(key) => Some(key.to_bytes().to_vec()),
-                                COption::None => None,
-                            },
-                            decimals: decimals as u32,
-                        }));
-                        transaction.instructions.push(base.clone());
-                    }
-                    // -- InitializeMint2 --
-                    TokenInstruction::InitializeMint2 {
-                        decimals,
-                        mint_authority,
-                        freeze_authority,
-                    } => {
-                        // accounts
-                        let mint = instruction.accounts()[0].0.to_vec();
-
-                        base.instruction = Some(pb::instruction::Instruction::InitializeMint(pb::InitializeMint {
-                            mint,
-                            mint_authority: mint_authority.to_bytes().to_vec(),
-                            freeze_authority: match freeze_authority {
-                                COption::Some(key) => Some(key.to_bytes().to_vec()),
-                                COption::None => None,
-                            },
-                            decimals: decimals as u32,
-                        }));
-                        transaction.instructions.push(base.clone());
-                    }
                     // -- InitializeAccount --
                     TokenInstruction::InitializeAccount {} => {
                         // accounts
@@ -118,18 +79,30 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                         }));
                         transaction.instructions.push(base.clone());
                     }
-                    // // -- InitializeImmutableOwner --
-                    // TokenInstruction::InitializeImmutableOwner => {
-                    //     // accounts
-                    //     let account: Vec<u8> = instruction.accounts()[0].0.to_vec(); // The account to initialize.
-                    //     let mint: Vec<u8> = instruction.accounts()[1].0.to_vec(); // The mint this account will be associated with.
+                    // -- InitializeImmutableOwner --
+                    TokenInstruction::InitializeImmutableOwner => {
+                        // accounts
+                        let account: Vec<u8> = instruction.accounts()[0].0.to_vec(); // The account to initialize.
 
-                    //     base.instruction = Some(pb::instruction::Instruction::InitializeImmutableOwner(pb::InitializeImmutableOwner {
-                    //         account,
-                    //         mint,
-                    //     }));
-                    //     transaction.instructions.push(base.clone());
-                    // }
+                        base.instruction = Some(pb::instruction::Instruction::InitializeImmutableOwner(pb::InitializeImmutableOwner { account }));
+                        transaction.instructions.push(base.clone());
+                    }
+                    // -- CloseAccount --
+                    TokenInstruction::CloseAccount {} => {
+                        // accounts
+                        let account = instruction.accounts()[0].0.to_vec();
+                        let destination = instruction.accounts()[1].0.to_vec();
+                        let authority = instruction.accounts()[2].0.to_vec();
+                        let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+
+                        base.instruction = Some(pb::instruction::Instruction::CloseAccount(pb::CloseAccount {
+                            account,
+                            destination,
+                            authority,
+                            multisig_authority,
+                        }));
+                        transaction.instructions.push(base.clone());
+                    }
                     // -- SetAuthority --
                     TokenInstruction::SetAuthority { authority_type, new_authority } => {
                         // accounts
@@ -139,9 +112,9 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
 
                         base.instruction = Some(pb::instruction::Instruction::SetAuthority(pb::SetAuthority {
                             account,
-                            authority_type: authority_type as i32,
-                            current_authority: authority.to_vec(),
-                            current_multisig_authority: multisig_authority.to_vec(),
+                            authority_type: authority_type as i32 + 1,
+                            authority: authority.to_vec(),
+                            multisig_authority: multisig_authority.to_vec(),
                             new_authority: match new_authority {
                                 COption::Some(key) => Some(key.to_bytes().to_vec()),
                                 COption::None => None,

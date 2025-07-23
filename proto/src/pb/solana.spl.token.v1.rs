@@ -35,21 +35,6 @@ pub struct Transaction {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct TokenBalance {
-    #[prost(bytes="vec", tag="1")]
-    pub program_id: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="2")]
-    pub account: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="3")]
-    pub mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag="4")]
-    pub amount: u64,
-    /// uint8
-    #[prost(uint32, tag="5")]
-    pub decimals: u32,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Instruction {
     #[prost(bytes="vec", tag="1")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
@@ -58,7 +43,7 @@ pub struct Instruction {
     /// Indicates if this instruction is a root instruction.
     #[prost(bool, tag="3")]
     pub is_root: bool,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -84,7 +69,28 @@ pub mod instruction {
         InitializeImmutableOwner(super::InitializeImmutableOwner),
         #[prost(message, tag="18")]
         SetAuthority(super::SetAuthority),
+        #[prost(message, tag="19")]
+        CloseAccount(super::CloseAccount),
+        #[prost(message, tag="20")]
+        FreezeAccount(super::FreezeAccount),
+        #[prost(message, tag="21")]
+        ThawAccount(super::ThawAccount),
     }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TokenBalance {
+    #[prost(bytes="vec", tag="1")]
+    pub program_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="2")]
+    pub account: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="3")]
+    pub mint: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint64, tag="4")]
+    pub amount: u64,
+    /// uint8
+    #[prost(uint32, tag="5")]
+    pub decimals: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -136,8 +142,6 @@ pub struct InitializeAccount {
 pub struct InitializeImmutableOwner {
     #[prost(bytes="vec", tag="1")]
     pub account: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", optional, tag="2")]
-    pub mint: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -190,10 +194,58 @@ pub struct SetAuthority {
     pub new_authority: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// Current authority expected to sign
     #[prost(bytes="vec", tag="4")]
-    pub current_authority: ::prost::alloc::vec::Vec<u8>,
+    pub authority: ::prost::alloc::vec::Vec<u8>,
     /// Current multisig authority expected to sign
     #[prost(bytes="vec", repeated, tag="5")]
-    pub current_multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CloseAccount {
+    /// The token account to close
+    #[prost(bytes="vec", tag="1")]
+    pub account: ::prost::alloc::vec::Vec<u8>,
+    /// The account to receive the closed account's balance
+    #[prost(bytes="vec", tag="2")]
+    pub destination: ::prost::alloc::vec::Vec<u8>,
+    /// The authority to close the account
+    #[prost(bytes="vec", tag="3")]
+    pub authority: ::prost::alloc::vec::Vec<u8>,
+    /// The multisig authority to close the account
+    #[prost(bytes="vec", repeated, tag="4")]
+    pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FreezeAccount {
+    /// The token account to freeze
+    #[prost(bytes="vec", tag="1")]
+    pub account: ::prost::alloc::vec::Vec<u8>,
+    /// The mint associated with the token account
+    #[prost(bytes="vec", tag="2")]
+    pub mint: ::prost::alloc::vec::Vec<u8>,
+    /// The authority to freeze the account
+    #[prost(bytes="vec", tag="3")]
+    pub authority: ::prost::alloc::vec::Vec<u8>,
+    /// The multisig authority to freeze the account
+    #[prost(bytes="vec", repeated, tag="4")]
+    pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ThawAccount {
+    /// The token account to thaw
+    #[prost(bytes="vec", tag="1")]
+    pub account: ::prost::alloc::vec::Vec<u8>,
+    /// The mint associated with the token account
+    #[prost(bytes="vec", tag="2")]
+    pub mint: ::prost::alloc::vec::Vec<u8>,
+    /// The authority to thaw the account
+    #[prost(bytes="vec", tag="3")]
+    pub authority: ::prost::alloc::vec::Vec<u8>,
+    /// The multisig authority to thaw the account
+    #[prost(bytes="vec", repeated, tag="4")]
+    pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
