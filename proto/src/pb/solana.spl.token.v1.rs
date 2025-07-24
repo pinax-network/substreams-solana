@@ -43,7 +43,7 @@ pub struct Instruction {
     /// Indicates if this instruction is a root instruction.
     #[prost(bool, tag="3")]
     pub is_root: bool,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -51,36 +51,56 @@ pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
+        /// Transfers
         #[prost(message, tag="10")]
         Transfer(super::Transfer),
         #[prost(message, tag="11")]
         Mint(super::Transfer),
         #[prost(message, tag="12")]
         Burn(super::Transfer),
+        /// Permissions
         #[prost(message, tag="13")]
         Approve(super::Approve),
         #[prost(message, tag="14")]
         Revoke(super::Revoke),
         #[prost(message, tag="15")]
-        InitializeMint(super::InitializeMint),
-        #[prost(message, tag="16")]
-        InitializeAccount(super::InitializeAccount),
-        #[prost(message, tag="17")]
-        InitializeImmutableOwner(super::InitializeImmutableOwner),
-        #[prost(message, tag="18")]
-        SetAuthority(super::SetAuthority),
-        #[prost(message, tag="19")]
-        CloseAccount(super::CloseAccount),
-        #[prost(message, tag="20")]
         FreezeAccount(super::FreezeAccount),
-        #[prost(message, tag="21")]
+        #[prost(message, tag="16")]
         ThawAccount(super::ThawAccount),
-        /// SPL-2022 Memo Transfer Extension
+        /// Mints
+        #[prost(message, tag="17")]
+        InitializeMint(super::InitializeMint),
+        /// Accounts
+        #[prost(message, tag="18")]
+        InitializeAccount(super::InitializeAccount),
+        #[prost(message, tag="19")]
+        InitializeImmutableOwner(super::InitializeImmutableOwner),
+        #[prost(message, tag="20")]
+        SetAuthority(super::SetAuthority),
+        #[prost(message, tag="21")]
+        CloseAccount(super::CloseAccount),
+        /// Metadata
+        ///
+        /// SPL-2022 Initialize Token Metadata
         #[prost(message, tag="22")]
-        MemoTransferExtension(super::MemoTransferExtension),
-        /// SPL-2022 Metadata Pointer Extension
+        InitializeTokenMetadata(super::InitializeTokenMetadata),
+        /// SPL-2022 Update Field
         #[prost(message, tag="23")]
-        MetadataPointerExtension(super::MetadataPointerExtension),
+        UpdateTokenMetadataField(super::UpdateTokenMetadataField),
+        /// SPL-2022 Update Authority
+        #[prost(message, tag="24")]
+        UpdateTokenMetadataAuthority(super::UpdateTokenMetadataAuthority),
+        /// SPL-2022 Remove Key
+        #[prost(message, tag="25")]
+        RemoveTokenMetadataField(super::RemoveTokenMetadataField),
+        /// Extensions
+        ///
+        /// SPL-2022 Memo Transfer Extension
+        #[prost(message, tag="26")]
+        MemoTransferExtension(super::MemoTransferExtension),
+        /// SPL-2022 Initialize Metadata Pointer
+        #[prost(message, tag="27")]
+        InitializeMetadataPointer(super::InitializeMetadataPointer),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -253,6 +273,7 @@ pub struct ThawAccount {
     #[prost(bytes="vec", repeated, tag="4")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
 }
+/// TO-DO: not yet implemented
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MemoTransferExtension {
@@ -260,12 +281,93 @@ pub struct MemoTransferExtension {
     #[prost(bytes="vec", tag="1")]
     pub data: ::prost::alloc::vec::Vec<u8>,
 }
+/// TO-DO: partially implemented
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MetadataPointerExtension {
-    /// instruction data, typically a metadata pointer
+pub struct InitializeMetadataPointer {
+    /// Metadata account address
     #[prost(bytes="vec", tag="1")]
-    pub data: ::prost::alloc::vec::Vec<u8>,
+    pub metadata_address: ::prost::alloc::vec::Vec<u8>,
+    /// Mint account address (TO-DO: not implemented yet)
+    #[prost(bytes="vec", tag="2")]
+    pub mint: ::prost::alloc::vec::Vec<u8>,
+    /// Authority account address (TO-DO: not implemented yet)
+    #[prost(bytes="vec", tag="3")]
+    pub authority: ::prost::alloc::vec::Vec<u8>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct InitializeTokenMetadata {
+    /// accounts
+    ///
+    /// Metadata account address
+    #[prost(bytes="vec", tag="1")]
+    pub metadata: ::prost::alloc::vec::Vec<u8>,
+    /// Update authority account address
+    #[prost(bytes="vec", tag="2")]
+    pub update_authority: ::prost::alloc::vec::Vec<u8>,
+    /// Mint account address
+    #[prost(bytes="vec", tag="3")]
+    pub mint: ::prost::alloc::vec::Vec<u8>,
+    /// Mint authority account address
+    #[prost(bytes="vec", tag="4")]
+    pub mint_authority: ::prost::alloc::vec::Vec<u8>,
+    /// instruction data
+    ///
+    /// Name of the token metadata
+    #[prost(string, tag="5")]
+    pub name: ::prost::alloc::string::String,
+    /// Symbol of the token metadata
+    #[prost(string, tag="6")]
+    pub symbol: ::prost::alloc::string::String,
+    /// URI of the token metadata
+    #[prost(string, tag="7")]
+    pub uri: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateTokenMetadataField {
+    /// Metadata account address
+    #[prost(bytes="vec", tag="1")]
+    pub metadata: ::prost::alloc::vec::Vec<u8>,
+    /// Update authority account address
+    #[prost(bytes="vec", tag="2")]
+    pub update_authority: ::prost::alloc::vec::Vec<u8>,
+    /// Name of the field to update
+    #[prost(string, tag="3")]
+    pub field: ::prost::alloc::string::String,
+    /// Value of the field to update
+    #[prost(string, tag="4")]
+    pub value: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateTokenMetadataAuthority {
+    /// Metadata account address
+    #[prost(bytes="vec", tag="1")]
+    pub metadata: ::prost::alloc::vec::Vec<u8>,
+    /// Update authority account address
+    #[prost(bytes="vec", tag="2")]
+    pub update_authority: ::prost::alloc::vec::Vec<u8>,
+    /// New update authority account address (null if removing ex: `11111111111111111111111111111111`)
+    #[prost(bytes="vec", tag="3")]
+    pub new_authority: ::prost::alloc::vec::Vec<u8>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RemoveTokenMetadataField {
+    /// Metadata account address
+    #[prost(bytes="vec", tag="1")]
+    pub metadata: ::prost::alloc::vec::Vec<u8>,
+    /// Update authority account address
+    #[prost(bytes="vec", tag="2")]
+    pub update_authority: ::prost::alloc::vec::Vec<u8>,
+    /// Name of the key to remove
+    #[prost(string, tag="3")]
+    pub key: ::prost::alloc::string::String,
+    /// Whether the removal is idempotent
+    #[prost(bool, tag="4")]
+    pub idempotent: bool,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

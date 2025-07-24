@@ -23,20 +23,36 @@ message Instruction {
     uint32 stack_height = 2;
     bool is_root = 3; // Indicates if this instruction is a root instruction.
     oneof instruction {
+        // Transfers
         Transfer transfer = 10;
         Transfer mint = 11;
         Transfer burn = 12;
+
+        // Permissions
         Approve approve = 13;
         Revoke revoke = 14;
-        InitializeMint initialize_mint = 15;
-        InitializeAccount initialize_account = 16;
-        InitializeImmutableOwner initialize_immutable_owner = 17;
-        SetAuthority set_authority = 18;
-        CloseAccount close_account = 19;
-        FreezeAccount freeze_account = 20;
-        ThawAccount thaw_account = 21;
-        MemoTransferExtension memo_transfer_extension = 22; // SPL-2022 Memo Transfer Extension
-        MetadataPointerExtension metadata_pointer_extension = 23; // SPL-2022 Metadata Pointer Extension
+        FreezeAccount freeze_account = 15;
+        ThawAccount thaw_account = 16;
+
+        // Mints
+        InitializeMint initialize_mint = 17;
+
+        // Accounts
+        InitializeAccount initialize_account = 18;
+        InitializeImmutableOwner initialize_immutable_owner = 19;
+        SetAuthority set_authority = 20;
+        CloseAccount close_account = 21;
+
+        // Metadata
+        InitializeTokenMetadata initialize_token_metadata = 22; // SPL-2022 Initialize Token Metadata
+        UpdateTokenMetadataField update_token_metadata_field = 23; // SPL-2022 Update Field
+        UpdateTokenMetadataAuthority update_token_metadata_authority = 24; // SPL-2022 Update Authority
+        RemoveTokenMetadataField remove_token_metadata_field = 25; // SPL-2022 Remove Key
+
+        // Extensions
+        MemoTransferExtension memo_transfer_extension = 26; // SPL-2022 Memo Transfer Extension
+        InitializeMetadataPointer initialize_metadata_pointer = 27; // SPL-2022 Initialize Metadata Pointer
+
     }
 }
 
@@ -149,10 +165,47 @@ message ThawAccount {
   repeated bytes multisig_authority = 4; // The multisig authority to thaw the account
 }
 
+// TO-DO: not yet implemented
 message MemoTransferExtension {
   bytes data = 1; // instruction data, typically a memo
 }
 
-message MetadataPointerExtension {
-  bytes data = 1; // instruction data, typically a metadata pointer
+// TO-DO: partially implemented
+message InitializeMetadataPointer {
+  bytes metadata_address = 1; // Metadata account address
+  bytes mint = 2; // Mint account address (TO-DO: not implemented yet)
+  bytes authority = 3; // Authority account address (TO-DO: not implemented yet)
+}
+
+message InitializeTokenMetadata {
+  // accounts
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  bytes mint = 3; // Mint account address
+  bytes mint_authority = 4; // Mint authority account address
+
+  // instruction data
+  string name = 5; // Name of the token metadata
+  string symbol = 6; // Symbol of the token metadata
+  string uri = 7; // URI of the token metadata
+}
+
+message UpdateTokenMetadataField {
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  string field = 3; // Name of the field to update
+  string value = 4; // Value of the field to update
+}
+
+message UpdateTokenMetadataAuthority {
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  bytes new_authority = 3; // New update authority account address (null if removing ex: `11111111111111111111111111111111`)
+}
+
+message RemoveTokenMetadataField {
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  string key = 3; // Name of the key to remove
+  bool idempotent = 4; // Whether the removal is idempotent
 }

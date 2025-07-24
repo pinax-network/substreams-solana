@@ -38,10 +38,14 @@
 - [x] `SetAuthority` (for `AccountOwner`, `CloseAccount` authority)
 - [ ] ~~`Reallocate`~~ (doesn't seem to emit any events)
 
-## Extensions
+### Metadata
 
-- [ ] `InitializeTokenMetadata` (SPL-2022)
-- [ ] `MetadataPointer` (SPL-2022)
+- [x] `InitializeTokenMetadata` (SPL-2022)
+- [x] `UpdateTokenMetadataAuthority` (SPL-2022)
+- [x] `UpdateTokenMetadataField` (SPL-2022)
+- [x] `RemoveTokenMetadataField` (SPL-2022)
+
+### Extensions
+
 - [ ] ~~`MemoTransferExtension`~~ (doesn't seem to emit any events)
-- [ ] ~~`TokenMetadata`~~ (SPL-2022) (not implemented yet)
 - [ ] ~~`TransferCheckedWithFee` (SPL-2022)~~ (not implemented yet)
