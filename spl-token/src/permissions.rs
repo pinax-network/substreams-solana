@@ -5,8 +5,6 @@ use substreams_solana_program_instructions::token_instruction_2022::TokenInstruc
 pub fn unpack_permissions(instruction: &InstructionView) -> Option<pb::instruction::Instruction> {
     match TokenInstruction::unpack(&instruction.data()) {
         Err(_err) => return None,
-
-        // -- TransferChecked --
         Ok(token_instruction) => match token_instruction {
             // -- Approve --
             TokenInstruction::Approve { amount } => {

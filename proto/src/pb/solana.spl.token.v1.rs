@@ -43,7 +43,7 @@ pub struct Instruction {
     /// Indicates if this instruction is a root instruction.
     #[prost(bool, tag="3")]
     pub is_root: bool,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -75,6 +75,12 @@ pub mod instruction {
         FreezeAccount(super::FreezeAccount),
         #[prost(message, tag="21")]
         ThawAccount(super::ThawAccount),
+        /// SPL-2022 Memo Transfer Extension
+        #[prost(message, tag="22")]
+        MemoTransferExtension(super::MemoTransferExtension),
+        /// SPL-2022 Metadata Pointer Extension
+        #[prost(message, tag="23")]
+        MetadataPointerExtension(super::MetadataPointerExtension),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -246,6 +252,20 @@ pub struct ThawAccount {
     /// The multisig authority to thaw the account
     #[prost(bytes="vec", repeated, tag="4")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MemoTransferExtension {
+    /// instruction data, typically a memo
+    #[prost(bytes="vec", tag="1")]
+    pub data: ::prost::alloc::vec::Vec<u8>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MetadataPointerExtension {
+    /// instruction data, typically a metadata pointer
+    #[prost(bytes="vec", tag="1")]
+    pub data: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

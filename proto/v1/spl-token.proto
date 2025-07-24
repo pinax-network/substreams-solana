@@ -35,6 +35,8 @@ message Instruction {
         CloseAccount close_account = 19;
         FreezeAccount freeze_account = 20;
         ThawAccount thaw_account = 21;
+        MemoTransferExtension memo_transfer_extension = 22; // SPL-2022 Memo Transfer Extension
+        MetadataPointerExtension metadata_pointer_extension = 23; // SPL-2022 Metadata Pointer Extension
     }
 }
 
@@ -145,4 +147,12 @@ message ThawAccount {
   bytes mint = 2; // The mint associated with the token account
   bytes authority = 3; // The authority to thaw the account
   repeated bytes multisig_authority = 4; // The multisig authority to thaw the account
+}
+
+message MemoTransferExtension {
+  bytes data = 1; // instruction data, typically a memo
+}
+
+message MetadataPointerExtension {
+  bytes data = 1; // instruction data, typically a metadata pointer
 }
