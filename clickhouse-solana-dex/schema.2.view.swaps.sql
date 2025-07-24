@@ -33,8 +33,12 @@ CREATE TABLE IF NOT EXISTS swaps (
     amm_pool                    LowCardinality(FixedString(44)) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',
     input_mint                  LowCardinality(FixedString(44)) COMMENT 'Input token mint address',
     input_amount                UInt64                          COMMENT 'Amount of input tokens swapped',
+    input_type                  LowCardinality(String) MATERIALIZED token_types(input_mint),
+    input_name                  LowCardinality(String) MATERIALIZED token_names(input_mint),
     output_mint                 LowCardinality(FixedString(44)) COMMENT 'Output token mint address',
     output_amount               UInt64                          COMMENT 'Amount of output tokens received',
+    output_type                 LowCardinality(String) MATERIALIZED token_types(output_mint),
+    output_name                 LowCardinality(String) MATERIALIZED token_names(output_mint),
 
     -- indexes -
     INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4,  -- always unique
@@ -51,7 +55,11 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_amm_name          (amm_name)          TYPE set(64)        GRANULARITY 1,
     INDEX idx_amm_pool          (amm_pool)          TYPE set(256)       GRANULARITY 1, -- 300 unique pools per granule
     INDEX idx_input_mint        (input_mint)        TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_input_type        (input_type)        TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
     INDEX idx_output_mint       (output_mint)       TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_output_type       (output_type)       TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
+    INDEX idx_input_name        (input_name)        TYPE set(16)        GRANULARITY 1,
+    INDEX idx_output_name       (output_name)       TYPE set(16)        GRANULARITY 1,
     INDEX idx_input_amount      (input_amount)      TYPE minmax         GRANULARITY 1,
     INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1
 )
@@ -65,19 +73,21 @@ COMMENT 'Swaps, used by all AMMs and DEXs';
 
 -- PROJECTIONS (Full) --
 -- all the data from the original table will be duplicated
-ALTER TABLE swaps ADD PROJECTION prj_timestamp (SELECT * ORDER BY timestamp);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_timestamp (SELECT * ORDER BY timestamp);
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE swaps ADD PROJECTION prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id);
-ALTER TABLE swaps ADD PROJECTION prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm);
-ALTER TABLE swaps ADD PROJECTION prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool);
-ALTER TABLE swaps ADD PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature);
-ALTER TABLE swaps ADD PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer);
-ALTER TABLE swaps ADD PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer);
-ALTER TABLE swaps ADD PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user);
-ALTER TABLE swaps ADD PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint);
-ALTER TABLE swaps ADD PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_user        (SELECT user,        _part_offset ORDER BY user);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_type  (SELECT input_type,  _part_offset ORDER BY input_type);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_type (SELECT output_type, _part_offset ORDER BY output_type);
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps

@@ -10,7 +10,11 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     amm_name                LowCardinality(String) MATERIALIZED program_names(amm),
     amm_pool                LowCardinality(FixedString(44)),
     mint0                   LowCardinality(FixedString(44)),
+    mint0_type              LowCardinality(String) MATERIALIZED token_types(mint0),
+    mint0_name              LowCardinality(String) MATERIALIZED token_names(mint0),
     mint1                   LowCardinality(FixedString(44)),
+    mint1_type              LowCardinality(String) MATERIALIZED token_types(mint1),
+    mint1_name              LowCardinality(String) MATERIALIZED token_names(mint1),
 
     -- Aggregate --
     open0                   AggregateFunction(argMin, Float64, UInt64),
@@ -35,6 +39,10 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     INDEX idx_mint0             (mint0)                     TYPE set(512)       GRANULARITY 1,
     INDEX idx_mint1             (mint1)                     TYPE set(512)       GRANULARITY 1,
     INDEX idx_mint_pair         (mint0, mint1)              TYPE set(512)       GRANULARITY 1,
+    INDEX idx_mint0_type        (mint0_type)                TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
+    INDEX idx_mint1_type        (mint1_type)                TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
+    INDEX idx_mint0_name        (mint0_name)                TYPE set(16)        GRANULARITY 1,
+    INDEX idx_mint1_name        (mint1_name)                TYPE set(16)        GRANULARITY 1,
 
     -- indexes (volume) --
     INDEX idx_gross_volume0     (gross_volume0)             TYPE minmax         GRANULARITY 1,

@@ -40,6 +40,6 @@ COMMENT 'Jupiter V4 & V6 Swaps';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE jupiter_swap ADD PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
-ALTER TABLE jupiter_swap ADD PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
-ALTER TABLE jupiter_swap ADD PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
+ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
+ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
+ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
