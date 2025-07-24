@@ -2,8 +2,7 @@
 members = [
   # Tokens
   "clickhouse-solana-tokens",
-  "spl-token-transfers",
-  "spl-token-balances",
+  "spl-token",
 
   # DEXs
   "clickhouse-solana-dex",

@@ -1,0 +1,211 @@
+syntax = "proto3";
+
+package solana.spl.token.v1;
+// https://github.com/solana-program/token-2022
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+    repeated TokenBalance pre_token_balances = 7; // Token balances before the transaction.
+    repeated TokenBalance post_token_balances = 8; // Token balances after the transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    bool is_root = 3; // Indicates if this instruction is a root instruction.
+    oneof instruction {
+        // Transfers
+        Transfer transfer = 10;
+        Transfer mint = 11;
+        Transfer burn = 12;
+
+        // Permissions
+        Approve approve = 13;
+        Revoke revoke = 14;
+        FreezeAccount freeze_account = 15;
+        ThawAccount thaw_account = 16;
+
+        // Mints
+        InitializeMint initialize_mint = 17;
+
+        // Accounts
+        InitializeAccount initialize_account = 18;
+        InitializeImmutableOwner initialize_immutable_owner = 19;
+        SetAuthority set_authority = 20;
+        CloseAccount close_account = 21;
+
+        // Metadata
+        InitializeTokenMetadata initialize_token_metadata = 22; // SPL-2022 Initialize Token Metadata
+        UpdateTokenMetadataField update_token_metadata_field = 23; // SPL-2022 Update Field
+        UpdateTokenMetadataAuthority update_token_metadata_authority = 24; // SPL-2022 Update Authority
+        RemoveTokenMetadataField remove_token_metadata_field = 25; // SPL-2022 Remove Key
+
+        // Extensions
+        MemoTransferExtension memo_transfer_extension = 26; // SPL-2022 Memo Transfer Extension
+        InitializeMetadataPointer initialize_metadata_pointer = 27; // SPL-2022 Initialize Metadata Pointer
+
+    }
+}
+
+message TokenBalance {
+  bytes program_id = 1;
+  bytes account = 2;
+  bytes mint = 3;
+  uint64 amount = 4;
+  uint32 decimals = 5; // uint8
+}
+
+message Transfer {
+  // -- authority --
+  bytes authority = 1;
+  repeated bytes multisig_authority = 2;
+
+  // -- event --
+  bytes source = 10;
+  bytes destination = 11;
+  uint64 amount = 12;
+  // SPL-2022
+  optional bytes mint = 13;
+  optional uint32 decimals = 14; // uint8
+}
+
+message InitializeMint {
+  bytes mint = 1;
+  bytes mint_authority = 2;
+  optional bytes freeze_authority = 3;
+  uint32 decimals = 4; // uint8
+}
+
+message InitializeAccount {
+  bytes account = 1;
+  bytes mint = 2;
+  bytes owner = 3;
+}
+
+message InitializeImmutableOwner {
+  bytes account = 1;
+}
+
+message Approve {
+  // -- authority --
+  bytes authority = 1;
+  repeated bytes multisig_authority = 2;
+
+  // -- event --
+  bytes source = 10;
+  optional bytes mint = 11;
+  bytes delegate = 12;
+  bytes owner = 13;
+  uint64 amount = 14;
+  optional uint32 decimals = 15; // uint8
+}
+
+message Revoke {
+  // -- authority --
+  bytes authority = 1;
+  repeated bytes multisig_authority = 2;
+
+  // -- event --
+  bytes source = 10;
+  bytes owner = 11;
+}
+
+enum AuthorityType {
+  AUTHORITY_TYPE_UNSPECIFIED = 0;
+  AUTHORITY_TYPE_MINT_TOKENS = 1; // Authority to mint new tokens
+  AUTHORITY_TYPE_FREEZE_ACCOUNT = 2; // Authority to freeze any account associated with the Mint
+  AUTHORITY_TYPE_ACCOUNT_OWNER = 3; // Owner of a given token account
+  AUTHORITY_TYPE_CLOSE_ACCOUNT = 4; // Authority to close a token account
+  AUTHORITY_TYPE_TRANSFER_FEE_CONFIG = 5; // Authority to set the transfer fee
+  AUTHORITY_TYPE_WITHHELD_WITHDRAW = 6; // Authority to withdraw withheld tokens
+  AUTHORITY_TYPE_CLOSE_MINT = 7; // Authority to close a mint account
+  AUTHORITY_TYPE_INTEREST_RATE = 8; // Authority to set the interest rate
+  AUTHORITY_TYPE_PERMANENT_DELEGATE = 9; // Authority to transfer or burn any tokens for a mint
+  AUTHORITY_TYPE_CONFIDENTIAL_TRANSFER_MINT = 10; // Authority to update confidential transfer mint and approve accounts for confidential transfers
+  AUTHORITY_TYPE_TRANSFER_HOOK_PROGRAM_ID = 11; // Authority to set the transfer hook program id
+  AUTHORITY_TYPE_CONFIDENTIAL_TRANSFER_FEE_CONFIG = 12; // Authority to set the withdraw withheld
+  AUTHORITY_TYPE_METADATA_POINTER = 13; // Authority to set the metadata address
+}
+
+message SetAuthority {
+  bytes account = 1;                      // The token account or mint to change authority on
+  AuthorityType authority_type = 2;       // Type of authority being changed
+  optional bytes new_authority = 3;       // New authority (null if removing)
+  bytes authority = 4;                    // Current authority expected to sign
+  repeated bytes multisig_authority = 5;  // Current multisig authority expected to sign
+}
+
+message CloseAccount {
+  bytes account = 1; // The token account to close
+  bytes destination = 2; // The account to receive the closed account's balance
+  bytes authority = 3; // The authority to close the account
+  repeated bytes multisig_authority = 4; // The multisig authority to close the account
+}
+
+message FreezeAccount {
+  bytes account = 1; // The token account to freeze
+  bytes mint = 2; // The mint associated with the token account
+  bytes authority = 3; // The authority to freeze the account
+  repeated bytes multisig_authority = 4; // The multisig authority to freeze the account
+}
+
+message ThawAccount {
+  bytes account = 1; // The token account to thaw
+  bytes mint = 2; // The mint associated with the token account
+  bytes authority = 3; // The authority to thaw the account
+  repeated bytes multisig_authority = 4; // The multisig authority to thaw the account
+}
+
+// TO-DO: not yet implemented
+message MemoTransferExtension {
+  bytes data = 1; // instruction data, typically a memo
+}
+
+// TO-DO: partially implemented
+message InitializeMetadataPointer {
+  bytes metadata_address = 1; // Metadata account address
+  bytes mint = 2; // Mint account address (TO-DO: not implemented yet)
+  bytes authority = 3; // Authority account address (TO-DO: not implemented yet)
+}
+
+message InitializeTokenMetadata {
+  // accounts
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  bytes mint = 3; // Mint account address
+  bytes mint_authority = 4; // Mint authority account address
+
+  // instruction data
+  string name = 5; // Name of the token metadata
+  string symbol = 6; // Symbol of the token metadata
+  string uri = 7; // URI of the token metadata
+}
+
+message UpdateTokenMetadataField {
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  string field = 3; // Name of the field to update
+  string value = 4; // Value of the field to update
+}
+
+message UpdateTokenMetadataAuthority {
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  bytes new_authority = 3; // New update authority account address (null if removing ex: `11111111111111111111111111111111`)
+}
+
+message RemoveTokenMetadataField {
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+  string key = 3; // Name of the key to remove
+  bool idempotent = 4; // Whether the removal is idempotent
+}

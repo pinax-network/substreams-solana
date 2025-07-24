@@ -5,6 +5,13 @@ use substreams_solana::{base58, pb::sf::solana::r#type::v1::ConfirmedTransaction
 const GENESIS_TIMESTAMP: u64 = 1584332940; // Genesis timestamp in seconds
 const SLOT_DURATION_MS: u64 = 400; // Slot duration in milliseconds
 
+pub const SOLANA_TOKEN_PROGRAM_KEG: &str = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+pub const SOLANA_TOKEN_PROGRAM_ZQB: &str = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+
+pub fn is_spl_token_program(program_id: &str) -> bool {
+    program_id == SOLANA_TOKEN_PROGRAM_KEG || program_id == SOLANA_TOKEN_PROGRAM_ZQB
+}
+
 pub fn to_timestamp(clock: &Clock) -> u64 {
     // GENESIS_TIMESTAMP is the genesis timestamp
     // SLOT_DURATION_MS per slot, so we multiply the slot number by SLOT_DURATION_MS and divide by 1000 to get seconds

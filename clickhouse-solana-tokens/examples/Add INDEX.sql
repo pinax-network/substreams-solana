@@ -30,7 +30,7 @@ WHERE status != 'Finished'
 
 -- detect how many unique values
 WITH t AS (
-    SELECT mint, source, destination, authority FROM transfers LIMIT 8192 OFFSET 120000
+    SELECT mint, source, destination, authority FROM transfers WHERE mint_raw != '' LIMIT 8192 OFFSET 120000
 ) SELECT
     uniq(mint),
     uniq(source),

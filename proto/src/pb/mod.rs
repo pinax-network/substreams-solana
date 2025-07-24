@@ -32,19 +32,10 @@ pub mod raydium {
 pub mod solana {
     pub mod spl {
         pub mod token {
-            pub mod balances {
-                // @@protoc_insertion_point(attribute:solana.spl.token.balances.v1)
-                pub mod v1 {
-                    include!("solana.spl.token.balances.v1.rs");
-                    // @@protoc_insertion_point(solana.spl.token.balances.v1)
-                }
-            }
-            pub mod transfers {
-                // @@protoc_insertion_point(attribute:solana.spl.token.transfers.v1)
-                pub mod v1 {
-                    include!("solana.spl.token.transfers.v1.rs");
-                    // @@protoc_insertion_point(solana.spl.token.transfers.v1)
-                }
+            // @@protoc_insertion_point(attribute:solana.spl.token.v1)
+            pub mod v1 {
+                include!("solana.spl.token.v1.rs");
+                // @@protoc_insertion_point(solana.spl.token.v1)
             }
         }
     }
