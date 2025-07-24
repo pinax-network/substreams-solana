@@ -7,18 +7,27 @@ CREATE TABLE IF NOT EXISTS pool_activity_summary (
     amm_name                    LowCardinality(String) MATERIALIZED program_names(amm),
     amm_pool                    LowCardinality(FixedString(44)),
     mint0                       LowCardinality(FixedString(44)),
+    mint0_type                  LowCardinality(String) MATERIALIZED token_types(mint0),
+    mint0_name                  LowCardinality(String) MATERIALIZED token_names(mint0),
     mint1                       LowCardinality(FixedString(44)),
+    mint1_type                  LowCardinality(String) MATERIALIZED token_types(mint1),
+    mint1_name                  LowCardinality(String) MATERIALIZED token_names(mint1),
 
     -- summing --
     transactions                UInt64,
 
     -- indexes --
-    INDEX idx_program_id        (program_id)                TYPE set(8)             GRANULARITY 1,
-    INDEX idx_amm               (amm)                       TYPE set(256)           GRANULARITY 1,
-    INDEX idx_amm_pool          (amm_pool)                  TYPE set(1024)          GRANULARITY 1,
-    INDEX idx_mint0             (mint0)                     TYPE set(1024)          GRANULARITY 1,
-    INDEX idx_mint1             (mint1)                     TYPE set(1024)          GRANULARITY 1,
-    INDEX idx_transactions      (transactions)              TYPE minmax             GRANULARITY 1
+    INDEX idx_program_id        (program_id)            TYPE set(8)            GRANULARITY 1,
+    INDEX idx_amm               (amm)                   TYPE set(256)          GRANULARITY 1,
+    INDEX idx_amm_pool          (amm_pool)              TYPE set(1024)         GRANULARITY 1,
+    INDEX idx_mint0             (mint0)                 TYPE set(1024)         GRANULARITY 1,
+    INDEX idx_mint1             (mint1)                 TYPE set(1024)         GRANULARITY 1,
+    INDEX idx_mint_pair         (mint0, mint1)          TYPE set(1024)         GRANULARITY 1,
+    INDEX idx_mint0_type        (mint0_type)            TYPE set(4)            GRANULARITY 1, -- USD,ETH,BTC,SOL
+    INDEX idx_mint1_type        (mint1_type)            TYPE set(4)            GRANULARITY 1, -- USD,ETH,BTC,SOL
+    INDEX idx_mint0_name        (mint0_name)            TYPE set(16)           GRANULARITY 1,
+    INDEX idx_mint1_name        (mint1_name)            TYPE set(16)           GRANULARITY 1,
+    INDEX idx_transactions      (transactions)          TYPE minmax            GRANULARITY 1
 )
 ENGINE = SummingMergeTree
 ORDER BY (program_id, amm, amm_pool, mint0, mint1)
