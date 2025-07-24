@@ -88,6 +88,10 @@ ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_mint  (SELECT inpu
 ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint);
 ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_type  (SELECT input_type,  _part_offset ORDER BY input_type);
 ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_type (SELECT output_type, _part_offset ORDER BY output_type);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_name  (SELECT input_name,  _part_offset ORDER BY input_name);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_name (SELECT output_name, _part_offset ORDER BY output_name);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_amount(SELECT input_amount, _part_offset ORDER BY input_amount);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_amount(SELECT output_amount, _part_offset ORDER BY output_amount);
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps
