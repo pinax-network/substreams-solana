@@ -47,13 +47,7 @@ CREATE TABLE IF NOT EXISTS pumpfun_amm_buy (
     -- event --
     quote_amount_in             UInt64,
     quote_amount_in_with_lp_fee UInt64,
-    user_quote_amount_in        UInt64,
-
-    -- projections (parts) --
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
-    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
-    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
+    user_quote_amount_in        UInt64
 )
 ENGINE = MergeTree
 ORDER BY (
@@ -61,6 +55,12 @@ ORDER BY (
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Pump.fun AMM Swap Buy';
+
+-- PROJECTIONS (Part) --
+-- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+ALTER TABLE pumpfun_amm_buy ADD PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
+ALTER TABLE pumpfun_amm_buy ADD PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
+ALTER TABLE pumpfun_amm_buy ADD PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
 
 -- Sell --
 CREATE TABLE IF NOT EXISTS pumpfun_amm_sell AS pumpfun_amm_buy

@@ -52,13 +52,8 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
     protocol_fee                UInt64 DEFAULT 0, -- lamports
     creator                     FixedString(44) DEFAULT '',
     creator_fee_basis_points    UInt64 DEFAULT 0,
-    creator_fee                 UInt64 DEFAULT 0, -- lamports
+    creator_fee                 UInt64 DEFAULT 0 -- lamports
 
-    -- projections (parts) --
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
-    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
-    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
 )
 ENGINE = MergeTree
 ORDER BY (
@@ -66,6 +61,12 @@ ORDER BY (
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Pump.fun Bonding Curve Buy';
+
+-- PROJECTIONS (Part) --
+-- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+ALTER TABLE pumpfun_buy ADD PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
+ALTER TABLE pumpfun_buy ADD PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
+ALTER TABLE pumpfun_buy ADD PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
 
 -- Sell --
 CREATE TABLE IF NOT EXISTS pumpfun_sell AS pumpfun_buy

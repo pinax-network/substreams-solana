@@ -53,24 +53,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_input_mint        (input_mint)        TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
     INDEX idx_output_mint       (output_mint)       TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
     INDEX idx_input_amount      (input_amount)      TYPE minmax         GRANULARITY 1,
-    INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1,
-
-    -- projections (full) --
-    -- all the data from the original table will be duplicated
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection
-    PROJECTION prj_timestamp        (SELECT * ORDER BY timestamp),
-
-    -- projections (parts) --
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    PROJECTION prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id),
-    PROJECTION prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm),
-    PROJECTION prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool),
-    PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature),
-    PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer),
-    PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer),
-    PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user),
-    PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint),
-    PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint)
+    INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1
 )
 ENGINE = MergeTree
 -- Optimized for swaps by AMM DEXs ordered by latest/oldest timestamp
@@ -79,6 +62,22 @@ ORDER BY (
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Swaps, used by all AMMs and DEXs';
+
+-- PROJECTIONS (Full) --
+-- all the data from the original table will be duplicated
+ALTER TABLE swaps ADD PROJECTION prj_timestamp (SELECT * ORDER BY timestamp);
+
+-- PROJECTIONS (Part) --
+-- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+ALTER TABLE swaps ADD PROJECTION prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id);
+ALTER TABLE swaps ADD PROJECTION prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm);
+ALTER TABLE swaps ADD PROJECTION prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool);
+ALTER TABLE swaps ADD PROJECTION prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature);
+ALTER TABLE swaps ADD PROJECTION prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer);
+ALTER TABLE swaps ADD PROJECTION prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer);
+ALTER TABLE swaps ADD PROJECTION prj_part_user        (SELECT user,        _part_offset ORDER BY user);
+ALTER TABLE swaps ADD PROJECTION prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint);
+ALTER TABLE swaps ADD PROJECTION prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint);
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps

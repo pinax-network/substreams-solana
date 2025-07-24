@@ -29,13 +29,7 @@ CREATE TABLE IF NOT EXISTS jupiter_swap (
     input_mint                  FixedString(44) COMMENT 'Input token mint address',
     input_amount                UInt64 COMMENT 'Amount of input tokens swapped',
     output_mint                 FixedString(44) COMMENT 'Output token mint address',
-    output_amount               UInt64 COMMENT 'Amount of output tokens received',
-
-    -- projections (parts) --
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
-    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
-    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
+    output_amount               UInt64 COMMENT 'Amount of output tokens received'
 )
 ENGINE = MergeTree
 ORDER BY (
@@ -43,3 +37,9 @@ ORDER BY (
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Jupiter V4 & V6 Swaps';
+
+-- PROJECTIONS (Part) --
+-- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+ALTER TABLE jupiter_swap ADD PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
+ALTER TABLE jupiter_swap ADD PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
+ALTER TABLE jupiter_swap ADD PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
