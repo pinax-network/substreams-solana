@@ -6,6 +6,7 @@ package:
 protobuf:
   files:
     - v1/spl-token.proto
+    - v1/native-token.proto
     - v1/pumpfun.proto
     - v1/pumpfun-amm.proto
     - v1/jupiter.proto

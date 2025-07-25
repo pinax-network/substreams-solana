@@ -52,7 +52,6 @@ message Instruction {
         // Extensions
         MemoTransferExtension memo_transfer_extension = 26; // SPL-2022 Memo Transfer Extension
         InitializeMetadataPointer initialize_metadata_pointer = 27; // SPL-2022 Initialize Metadata Pointer
-
     }
 }
 

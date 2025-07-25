@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package solana.native.token.v1;
+// https://docs.rs/solana-program/latest/solana_program/
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+    repeated Balance pre_balances = 9; // Native balances before the transaction.
+    repeated Balance post_balances = 10; // Native balances after the transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    bool is_root = 3;
+    oneof instruction {
+        // Transfers
+        Transfer transfer = 10;
+        TransferWithSeed transfer_with_seed = 11;
+        CreateAccount create_account = 12;
+        CreateAccountWithSeed create_account_with_seed = 13;
+    }
+}
+
+message Balance {
+  bytes account = 1;
+  uint64 amount = 2;
+}
+
+message Transfer {
+  bytes source = 1;
+  bytes destination = 2;
+  uint64 lamports = 3;
+}
+
+message TransferWithSeed {
+  bytes destination = 1;
+  uint64 lamports = 2;
+  bytes source = 3;
+  bytes source_base = 4; // Base account addresss for the seed.
+  bytes source_owner = 5; // Owner of the source account.
+  string source_seed = 6; // Seed used to derive the source account.
+}
+
+message CreateAccount {
+  bytes source = 1; // Funding account address.
+  bytes new_account = 2; // New account address.
+  bytes owner = 3; // Owner program account address
+  uint64 lamports = 4; // Initial balance in lamports.
+  uint64 space = 5; // Space allocated for the new account.
+}
+
+message CreateAccountWithSeed {
+  bytes source = 1; // Funding account address.
+  bytes new_account = 2; // New account address.
+  bytes base = 3; // Base account address for the seed.
+  optional bytes base_account = 4; // Base account address for the seed.
+  bytes owner = 5; // Owner program account address
+  uint64 lamports = 6; // Initial balance in lamports.
+  uint64 space = 7; // Space allocated for the new account.
+  string seed = 8; // Seed used to derive the new account.
+}

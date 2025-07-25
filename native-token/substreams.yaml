@@ -1,0 +1,36 @@
+specVersion: v0.1.0
+package:
+  name: native_token
+  version: v0.2.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: Native Token
+  image: ../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../target/wasm32-unknown-unknown/release/native_token.wasm
+
+protobuf:
+  files:
+    - v1/native-token.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    doc: Native Token
+    inputs:
+      - map: solana_common:blocks_without_votes
+    # blockFilter:
+    #   module: solana_common:program_ids_without_votes
+    #   query:
+    #     string: "program:So11111111111111111111111111111111111111111"
+    output:
+      type: proto:solana.native.token.v1.Events
+
+network: solana

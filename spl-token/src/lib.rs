@@ -45,7 +45,7 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                     }
                 }
             }
-            None => continue,
+            None => {}
         }
 
         // SPL-Token Instructions
@@ -95,7 +95,7 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
                 transaction.instructions.push(base.clone());
             }
         }
-        if !transaction.instructions.is_empty() {
+        if !transaction.instructions.is_empty() || !transaction.pre_token_balances.is_empty() || !transaction.post_token_balances.is_empty() {
             events.transactions.push(transaction);
         }
     }
