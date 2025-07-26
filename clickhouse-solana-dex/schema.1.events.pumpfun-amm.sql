@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS pumpfun_amm_buy (
     user_quote_amount_in        UInt64
 )
 ENGINE = MergeTree
+PARTITION BY toYYYYMM(datetime)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
@@ -58,9 +59,9 @@ COMMENT 'Pump.fun AMM Swap Buy';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
+ALTER TABLE pumpfun_amm_buy ADD PROJECTION IF NOT EXISTS prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
+ALTER TABLE pumpfun_amm_buy ADD PROJECTION IF NOT EXISTS prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
+ALTER TABLE pumpfun_amm_buy ADD PROJECTION IF NOT EXISTS prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
 
 -- Sell --
 CREATE TABLE IF NOT EXISTS pumpfun_amm_sell AS pumpfun_amm_buy

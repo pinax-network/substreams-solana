@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS jupiter_swap (
     output_amount               UInt64 COMMENT 'Amount of output tokens received'
 )
 ENGINE = MergeTree
+PARTITION BY toYYYYMM(datetime)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index

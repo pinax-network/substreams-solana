@@ -65,33 +65,45 @@ CREATE TABLE IF NOT EXISTS swaps (
 )
 ENGINE = MergeTree
 -- Optimized for swaps by AMM DEXs ordered by latest/oldest timestamp
+PARTITION BY toYYYYMM(datetime)
 ORDER BY (
-    program_id, amm, amm_pool, timestamp, block_num,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Swaps, used by all AMMs and DEXs';
 
--- PROJECTIONS (Full) --
--- all the data from the original table will be duplicated
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_timestamp (SELECT * ORDER BY timestamp);
+-- -- PROJECTIONS (Full) --
+-- -- all the data from the original table will be duplicated
+-- ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_timestamp (SELECT * ORDER BY timestamp);
+
+-- Increase index granularity to 64 MiB (default is 1 MiB) to reduce the number of index granules
+ALTER TABLE swaps
+  MODIFY SETTING
+    index_granularity = 8192,              -- 4× rows per granule
+    index_granularity_bytes = 33554432;     -- 32 MiB; keep this permissive
+
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_user        (SELECT user,        _part_offset ORDER BY user);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_type  (SELECT input_type,  _part_offset ORDER BY input_type);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_type (SELECT output_type, _part_offset ORDER BY output_type);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_name  (SELECT input_name,  _part_offset ORDER BY input_name);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_name (SELECT output_name, _part_offset ORDER BY output_name);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_amount(SELECT input_amount, _part_offset ORDER BY input_amount);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_amount(SELECT output_amount, _part_offset ORDER BY output_amount);
+ALTER TABLE swaps
+    ADD COLUMN IF NOT EXISTS signature_hash   UInt64 MATERIALIZED cityHash64(signature) AFTER signature,
+    ADD COLUMN IF NOT EXISTS fee_payer_hash   UInt64 MATERIALIZED cityHash64(fee_payer) AFTER fee_payer,
+    ADD COLUMN IF NOT EXISTS signer_hash      UInt64 MATERIALIZED cityHash64(signer) AFTER signer,
+    ADD COLUMN IF NOT EXISTS user_hash        UInt64 MATERIALIZED cityHash64(user) AFTER user,
+    ADD COLUMN IF NOT EXISTS program_id_hash  UInt64 MATERIALIZED cityHash64(program_id) AFTER program_id,
+    ADD COLUMN IF NOT EXISTS amm_hash         UInt64 MATERIALIZED cityHash64(amm) AFTER amm,
+    ADD COLUMN IF NOT EXISTS amm_pool_hash    UInt64 MATERIALIZED cityHash64(amm_pool) AFTER amm_pool,
+    ADD COLUMN IF NOT EXISTS input_mint_hash  UInt64 MATERIALIZED cityHash64(input_mint) AFTER input_mint,
+    ADD COLUMN IF NOT EXISTS output_mint_hash UInt64 MATERIALIZED cityHash64(output_mint) AFTER output_mint;
+
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_fee_payer_ts ( SELECT * ORDER BY (fee_payer_hash, timestamp) );
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_signer_ts ( SELECT * ORDER BY (signer_hash, timestamp) );
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_user_ts ( SELECT * ORDER BY (user_hash, timestamp) );
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_program_id_ts ( SELECT * ORDER BY (program_id_hash, timestamp) );
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_amm_ts ( SELECT * ORDER BY (amm_hash, timestamp) );
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_amm_pool_ts ( SELECT * ORDER BY (amm_pool_hash, timestamp) );
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_input_mint_ts ( SELECT * ORDER BY (input_mint_hash, timestamp) );
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_output_mint_ts ( SELECT * ORDER BY (output_mint_hash, timestamp) );
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps

@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     pool_pc                     UInt64
 )
 ENGINE = MergeTree
+PARTITION BY toYYYYMM(datetime)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
@@ -65,9 +66,9 @@ COMMENT 'Raydium AMM V4 Swap Base In';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
 
 --- SwapBaseOut --
 CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in
