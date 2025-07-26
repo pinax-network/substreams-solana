@@ -47,7 +47,7 @@ message TransferWithSeed {
   bytes destination = 1;
   uint64 lamports = 2;
   bytes source = 3;
-  bytes source_base = 4; // Base account addresss for the seed.
+  bytes source_base = 4; // Base account address for the seed.
   bytes source_owner = 5; // Owner of the source account.
   string source_seed = 6; // Seed used to derive the source account.
 }
