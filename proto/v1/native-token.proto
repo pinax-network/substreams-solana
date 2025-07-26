@@ -63,8 +63,8 @@ message CreateAccount {
 message CreateAccountWithSeed {
   bytes source = 1; // Funding account address.
   bytes new_account = 2; // New account address.
-  bytes base = 3; // Base account address for the seed.
-  optional bytes base_account = 4; // Base account address for the seed.
+  bytes base = 3; // Primary base account address used for deriving the seed.
+  optional bytes base_account = 4; // Optional secondary account related to the base.
   bytes owner = 5; // Owner program account address
   uint64 lamports = 6; // Initial balance in lamports.
   uint64 space = 7; // Space allocated for the new account.
