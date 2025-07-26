@@ -74,9 +74,6 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
         if !transaction.instructions.is_empty() || !transaction.post_balances.is_empty() || !transaction.pre_balances.is_empty() {
             events.transactions.push(transaction);
         }
-        if tx_meta.fee == 0 {
-            panic!("Transaction fee should not be zero {}", base58::encode(tx.hash()));
-        }
     }
     Ok(events)
 }
