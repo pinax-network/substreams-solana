@@ -28,6 +28,7 @@ message Instruction {
         TransferWithSeed transfer_with_seed = 11;
         CreateAccount create_account = 12;
         CreateAccountWithSeed create_account_with_seed = 13;
+        WithdrawNonceAccount withdraw_nonce_account = 14;
     }
 }
 
@@ -68,4 +69,11 @@ message CreateAccountWithSeed {
   uint64 lamports = 6; // Initial balance in lamports.
   uint64 space = 7; // Space allocated for the new account.
   string seed = 8; // Seed used to derive the new account.
+}
+
+message WithdrawNonceAccount {
+    bytes destination = 1; // Recipient account address.
+    uint64 lamports = 2; // Amount to withdraw in lamports.
+    bytes nonce_account = 3; // Nonce account address.
+    bytes nonce_authority = 4; // Nonce authority account address.
 }

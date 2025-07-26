@@ -42,7 +42,7 @@ pub struct Instruction {
     pub stack_height: u32,
     #[prost(bool, tag="3")]
     pub is_root: bool,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -59,6 +59,8 @@ pub mod instruction {
         CreateAccount(super::CreateAccount),
         #[prost(message, tag="13")]
         CreateAccountWithSeed(super::CreateAccountWithSeed),
+        #[prost(message, tag="14")]
+        WithdrawNonceAccount(super::WithdrawNonceAccount),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -144,5 +146,21 @@ pub struct CreateAccountWithSeed {
     /// Seed used to derive the new account.
     #[prost(string, tag="8")]
     pub seed: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WithdrawNonceAccount {
+    /// Recipient account address.
+    #[prost(bytes="vec", tag="1")]
+    pub destination: ::prost::alloc::vec::Vec<u8>,
+    /// Amount to withdraw in lamports.
+    #[prost(uint64, tag="2")]
+    pub lamports: u64,
+    /// Nonce account address.
+    #[prost(bytes="vec", tag="3")]
+    pub nonce_account: ::prost::alloc::vec::Vec<u8>,
+    /// Nonce authority account address.
+    #[prost(bytes="vec", tag="4")]
+    pub nonce_authority: ::prost::alloc::vec::Vec<u8>,
 }
 // @@protoc_insertion_point(module)

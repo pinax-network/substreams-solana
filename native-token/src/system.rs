@@ -9,7 +9,6 @@ pub fn unpack_transfers(instruction: &InstructionView) -> Option<pb::instruction
         .with_fixed_int_encoding() // NOT variable‑int
         .with_little_endian();
 
-    // let cfg = config::standard();
     let (sys_ix, _): (SystemInstruction, usize) = bincode::serde::decode_from_slice(instruction.data(), cfg).ok()?;
 
     match sys_ix {
@@ -73,6 +72,18 @@ pub fn unpack_transfers(instruction: &InstructionView) -> Option<pb::instruction
                 base_account,
                 base: base.to_bytes().to_vec(),
                 seed,
+            }))
+        }
+        SystemInstruction::WithdrawNonceAccount { 0: lamports } if lamports > 0 => {
+            let nonce_account = instruction.accounts()[0].0.to_vec();
+            let destination = instruction.accounts()[1].0.to_vec();
+            let nonce_authority = instruction.accounts()[4].0.to_vec();
+
+            Some(pb::instruction::Instruction::WithdrawNonceAccount(pb::WithdrawNonceAccount {
+                nonce_account,
+                destination,
+                lamports,
+                nonce_authority,
             }))
         }
         _ => None,
