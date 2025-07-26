@@ -7,9 +7,14 @@ const SLOT_DURATION_MS: u64 = 400; // Slot duration in milliseconds
 
 pub const SOLANA_TOKEN_PROGRAM_KEG: &str = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 pub const SOLANA_TOKEN_PROGRAM_ZQB: &str = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+pub const SYSTEM_PROGRAM: &str = "11111111111111111111111111111111";
 
 pub fn is_spl_token_program(program_id: &str) -> bool {
     program_id == SOLANA_TOKEN_PROGRAM_KEG || program_id == SOLANA_TOKEN_PROGRAM_ZQB
+}
+
+pub fn is_system_program(program_id: &str) -> bool {
+    program_id == SYSTEM_PROGRAM
 }
 
 pub fn to_timestamp(clock: &Clock) -> u64 {

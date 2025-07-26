@@ -30,6 +30,15 @@ pub mod raydium {
     }
 }
 pub mod solana {
+    pub mod native {
+        pub mod token {
+            // @@protoc_insertion_point(attribute:solana.native.token.v1)
+            pub mod v1 {
+                include!("solana.native.token.v1.rs");
+                // @@protoc_insertion_point(solana.native.token.v1)
+            }
+        }
+    }
     pub mod spl {
         pub mod token {
             // @@protoc_insertion_point(attribute:solana.spl.token.v1)

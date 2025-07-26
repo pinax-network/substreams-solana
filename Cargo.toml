@@ -3,6 +3,7 @@ members = [
   # Tokens
   "clickhouse-solana-tokens",
   "spl-token",
+  "native-token",
 
   # DEXs
   "clickhouse-solana-dex",
