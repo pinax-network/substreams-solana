@@ -4,7 +4,7 @@ SELECT
     sum(rows) AS total_rows,
     formatReadableSize(sum(data_compressed_bytes)) AS on_disk
 FROM system.parts
-WHERE table = 'swaps' AND active
+WHERE database = currentDatabase() AND active
 GROUP BY table
 ORDER BY sum(data_compressed_bytes) DESC;
 
@@ -13,8 +13,7 @@ SELECT name,
     sum(rows) AS total_rows,
     formatReadableSize(sum(data_compressed_bytes)) AS on_disk
 FROM system.projection_parts
-WHERE database = currentDatabase()
-  AND table    = 'swaps' AND active = 1
+WHERE database = currentDatabase() AND active = 1
 GROUP BY name
 ORDER BY sum(data_compressed_bytes) DESC;
 
@@ -25,7 +24,7 @@ SELECT
     type,
     granularity
 FROM system.data_skipping_indices
-WHERE table = 'swaps'
+WHERE database = currentDatabase()
 ORDER BY data_compressed_bytes DESC;
 
 -- Make the optimiser show its hand with EXPLAIN
@@ -189,6 +188,15 @@ WHERE _part_starting_offset + _part_offset IN (
     SELECT _part_starting_offset + _part_offset
     FROM pumpfun_amm_buy
     WHERE signature = (SELECT signature FROM pumpfun_amm_buy ORDER BY rand() LIMIT 1)
+);
+
+EXPLAIN indexes =1
+SELECT *
+FROM pumpfun_amm_buy
+WHERE _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM pumpfun_amm_buy
+    WHERE fee_payer = 'ECxHsxqV2Qe3G8wGXvMmKsnwMEepkoiYwSCpVdwYcevu'
 );
 
 EXPLAIN indexes =1
