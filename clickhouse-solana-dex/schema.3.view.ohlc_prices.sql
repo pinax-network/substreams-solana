@@ -1,7 +1,6 @@
 -- OHLCV prices --
 CREATE TABLE IF NOT EXISTS ohlc_prices (
-    timestamp               UInt32 COMMENT 'beginning of the bar',
-    datetime                DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
+    timestamp               DateTime('UTC', 0) COMMENT 'beginning of the bar',
 
     -- OrderBy --
     program_id              LowCardinality(FixedString(44)),
@@ -74,7 +73,7 @@ WITH
     if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1
 
 SELECT
-    toStartOfHour(datetime)    AS timestamp,
+    toStartOfHour(timestamp)    AS timestamp,
     program_id, amm, amm_pool, mint0, mint1,
 
     /* OHLC */

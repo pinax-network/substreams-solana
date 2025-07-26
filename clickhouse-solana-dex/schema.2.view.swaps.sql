@@ -5,8 +5,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     -- block --
     block_num                   UInt32,
     block_hash                  FixedString(44),
-    timestamp                   UInt32,
-    datetime                    DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
+    timestamp                   DateTime('UTC', 0),
 
     -- ordering --
     transaction_index           UInt32,
@@ -65,23 +64,12 @@ CREATE TABLE IF NOT EXISTS swaps (
 )
 ENGINE = MergeTree
 -- Optimized for swaps by AMM DEXs ordered by latest/oldest timestamp
-PARTITION BY toYYYYMM(datetime)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Swaps, used by all AMMs and DEXs';
-
--- -- PROJECTIONS (Full) --
--- -- all the data from the original table will be duplicated
--- ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_timestamp (SELECT * ORDER BY timestamp);
-
--- Increase index granularity to 64 MiB (default is 1 MiB) to reduce the number of index granules
-ALTER TABLE swaps
-  MODIFY SETTING
-    index_granularity = 8192,              -- 4× rows per granule
-    index_granularity_bytes = 33554432;     -- 32 MiB; keep this permissive
-
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field

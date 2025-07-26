@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS pumpfun_buy (
 
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMM(datetime)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index

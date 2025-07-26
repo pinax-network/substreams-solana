@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     -- block --
     block_num                   UInt32,
     block_hash                  FixedString(44),
-    timestamp                   DateTime(0, 'UTC'),
+    timestamp                   DateTime('UTC', 0),
 
     -- ordering --
     transaction_index           UInt32,
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     pool_pc                     UInt64
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMM(datetime)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index

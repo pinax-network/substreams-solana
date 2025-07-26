@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS pumpfun_amm_buy (
     user_quote_amount_in        UInt64
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMM(datetime)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
