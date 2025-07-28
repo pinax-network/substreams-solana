@@ -1,7 +1,6 @@
 -- OHLCV prices --
 CREATE TABLE IF NOT EXISTS ohlc_prices (
-    timestamp               UInt32 COMMENT 'beginning of the bar',
-    datetime                DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
+    timestamp               DateTime('UTC', 0) COMMENT 'beginning of the bar',
 
     -- OrderBy --
     program_id              LowCardinality(FixedString(44)),
@@ -33,26 +32,23 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
 
     -- indexes --
     INDEX idx_timestamp         (timestamp)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_program_id        (program_id)                TYPE set(8)         GRANULARITY 4,
-    INDEX idx_amm               (amm)                       TYPE set(128)       GRANULARITY 2,
+    INDEX idx_program_id        (program_id)                TYPE set(8)         GRANULARITY 1,
+    INDEX idx_amm               (amm)                       TYPE set(256)       GRANULARITY 1,
     INDEX idx_amm_pool          (amm_pool)                  TYPE set(512)       GRANULARITY 1,
-    INDEX idx_mint0             (mint0)                     TYPE set(512)       GRANULARITY 1,
-    INDEX idx_mint1             (mint1)                     TYPE set(512)       GRANULARITY 1,
-    INDEX idx_mint_pair         (mint0, mint1)              TYPE set(512)       GRANULARITY 1,
-    INDEX idx_mint0_type        (mint0_type)                TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
-    INDEX idx_mint1_type        (mint1_type)                TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
-    INDEX idx_mint0_name        (mint0_name)                TYPE set(16)        GRANULARITY 1,
-    INDEX idx_mint1_name        (mint1_name)                TYPE set(16)        GRANULARITY 1,
+    INDEX idx_mint0             (mint0)                     TYPE set(1024)      GRANULARITY 1,
+    INDEX idx_mint1             (mint1)                     TYPE set(1024)      GRANULARITY 1,
+    INDEX idx_mint_pair         (mint0, mint1)              TYPE set(1024)      GRANULARITY 1,
 
     -- indexes (volume) --
     INDEX idx_gross_volume0     (gross_volume0)             TYPE minmax         GRANULARITY 1,
     INDEX idx_gross_volume1     (gross_volume1)             TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow0         (net_flow0)                 TYPE minmax         GRANULARITY 1,
     INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1
+    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1,
 )
 ENGINE = AggregatingMergeTree
-ORDER BY (program_id, amm, amm_pool, mint0, mint1, timestamp)
+PARTITION BY toDate(timestamp)
+ORDER BY (timestamp, program_id, amm, amm_pool, mint0, mint1)
 COMMENT 'OHLCV prices for AMM pools, aggregated by hour';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
@@ -74,7 +70,7 @@ WITH
     if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1
 
 SELECT
-    toStartOfHour(datetime)    AS timestamp,
+    toStartOfHour(timestamp)    AS timestamp,
     program_id, amm, amm_pool, mint0, mint1,
 
     /* OHLC */
@@ -92,5 +88,5 @@ SELECT
     uniqState(user)         AS uaw,
     count()                 AS transactions
 FROM swaps
-GROUP BY program_id, amm, amm_pool, mint0, mint1, timestamp;
+GROUP BY timestamp, program_id, amm, amm_pool, mint0, mint1;
 

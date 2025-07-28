@@ -4,7 +4,7 @@ SELECT
     sum(rows) AS total_rows,
     formatReadableSize(sum(data_compressed_bytes)) AS on_disk
 FROM system.parts
-WHERE table = 'swaps' AND active
+WHERE database = currentDatabase() AND active = 1
 GROUP BY table
 ORDER BY sum(data_compressed_bytes) DESC;
 
@@ -13,8 +13,7 @@ SELECT name,
     sum(rows) AS total_rows,
     formatReadableSize(sum(data_compressed_bytes)) AS on_disk
 FROM system.projection_parts
-WHERE database = currentDatabase()
-  AND table    = 'swaps' AND active = 1
+WHERE database = currentDatabase() AND active = 1 AND table = 'swaps'
 GROUP BY name
 ORDER BY sum(data_compressed_bytes) DESC;
 
@@ -25,8 +24,47 @@ SELECT
     type,
     granularity
 FROM system.data_skipping_indices
-WHERE table = 'swaps'
+WHERE database = currentDatabase() AND table = 'swaps'
 ORDER BY data_compressed_bytes DESC;
+
+-- Count parts and their sizes per (proposed) daily partition
+SELECT
+  partition,
+  countIf(active)                AS active_parts,
+  sumIf(rows, active)            AS rows,
+  sumIf(bytes_on_disk, active)   AS bytes,
+  round(bytes / 1048576)         AS mb
+FROM system.parts
+WHERE database = currentDatabase()
+  AND table = 'swaps'
+GROUP BY partition
+ORDER BY partition DESC
+LIMIT 30;
+
+-- See how many parts a last‑24h query would touch
+-- If you already have daily partitions (or you simulate by filtering on toDate(datetime)):
+SELECT
+  countDistinct(partition) AS partitions,
+  count()                  AS parts
+FROM system.parts
+WHERE database = currentDatabase()
+  AND table = 'swaps'
+  AND active
+  AND toDate(max_time) >= today() - 1
+  AND toDate(min_time) <= today();     -- adjust to your timestamp column
+
+
+-- Cache effectiveness (quick read)
+SELECT
+  sumIf(value, event = 'MarkCacheHits')   AS mark_hits,
+  sumIf(value, event = 'MarkCacheMisses') AS mark_misses
+FROM system.events;
+
+SELECT
+  sumIf(value, event = 'FilesystemCacheReadBytes')  AS fs_read_cached,
+  sumIf(value, event = 'FilesystemCacheWriteBytes') AS fs_cached_written
+FROM system.events;
+
 
 -- Make the optimiser show its hand with EXPLAIN
 EXPLAIN PLAN indexes=1
@@ -189,6 +227,15 @@ WHERE _part_starting_offset + _part_offset IN (
     SELECT _part_starting_offset + _part_offset
     FROM pumpfun_amm_buy
     WHERE signature = (SELECT signature FROM pumpfun_amm_buy ORDER BY rand() LIMIT 1)
+);
+
+EXPLAIN indexes =1
+SELECT *
+FROM pumpfun_amm_buy
+WHERE _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM pumpfun_amm_buy
+    WHERE fee_payer = 'ECxHsxqV2Qe3G8wGXvMmKsnwMEepkoiYwSCpVdwYcevu'
 );
 
 EXPLAIN indexes =1

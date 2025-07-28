@@ -5,8 +5,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     -- block --
     block_num                   UInt32,
     block_hash                  FixedString(44),
-    timestamp                   UInt32,
-    datetime                    DateTime('UTC', 0) MATERIALIZED toDateTime(timestamp, 'UTC'),
+    timestamp                   DateTime('UTC', 0),
 
     -- ordering --
     transaction_index           UInt32,
@@ -40,58 +39,43 @@ CREATE TABLE IF NOT EXISTS swaps (
     output_type                 LowCardinality(String) MATERIALIZED token_types(output_mint),
     output_name                 LowCardinality(String) MATERIALIZED token_names(output_mint),
 
+    -- Convert Keys into CityHash64 for faster lookups --
+    -- -83% reduction disk space for FixedString(88) vs. UInt64 --
+    -- https://clickhouse.com/docs/sql-reference/functions/hash-functions#cityhash64 --
+    signature_hash              UInt64  MATERIALIZED cityHash64(signature),
+
     -- indexes -
-    INDEX idx_signature         (signature)         TYPE bloom_filter   GRANULARITY 4,  -- always unique
-    INDEX idx_fee_payer         (fee_payer)         TYPE set(4096)      GRANULARITY 1,
-    INDEX idx_signer            (signer)            TYPE set(4096)      GRANULARITY 1,
-    INDEX idx_block_num         (block_num)         TYPE minmax         GRANULARITY 1,
-    INDEX idx_timestamp         (timestamp)         TYPE minmax         GRANULARITY 1,
-    INDEX idx_program_id        (program_id)        TYPE set(8)         GRANULARITY 1, -- 5 unique programs per granule
-    INDEX idx_program_name      (program_name)      TYPE set(8)         GRANULARITY 1,
+    INDEX idx_program_id        (program_id)        TYPE set(8)                 GRANULARITY 1, -- 5 unique programs per granule
 
     -- indexes for common fields --
-    INDEX idx_user              (user)              TYPE set(4096)      GRANULARITY 1, -- 2500 unique users per granule
-    INDEX idx_amm               (amm)               TYPE set(64)        GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
-    INDEX idx_amm_name          (amm_name)          TYPE set(64)        GRANULARITY 1,
-    INDEX idx_amm_pool          (amm_pool)          TYPE set(256)       GRANULARITY 1, -- 300 unique pools per granule
-    INDEX idx_input_mint        (input_mint)        TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
-    INDEX idx_input_type        (input_type)        TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
-    INDEX idx_output_mint       (output_mint)       TYPE set(512)       GRANULARITY 1, -- 500 unique mints per granule
-    INDEX idx_output_type       (output_type)       TYPE set(4)         GRANULARITY 1, -- USD,ETH,BTC,SOL
-    INDEX idx_input_name        (input_name)        TYPE set(16)        GRANULARITY 1,
-    INDEX idx_output_name       (output_name)       TYPE set(16)        GRANULARITY 1,
-    INDEX idx_input_amount      (input_amount)      TYPE minmax         GRANULARITY 1,
-    INDEX idx_output_amount     (output_amount)     TYPE minmax         GRANULARITY 1
+    INDEX idx_signature         (signature)         TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_fee_payer         (fee_payer)         TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_user              (user)              TYPE bloom_filter(0.005)    GRANULARITY 1, -- 2500 unique users per granule
+    INDEX idx_amm               (amm)               TYPE set(128)               GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
+    INDEX idx_amm_pool          (amm_pool)          TYPE set(1024)              GRANULARITY 1, -- 300 unique pools per granule
+    INDEX idx_input_mint        (input_mint)        TYPE set(1024)              GRANULARITY 1, -- 500 unique mints per granule
+    INDEX idx_output_mint       (output_mint)       TYPE set(1024)              GRANULARITY 1, -- 500 unique mints per granule
 )
 ENGINE = MergeTree
--- Optimized for swaps by AMM DEXs ordered by latest/oldest timestamp
+PARTITION BY toDate(timestamp)
 ORDER BY (
-    program_id, amm, amm_pool, timestamp, block_num,
+    timestamp, block_num,
     block_hash, transaction_index, instruction_index
 )
 COMMENT 'Swaps, used by all AMMs and DEXs';
 
--- PROJECTIONS (Full) --
--- all the data from the original table will be duplicated
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_timestamp (SELECT * ORDER BY timestamp);
-
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_program_id  (SELECT program_id,  _part_offset ORDER BY program_id);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm         (SELECT amm,         _part_offset ORDER BY amm);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm_pool    (SELECT amm_pool,    _part_offset ORDER BY amm_pool);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signature   (SELECT signature,   _part_offset ORDER BY signature);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_fee_payer   (SELECT fee_payer,   _part_offset ORDER BY fee_payer);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signer      (SELECT signer,      _part_offset ORDER BY signer);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_user        (SELECT user,        _part_offset ORDER BY user);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_mint  (SELECT input_mint,  _part_offset ORDER BY input_mint);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, _part_offset ORDER BY output_mint);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_type  (SELECT input_type,  _part_offset ORDER BY input_type);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_type (SELECT output_type, _part_offset ORDER BY output_type);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_name  (SELECT input_name,  _part_offset ORDER BY input_name);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_name (SELECT output_name, _part_offset ORDER BY output_name);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_amount(SELECT input_amount, _part_offset ORDER BY input_amount);
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_amount(SELECT output_amount, _part_offset ORDER BY output_amount);
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signature_hash (SELECT signature_hash, _part_offset ORDER BY (signature_hash));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_program_id (SELECT program_id, timestamp, _part_offset ORDER BY (program_id, timestamp));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY (fee_payer, timestamp));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signer (SELECT signer, timestamp, _part_offset ORDER BY (signer, timestamp));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_user (SELECT user, timestamp, _part_offset ORDER BY (user, timestamp));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm (SELECT amm, timestamp, _part_offset ORDER BY (amm, timestamp));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm_pool (SELECT amm_pool, timestamp, _part_offset ORDER BY (amm_pool, timestamp));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_mint (SELECT input_mint, timestamp, _part_offset ORDER BY (input_mint, timestamp));
+ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, timestamp, _part_offset ORDER BY (output_mint, timestamp));
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps
