@@ -52,7 +52,7 @@ COMMENT 'Jupiter V4 & V6 Swaps';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signature_hash        (SELECT signature_hash, _part_offset ORDER BY (signature_hash));
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_program_id            (SELECT program_id, timestamp _part_offset ORDER BY (program_id, timestamp));
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_fee_payer             (SELECT fee_payer, timestamp _part_offset ORDER BY (fee_payer, timestamp));
-ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signer                (SELECT signer, timestamp _part_offset ORDER BY (signer, timestamp));
+ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signature_hash (SELECT signature_hash, _part_offset ORDER BY signature_hash);
+ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_program_id (SELECT program_id, timestamp, _part_offset ORDER BY program_id, timestamp);
+ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY fee_payer, timestamp);
+ALTER TABLE jupiter_swap ADD PROJECTION IF NOT EXISTS prj_part_signer (SELECT signer, timestamp, _part_offset ORDER BY signer, timestamp);

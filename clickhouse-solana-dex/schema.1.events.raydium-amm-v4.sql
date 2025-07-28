@@ -77,10 +77,10 @@ COMMENT 'Raydium AMM V4 Swap Base In';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signature_hash        (SELECT signature_hash, _part_offset ORDER BY (signature_hash));
-ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_program_id            (SELECT program_id, timestamp _part_offset ORDER BY (program_id, timestamp));
-ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_fee_payer             (SELECT fee_payer, timestamp _part_offset ORDER BY (fee_payer, timestamp));
-ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signer                (SELECT signer, timestamp _part_offset ORDER BY (signer, timestamp));
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signature_hash (SELECT signature_hash, _part_offset ORDER BY signature_hash);
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_program_id (SELECT program_id, timestamp, _part_offset ORDER BY program_id, timestamp);
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY fee_payer, timestamp);
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signer (SELECT signer, timestamp, _part_offset ORDER BY signer, timestamp);
 
 --- SwapBaseOut --
 CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in
