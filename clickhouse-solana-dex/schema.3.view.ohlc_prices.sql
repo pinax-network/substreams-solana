@@ -65,16 +65,18 @@ WITH
     -- net flow of mint0: +in, -out
     if(dir, toInt128(input_amount), -toInt128(output_amount))  AS nf0,
     -- net flow of mint1: +in, -out (signs flipped vs. your original)
-    if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1
+    if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1,
+    timestamp AS ts_event,
+    ts64 AS ts64
 
 SELECT
-    toStartOfHour(timestamp)    AS timestamp,
+    toStartOfHour(ts_event)    AS timestamp,
     program_id, amm, amm_pool, mint0, mint1,
 
     /* OHLC */
-    argMinState(price, toUInt64(timestamp))                 AS open0,
-    quantileDeterministicState(price, toUInt64(timestamp))  AS quantile0,
-    argMaxState(price, toUInt64(timestamp))                 AS close0,
+    argMinState(price, ts64)                 AS open0,
+    quantileDeterministicState(price, ts64)  AS quantile0,
+    argMaxState(price, ts64)                 AS close0,
 
     /* volumes & flows (all in canonical orientation) */
     sum(gv0)                AS gross_volume0,
