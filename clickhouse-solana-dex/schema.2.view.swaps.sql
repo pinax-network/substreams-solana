@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1,
     INDEX idx_fee_payer         (fee_payer)         TYPE bloom_filter(0.005)    GRANULARITY 1,
     INDEX idx_user              (user)              TYPE bloom_filter(0.005)    GRANULARITY 1, -- 2500 unique users per granule
-    INDEX idx_amm               (amm)               TYPE set(256)               GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
-    INDEX idx_amm_pool          (amm_pool)          TYPE set(512)               GRANULARITY 1, -- 300 unique pools per granule
+    INDEX idx_amm               (amm)               TYPE set(128)               GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
+    INDEX idx_amm_pool          (amm_pool)          TYPE set(1024)              GRANULARITY 1, -- 300 unique pools per granule
     INDEX idx_input_mint        (input_mint)        TYPE set(1024)              GRANULARITY 1, -- 500 unique mints per granule
     INDEX idx_output_mint       (output_mint)       TYPE set(1024)              GRANULARITY 1, -- 500 unique mints per granule
 )

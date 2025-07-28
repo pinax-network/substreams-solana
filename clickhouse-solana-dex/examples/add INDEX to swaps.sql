@@ -30,16 +30,17 @@ WHERE status != 'Finished'
 
 -- detect how many unique values
 WITH t AS (
-    SELECT signer, * FROM swaps LIMIT 8192 OFFSET 8000000
+    SELECT signer, * FROM swaps ORDER BY timestamp DESC LIMIT 8192 OFFSET 20000
 ) SELECT
+    uniq(program_id),
     uniq(amm),
     uniq(amm_pool),
+    uniq(input_mint),
+    uniq(output_mint),
     uniq(user),
     uniq(signer),
     uniq(fee_payer),
-    uniq(input_mint),
-    uniq(output_mint)
-FROM t
+FROM t;
 
 -- check the index sizes
 SELECT
