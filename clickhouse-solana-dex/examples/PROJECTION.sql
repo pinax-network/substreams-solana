@@ -4,7 +4,7 @@ SELECT
     sum(rows) AS total_rows,
     formatReadableSize(sum(data_compressed_bytes)) AS on_disk
 FROM system.parts
-WHERE database = currentDatabase() AND active = 1
+WHERE database = currentDatabase() AND active = 1 AND table = 'swaps'
 GROUP BY table
 ORDER BY sum(data_compressed_bytes) DESC;
 

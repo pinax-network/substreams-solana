@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS jupiter_swap (
     INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1
 )
 ENGINE = MergeTree
-PARTITION BY toDate(timestamp)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index

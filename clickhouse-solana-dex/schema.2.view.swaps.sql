@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS swaps (
     INDEX idx_output_mint       (output_mint)       TYPE set(1024)              GRANULARITY 1, -- 500 unique mints per granule
 )
 ENGINE = MergeTree
-PARTITION BY toDate(timestamp)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index

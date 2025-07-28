@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1
 )
 ENGINE = MergeTree
-PARTITION BY toDate(timestamp)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
