@@ -54,10 +54,21 @@ CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_in (
     direction                   Enum8('PC2Coin' = 1, 'Coin2PC' = 2),
     user_source                 UInt64,
     pool_coin                   UInt64,
-    pool_pc                     UInt64
+    pool_pc                     UInt64,
+
+    -- Convert Keys into CityHash64 for faster lookups --
+    -- -83% reduction disk space for FixedString(88) vs. UInt64 --
+    -- https://clickhouse.com/docs/sql-reference/functions/hash-functions#cityhash64 --
+    signature_hash              UInt64  MATERIALIZED cityHash64(signature),
+
+    -- indexes -
+    INDEX idx_program_id        (program_id)        TYPE set(8)                 GRANULARITY 1,
+    INDEX idx_fee_payer         (fee_payer)         TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_signature         (signature)         TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMM(timestamp)
+PARTITION BY toDate(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
@@ -66,9 +77,10 @@ COMMENT 'Raydium AMM V4 Swap Base In';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature);
-ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer);
-ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer);
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signature_hash        (SELECT signature_hash, _part_offset ORDER BY (signature_hash));
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_program_id            (SELECT program_id, timestamp _part_offset ORDER BY (program_id, timestamp));
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_fee_payer             (SELECT fee_payer, timestamp _part_offset ORDER BY (fee_payer, timestamp));
+ALTER TABLE raydium_amm_v4_swap_base_in ADD PROJECTION IF NOT EXISTS prj_part_signer                (SELECT signer, timestamp _part_offset ORDER BY (signer, timestamp));
 
 --- SwapBaseOut --
 CREATE TABLE IF NOT EXISTS raydium_amm_v4_swap_base_out AS raydium_amm_v4_swap_base_in

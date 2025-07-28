@@ -1,0 +1,7 @@
+-- Projection is fully supported in AggregatingMergeTree with deduplicate_merge_projection_mode = throw. Use 'drop' or 'rebuild' option of deduplicate_merge_projection_mode --
+
+ALTER TABLE ohlc_prices ADD PROJECTION IF NOT EXISTS prj_part_program_id (SELECT program_id, timestamp, _part_offset ORDER BY (program_id, timestamp));
+ALTER TABLE ohlc_prices ADD PROJECTION IF NOT EXISTS prj_part_amm (SELECT amm, timestamp, _part_offset ORDER BY (amm, timestamp));
+ALTER TABLE ohlc_prices ADD PROJECTION IF NOT EXISTS prj_part_amm_pool (SELECT amm_pool, timestamp, _part_offset ORDER BY (amm_pool, timestamp));
+ALTER TABLE ohlc_prices ADD PROJECTION IF NOT EXISTS prj_part_mint0 (SELECT mint0, timestamp, _part_offset ORDER BY (mint0, timestamp));
+ALTER TABLE ohlc_prices ADD PROJECTION IF NOT EXISTS prj_part_mint1 (SELECT mint1, timestamp, _part_offset ORDER BY (mint1, timestamp));
