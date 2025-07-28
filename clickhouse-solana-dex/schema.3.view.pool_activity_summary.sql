@@ -34,7 +34,6 @@ ORDER BY (program_id, amm, amm_pool, mint0, mint1)
 COMMENT 'Summary of pool activity (transactions) for AMM pools';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pool_activity_summary
-REFRESH EVERY 10 MINUTE APPEND
 TO pool_activity_summary
 AS
 WITH

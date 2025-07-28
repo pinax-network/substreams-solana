@@ -51,7 +51,6 @@ ORDER BY (timestamp, program_id, amm, amm_pool, mint0, mint1)
 COMMENT 'OHLCV prices for AMM pools, aggregated by hour';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ohlc_prices
-REFRESH EVERY 10 MINUTE APPEND
 TO ohlc_prices
 AS
 WITH
