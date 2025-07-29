@@ -145,4 +145,4 @@ ALTER TABLE remove_token_metadata_field
     ADD COLUMN IF NOT EXISTS metadata                FixedString(44),
     ADD COLUMN IF NOT EXISTS update_authority        FixedString(44),
     ADD COLUMN IF NOT EXISTS `key`                   String,
-    ADD COLUMN IF NOT EXISTS idempotent              Bool DEFAULT false; -- Whether the removal is idempotent
+    ADD COLUMN IF NOT EXISTS idempotent              Bool DEFAULT false COMMENT 'Whether the removal is idempotent';

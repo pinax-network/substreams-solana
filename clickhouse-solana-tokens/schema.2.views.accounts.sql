@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS accounts (
 ORDER BY (account, mint)
 COMMENT 'Solana Accounts, used by SPL Tokens';
 
+ALTER TABLE accounts ADD PROJECTION IF NOT EXISTS prj_owner (SELECT * ORDER BY owner);
+
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_account
 TO accounts AS
 SELECT
@@ -18,7 +20,7 @@ SELECT
     mint
 FROM initialize_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS initialize_immutable_owner
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_immutable_owner
 TO accounts AS
 SELECT
     block_num,
@@ -27,7 +29,7 @@ SELECT
     account AS owner
 FROM initialize_immutable_owner;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS close_account
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account
 TO accounts AS
 SELECT
     block_num,

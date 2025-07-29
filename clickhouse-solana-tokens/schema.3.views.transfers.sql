@@ -9,7 +9,7 @@ ALTER TABLE transfers
     -- require `decimals` to be present for token transfers
     DROP COLUMN IF EXISTS decimals,
     DROP COLUMN IF EXISTS decimals_raw,
-    ADD COLUMN decimals             UInt8;
+    ADD COLUMN decimals UInt8;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_token_transfers
 TO transfers AS
