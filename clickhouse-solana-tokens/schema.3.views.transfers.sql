@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS transfers AS spl_token_transfers
+CREATE TABLE IF NOT EXISTS transfers AS spl_transfer
 COMMENT 'SPL 2022 & Native token transfers';
 
 -- SPL Token Transfers --
@@ -15,7 +15,7 @@ ALTER TABLE transfers
     DROP COLUMN IF EXISTS mint_raw,
     ADD COLUMN mint FixedString(44);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_token_transfers
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
 SELECT
     -- base fields --
@@ -45,7 +45,7 @@ SELECT
     -- JOIN fields --
     a1.owner AS source_owner,
     a2.owner AS destination_owner
-FROM spl_token_transfers AS t
+FROM spl_transfer AS t
 JOIN accounts AS a1 ON (t.mint = a1.mint AND t.source = a1.account)
 JOIN accounts AS a2 ON (t.mint = a2.mint AND t.destination = a2.account)
 JOIN mints AS m ON m.mint = t.mint

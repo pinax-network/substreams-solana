@@ -1,183 +1,156 @@
-use common::clickhouse::{common_key, set_authority, set_clock, set_instruction, set_ordering, set_pumpfun_amm_instruction_v2};
-use proto::pb::solana::spl;
+use common::clickhouse::{common_key_v2, set_clock, set_native_token_instruction_v2, set_native_token_transaction_v2};
+use proto::pb::solana::native::token::v1 as pb;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
 
-pub fn process_spl_token_transfers(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: spl::token::transfers::v1::Events) {
-    for event in events.initialize_accounts {
-        handle_initialize_account(tables, clock, event);
+pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
+    for (transaction_index, transaction) in events.transactions.iter().enumerate() {
+        // // Token Balances
+        // for (i, balance) in transaction.post_token_balances.iter().enumerate() {
+        //     handle_token_balances("post_token_balances", tables, clock, transaction, balance, transaction_index, i);
+        // }
+        // for (i, balance) in transaction.pre_token_balances.iter().enumerate() {
+        //     handle_token_balances("pre_token_balances", tables, clock, transaction, balance, transaction_index, i);
+        // }
+        for (i, instruction) in transaction.instructions.iter().enumerate() {
+            match &instruction.instruction {
+                Some(pb::instruction::Instruction::Transfer(data)) => {
+                    handle_transfer(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::TransferWithSeed(data)) => {
+                    handle_transfer_with_seed(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::WithdrawNonceAccount(data)) => {
+                    handle_withdraw_nonce_account(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::CreateAccount(data)) => {
+                    handle_create_account(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::CreateAccountWithSeed(data)) => {
+                    create_account_with_seed(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                _ => {}
+            }
+        }
     }
-    for event in events.initialize_mints {
-        handle_initialize_mint(tables, clock, event);
-    }
-    // for event in events.approves {
-    //     handle_approve(tables, clock, event);
-    // }
-    // for event in events.revokes {
-    //     handle_revoke(tables, clock, event);
-    // }
-    // -- Transfers --
-    for event in events.transfers {
-        handle_transfer(tables, clock, event);
-    }
-    // for event in events.mints {
-    //     handle_transfer(tables, clock, event);
-    // }
-    // for event in events.burns {
-    //     handle_transfer(tables, clock, event);
-    // }
 }
 
-fn handle_transfer(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::Transfer) {
-    let key = common_key(&clock, event.execution_index as u64);
-    let instruction = event.instruction().as_str_name();
-
-    let mint_raw = match event.mint {
-        Some(mint) => base58::encode(mint),
-        None => "".to_string(),
-    };
-    let decimals_raw = match event.decimals {
-        Some(decimals) => decimals.to_string(),
-        None => "".to_string(),
-    };
+fn handle_transfer(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::Transfer,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("transfers_raw", key)
-        .set("source", base58::encode(event.source))
-        .set("destination", base58::encode(event.destination))
-        .set("amount", event.amount.to_string())
-        // -- SPL Token-2022 --
-        .set("mint_raw", mint_raw)
-        .set("decimals_raw", decimals_raw.to_string());
+        .create_row("native_transfer", key)
+        .set("source", base58::encode(&data.source))
+        .set("destination", base58::encode(&data.destination))
+        .set("lamports", data.lamports);
 
-    set_instruction(event.tx_hash, event.program_id, instruction, row);
-    set_authority(event.authority, event.multisig_authority, row);
-    set_pumpfun_amm_instruction_v2(instruction, row);
-    set_pumpfun_amm_transaction_v2(transaction, row);
-    // set_ordering(
-    //     event.execution_index,
-    //     event.instruction_index,
-    //     event.inner_instruction_index,
-    //     event.stack_height,
-    //     clock,
-    //     row,
-    // );
+    set_native_token_instruction_v2(instruction, row);
+    set_native_token_transaction_v2(transaction, row);
     set_clock(clock, row);
 }
 
-fn handle_initialize_account(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::InitializeAccount) {
-    let instruction = event.instruction().as_str_name();
-
-    // -- key --
-    let mint = base58::encode(event.mint);
-    let account = base58::encode(event.account);
-    let program_id: String = base58::encode(event.program_id.clone());
-    let key = [
-        ("account", account.to_string()),
-        ("mint", mint.to_string()),
-        ("program_id", program_id.to_string()),
-    ];
-
+fn handle_transfer_with_seed(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::TransferWithSeed,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("initialize_accounts", key)
-        .set("account", account)
-        .set("mint", mint)
-        .set("owner", base58::encode(event.owner));
+        .create_row("native_transfer_with_seed", key)
+        .set("source", base58::encode(&data.source))
+        .set("destination", base58::encode(&data.destination))
+        .set("lamports", data.lamports)
+        .set("source_base", base58::encode(&data.source_base))
+        .set("source_owner", base58::encode(&data.source_owner))
+        .set("source_seed", data.source_seed.clone());
 
-    set_instruction(event.tx_hash, event.program_id, instruction, row);
-    set_ordering(
-        event.execution_index,
-        event.instruction_index,
-        event.inner_instruction_index,
-        event.stack_height,
-        clock,
-        row,
-    );
+    set_native_token_instruction_v2(instruction, row);
+    set_native_token_transaction_v2(transaction, row);
     set_clock(clock, row);
 }
 
-fn handle_initialize_mint(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::InitializeMint) {
-    let instruction = event.instruction().as_str_name();
-
-    // -- key --
-    let mint = base58::encode(event.mint);
-    let program_id: String = base58::encode(event.program_id.clone());
-    let key = [("mint", mint.to_string()), ("program_id", program_id.to_string())];
-
+fn handle_create_account(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::CreateAccount,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("initialize_mints", key)
-        .set("mint", mint)
-        .set("mint_authority", base58::encode(event.mint_authority))
-        .set(
-            "freeze_authority",
-            event.freeze_authority.as_ref().map_or("".to_string(), |fa| base58::encode(fa)),
-        )
-        .set("decimals", event.decimals);
+        .create_row("create_account", key)
+        .set("source", base58::encode(&data.source))
+        .set("new_account", base58::encode(&data.new_account))
+        .set("owner", base58::encode(&data.owner))
+        .set("lamports", data.lamports)
+        .set("space", data.space);
 
-    set_instruction(event.tx_hash, event.program_id, instruction, row);
-    set_ordering(
-        event.execution_index,
-        event.instruction_index,
-        event.inner_instruction_index,
-        event.stack_height,
-        clock,
-        row,
-    );
+    set_native_token_instruction_v2(instruction, row);
+    set_native_token_transaction_v2(transaction, row);
     set_clock(clock, row);
 }
 
-fn handle_approve(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::Approve) {
-    let key = common_key(&clock, event.execution_index as u64);
-    let instruction = event.instruction().as_str_name();
-
-    let mint_raw = match event.mint {
-        Some(mint) => base58::encode(mint),
+fn create_account_with_seed(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::CreateAccountWithSeed,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let base_account_raw = match &data.base_account {
+        Some(base_account) => base58::encode(base_account),
         None => "".to_string(),
     };
-    let decimals_raw = match event.decimals {
-        Some(decimals) => decimals.to_string(),
-        None => "".to_string(),
-    };
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("approves", key)
-        .set("source", base58::encode(event.source))
-        .set("delegate", base58::encode(event.delegate))
-        .set("owner", base58::encode(event.owner))
-        .set("amount", event.amount.to_string())
-        // -- SPL Token-2022 --
-        .set("mint_raw", mint_raw)
-        .set("decimals_raw", decimals_raw.to_string());
+        .create_row("create_account_with_seed", key)
+        .set("source", base58::encode(&data.source))
+        .set("new_account", base58::encode(&data.new_account))
+        .set("base", base58::encode(&data.base))
+        .set("base_account_raw", base_account_raw)
+        .set("owner", base58::encode(&data.owner))
+        .set("lamports", data.lamports)
+        .set("space", data.space)
+        .set("seed", data.seed.clone());
 
-    set_instruction(event.tx_hash, event.program_id, instruction, row);
-    set_authority(event.authority, event.multisig_authority, row);
-    set_ordering(
-        event.execution_index,
-        event.instruction_index,
-        event.inner_instruction_index,
-        event.stack_height,
-        clock,
-        row,
-    );
+    set_native_token_instruction_v2(instruction, row);
+    set_native_token_transaction_v2(transaction, row);
     set_clock(clock, row);
 }
 
-fn handle_revoke(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, event: spl::token::transfers::v1::Revoke) {
-    let key = common_key(&clock, event.execution_index as u64);
-    let instruction = event.instruction().as_str_name();
-
+fn handle_withdraw_nonce_account(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::WithdrawNonceAccount,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("revokes", key)
-        .set("source", base58::encode(event.source))
-        .set("owner", base58::encode(event.owner));
+        .create_row("withdraw_nonce_account", key)
+        .set("destination", base58::encode(&data.destination))
+        .set("lamports", data.lamports)
+        .set("nonce_account", base58::encode(&data.nonce_account))
+        .set("nonce_authority", base58::encode(&data.nonce_authority));
 
-    set_instruction(event.tx_hash, event.program_id, instruction, row);
-    set_authority(event.authority, event.multisig_authority, row);
-    set_ordering(
-        event.execution_index,
-        event.instruction_index,
-        event.inner_instruction_index,
-        event.stack_height,
-        clock,
-        row,
-    );
+    set_native_token_instruction_v2(instruction, row);
+    set_native_token_transaction_v2(transaction, row);
     set_clock(clock, row);
 }

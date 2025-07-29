@@ -1,7 +1,7 @@
 -- SPL Token Transfers --
-CREATE TABLE IF NOT EXISTS spl_token_transfers AS base_events
-COMMENT 'SPL 2022 token transfers';
-ALTER TABLE spl_token_transfers
+CREATE TABLE IF NOT EXISTS spl_transfer AS base_events
+COMMENT 'SPL Token Transfer/Burn/Mint events';
+ALTER TABLE spl_transfer
     -- authority --
     ADD COLUMN IF NOT EXISTS authority               FixedString(44),
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
