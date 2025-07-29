@@ -17,17 +17,13 @@ CREATE TABLE IF NOT EXISTS pool_activity_summary (
     transactions                UInt64,
 
     -- indexes --
-    INDEX idx_program_id        (program_id)            TYPE set(8)            GRANULARITY 1,
-    INDEX idx_amm               (amm)                   TYPE set(256)          GRANULARITY 1,
-    INDEX idx_amm_pool          (amm_pool)              TYPE set(1024)         GRANULARITY 1,
-    INDEX idx_mint0             (mint0)                 TYPE set(1024)         GRANULARITY 1,
-    INDEX idx_mint1             (mint1)                 TYPE set(1024)         GRANULARITY 1,
-    INDEX idx_mint_pair         (mint0, mint1)          TYPE set(1024)         GRANULARITY 1,
-    INDEX idx_mint0_type        (mint0_type)            TYPE set(4)            GRANULARITY 1, -- USD,ETH,BTC,SOL
-    INDEX idx_mint1_type        (mint1_type)            TYPE set(4)            GRANULARITY 1, -- USD,ETH,BTC,SOL
-    INDEX idx_mint0_name        (mint0_name)            TYPE set(16)           GRANULARITY 1,
-    INDEX idx_mint1_name        (mint1_name)            TYPE set(16)           GRANULARITY 1,
-    INDEX idx_transactions      (transactions)          TYPE minmax            GRANULARITY 1
+    INDEX idx_program_id        (program_id)            TYPE set(8)                 GRANULARITY 1,
+    INDEX idx_amm               (amm)                   TYPE set(256)               GRANULARITY 1,
+    INDEX idx_amm_pool          (amm_pool)              TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_mint0             (mint0)                 TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_mint1             (mint1)                 TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_mint_pair         (mint0, mint1)          TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_transactions      (transactions)          TYPE minmax                 GRANULARITY 1
 )
 ENGINE = SummingMergeTree
 ORDER BY (program_id, amm, amm_pool, mint0, mint1)
