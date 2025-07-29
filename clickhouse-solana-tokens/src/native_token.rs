@@ -91,7 +91,7 @@ fn handle_create_account(
 ) {
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("create_account", key)
+        .create_row("system_create_account", key)
         .set("source", base58::encode(&data.source))
         .set("new_account", base58::encode(&data.new_account))
         .set("owner", base58::encode(&data.owner))
@@ -118,7 +118,7 @@ fn create_account_with_seed(
     };
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("create_account_with_seed", key)
+        .create_row("system_create_account_with_seed", key)
         .set("source", base58::encode(&data.source))
         .set("new_account", base58::encode(&data.new_account))
         .set("base", base58::encode(&data.base))
@@ -144,7 +144,7 @@ fn handle_withdraw_nonce_account(
 ) {
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("withdraw_nonce_account", key)
+        .create_row("system_withdraw_nonce_account", key)
         .set("destination", base58::encode(&data.destination))
         .set("lamports", data.lamports)
         .set("nonce_account", base58::encode(&data.nonce_account))

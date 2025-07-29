@@ -96,7 +96,7 @@ fn handle_transfer(
     };
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("spl_token_transfer", key)
+        .create_row("spl_transfer", key)
         .set("source", base58::encode(&data.source))
         .set("destination", base58::encode(&data.destination))
         .set("amount", data.amount)
