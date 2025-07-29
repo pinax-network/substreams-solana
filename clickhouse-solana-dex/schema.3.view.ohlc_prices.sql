@@ -31,20 +31,20 @@ CREATE TABLE IF NOT EXISTS ohlc_prices (
     transactions            SimpleAggregateFunction(sum, UInt64) COMMENT 'number of transactions in the window',
 
     -- indexes --
-    INDEX idx_timestamp         (timestamp)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_program_id        (program_id)                TYPE set(8)         GRANULARITY 1,
-    INDEX idx_amm               (amm)                       TYPE set(256)       GRANULARITY 1,
-    INDEX idx_amm_pool          (amm_pool)                  TYPE set(512)       GRANULARITY 1,
-    INDEX idx_mint0             (mint0)                     TYPE set(1024)      GRANULARITY 1,
-    INDEX idx_mint1             (mint1)                     TYPE set(1024)      GRANULARITY 1,
-    INDEX idx_mint_pair         (mint0, mint1)              TYPE set(1024)      GRANULARITY 1,
+    INDEX idx_timestamp         (timestamp)         TYPE minmax                 GRANULARITY 1,
+    INDEX idx_program_id        (program_id)        TYPE set(8)                 GRANULARITY 1,
+    INDEX idx_amm               (amm)               TYPE set(256)               GRANULARITY 1,
+    INDEX idx_amm_pool          (amm_pool)          TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_mint0             (mint0)             TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_mint1             (mint1)             TYPE bloom_filter(0.005)    GRANULARITY 1,
+    INDEX idx_mint_pair         (mint0, mint1)      TYPE bloom_filter(0.005)    GRANULARITY 1,
 
     -- indexes (volume) --
-    INDEX idx_gross_volume0     (gross_volume0)             TYPE minmax         GRANULARITY 1,
-    INDEX idx_gross_volume1     (gross_volume1)             TYPE minmax         GRANULARITY 1,
-    INDEX idx_net_flow0         (net_flow0)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_net_flow1         (net_flow1)                 TYPE minmax         GRANULARITY 1,
-    INDEX idx_transactions      (transactions)              TYPE minmax         GRANULARITY 1,
+    INDEX idx_gross_volume0     (gross_volume0)     TYPE minmax         GRANULARITY 1,
+    INDEX idx_gross_volume1     (gross_volume1)     TYPE minmax         GRANULARITY 1,
+    INDEX idx_net_flow0         (net_flow0)         TYPE minmax         GRANULARITY 1,
+    INDEX idx_net_flow1         (net_flow1)         TYPE minmax         GRANULARITY 1,
+    INDEX idx_transactions      (transactions)      TYPE minmax         GRANULARITY 1,
 )
 ENGINE = AggregatingMergeTree
 ORDER BY (timestamp, program_id, amm, amm_pool, mint0, mint1)
@@ -67,7 +67,7 @@ WITH
     -- net flow of mint1: +in, -out (signs flipped vs. your original)
     if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1,
     timestamp AS ts_event,
-    ts64 AS ts64
+    toUInt64(timestamp) AS ts64
 
 SELECT
     toStartOfHour(ts_event)    AS timestamp,

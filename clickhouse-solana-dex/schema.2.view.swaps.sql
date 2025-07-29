@@ -1,81 +1,41 @@
-/* ──────────────────────────────────────────────────────────────────────────
-   0.  Common-fields target table
-   ────────────────────────────────────────────────────────────────────────── */
-CREATE TABLE IF NOT EXISTS swaps (
-    -- block --
-    block_num                   UInt32,
-    block_hash                  FixedString(44),
-    timestamp                   DateTime('UTC', 0),
+-- Solana Swaps --
+CREATE TABLE IF NOT EXISTS swaps AS base_events
+COMMENT 'Solana Swaps';
+ALTER TABLE swaps
+    -- log --
+    ADD COLUMN IF NOT EXISTS amm                         FixedString(44) COMMENT 'AMM protocol (Raydium Liquidity Pool V4)',
+    ADD COLUMN IF NOT EXISTS amm_name                    String MATERIALIZED program_names(amm),
+    ADD COLUMN IF NOT EXISTS amm_pool                    FixedString(44) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',
+    ADD COLUMN IF NOT EXISTS user                        FixedString(44) COMMENT 'User wallet address',
+    ADD COLUMN IF NOT EXISTS input_mint                  FixedString(44) COMMENT 'Input token mint address',
+    ADD COLUMN IF NOT EXISTS input_amount                UInt64 COMMENT 'Amount of input tokens swapped',
+    ADD COLUMN IF NOT EXISTS input_type                  String MATERIALIZED token_types(input_mint),
+    ADD COLUMN IF NOT EXISTS input_name                  String MATERIALIZED token_names(input_mint),
+    ADD COLUMN IF NOT EXISTS output_mint                 FixedString(44) COMMENT 'Output token mint address',
+    ADD COLUMN IF NOT EXISTS output_amount               UInt64 COMMENT 'Amount of output tokens received',
+    ADD COLUMN IF NOT EXISTS output_type                 String MATERIALIZED token_types(output_mint),
+    ADD COLUMN IF NOT EXISTS output_name                 String MATERIALIZED token_names(output_mint),
 
-    -- ordering --
-    transaction_index           UInt32,
-    instruction_index           UInt32,
+    -- INDEX for common fields --
+    ADD INDEX IF NOT EXISTS idx_amm               (amm)               TYPE set(256)               GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
+    ADD INDEX IF NOT EXISTS idx_amm_pool          (amm_pool)          TYPE bloom_filter(0.005)    GRANULARITY 1, -- 300 unique pools per granule
+    ADD INDEX IF NOT EXISTS idx_user              (user)              TYPE bloom_filter(0.005)    GRANULARITY 1, -- 2500 unique users per granule
+    ADD INDEX IF NOT EXISTS idx_input_mint        (input_mint)        TYPE bloom_filter(0.005)    GRANULARITY 1, -- 500 unique mints per granule
+    ADD INDEX IF NOT EXISTS idx_output_mint       (output_mint)       TYPE bloom_filter(0.005)    GRANULARITY 1, -- 500 unique mints per granule
+    ADD INDEX IF NOT EXISTS idx_input_amount      (input_amount)      TYPE minmax                 GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_output_amount     (output_amount)     TYPE minmax                 GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint_pair         (input_mint, output_mint)    TYPE bloom_filter(0.005)    GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint_pair_inverse (output_mint, input_mint)    TYPE bloom_filter(0.005)    GRANULARITY 1,
 
-    -- transaction --
-    signature                   FixedString(88),
-    fee_payer                   FixedString(44),
-    signers_raw                 String,
-    signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
-    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
-    fee                         UInt64 DEFAULT 0,
-    compute_units_consumed      UInt64 DEFAULT 0,
-
-    -- instruction --
-    program_id                  LowCardinality(FixedString(44)),
-    program_name                LowCardinality(String) MATERIALIZED program_names(program_id),
-    stack_height                UInt32,
-
-    -- common fields --
-    user                        FixedString(44)                 COMMENT 'User wallet address',
-    amm                         LowCardinality(FixedString(44)) COMMENT 'AMM protocol (Raydium Liquidity Pool V4)',
-    amm_name                    LowCardinality(String) MATERIALIZED program_names(amm),
-    amm_pool                    LowCardinality(FixedString(44)) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',
-    input_mint                  LowCardinality(FixedString(44)) COMMENT 'Input token mint address',
-    input_amount                UInt64                          COMMENT 'Amount of input tokens swapped',
-    input_type                  LowCardinality(String) MATERIALIZED token_types(input_mint),
-    input_name                  LowCardinality(String) MATERIALIZED token_names(input_mint),
-    output_mint                 LowCardinality(FixedString(44)) COMMENT 'Output token mint address',
-    output_amount               UInt64                          COMMENT 'Amount of output tokens received',
-    output_type                 LowCardinality(String) MATERIALIZED token_types(output_mint),
-    output_name                 LowCardinality(String) MATERIALIZED token_names(output_mint),
-
-    -- Convert Keys into CityHash64 for faster lookups --
-    -- -83% reduction disk space for FixedString(88) vs. UInt64 --
-    -- https://clickhouse.com/docs/sql-reference/functions/hash-functions#cityhash64 --
-    signature_hash              UInt64  MATERIALIZED cityHash64(signature),
-
-    -- indexes -
-    INDEX idx_program_id        (program_id)        TYPE set(8)                 GRANULARITY 1, -- 5 unique programs per granule
-
-    -- indexes for common fields --
-    INDEX idx_signature         (signature)         TYPE bloom_filter(0.005)    GRANULARITY 1,
-    INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1,
-    INDEX idx_fee_payer         (fee_payer)         TYPE bloom_filter(0.005)    GRANULARITY 1,
-    INDEX idx_user              (user)              TYPE bloom_filter(0.005)    GRANULARITY 1, -- 2500 unique users per granule
-    INDEX idx_amm               (amm)               TYPE set(128)               GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6
-    INDEX idx_amm_pool          (amm_pool)          TYPE set(1024)              GRANULARITY 1, -- 300 unique pools per granule
-    INDEX idx_input_mint        (input_mint)        TYPE set(1024)              GRANULARITY 1, -- 500 unique mints per granule
-    INDEX idx_output_mint       (output_mint)       TYPE set(1024)              GRANULARITY 1, -- 500 unique mints per granule
-)
-ENGINE = MergeTree
-PARTITION BY toYYYYMM(timestamp)
-ORDER BY (
-    timestamp, block_num,
-    block_hash, transaction_index, instruction_index
-)
-COMMENT 'Swaps, used by all AMMs and DEXs';
-
--- PROJECTIONS (Part) --
--- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signature_hash (SELECT signature_hash, _part_offset ORDER BY (signature_hash));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_program_id (SELECT program_id, timestamp, _part_offset ORDER BY (program_id, timestamp));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY (fee_payer, timestamp));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_signer (SELECT signer, timestamp, _part_offset ORDER BY (signer, timestamp));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_user (SELECT user, timestamp, _part_offset ORDER BY (user, timestamp));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm (SELECT amm, timestamp, _part_offset ORDER BY (amm, timestamp));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_amm_pool (SELECT amm_pool, timestamp, _part_offset ORDER BY (amm_pool, timestamp));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_input_mint (SELECT input_mint, timestamp, _part_offset ORDER BY (input_mint, timestamp));
-ALTER TABLE swaps ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, timestamp, _part_offset ORDER BY (output_mint, timestamp));
+    -- PROJECTION (Part) --
+    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+    ADD PROJECTION IF NOT EXISTS prj_part_amm (SELECT amm, timestamp, _part_offset ORDER BY (amm, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_part_amm_pool (SELECT amm_pool, timestamp, _part_offset ORDER BY (amm_pool, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_part_user (SELECT user, timestamp, _part_offset ORDER BY (user, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_part_input_mint (SELECT input_mint, timestamp, _part_offset ORDER BY (input_mint, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, timestamp, _part_offset ORDER BY (output_mint, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_part_input_amount (SELECT input_amount, timestamp, _part_offset ORDER BY (input_amount, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_part_output_amount (SELECT output_amount, timestamp, _part_offset ORDER BY (output_amount, timestamp));
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps
