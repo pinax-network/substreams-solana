@@ -1,0 +1,436 @@
+use common::clickhouse::{common_key_v2, set_authority, set_clock, set_spl_token_instruction_v2, set_spl_token_transaction_v2};
+use proto::pb::solana::spl::token::v1 as pb;
+use substreams::pb::substreams::Clock;
+use substreams_solana::base58;
+
+pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
+    for (transaction_index, transaction) in events.transactions.iter().enumerate() {
+        // // Token Balances
+        // for (i, balance) in transaction.post_token_balances.iter().enumerate() {
+        //     handle_token_balances("post_token_balances", tables, clock, transaction, balance, transaction_index, i);
+        // }
+        // for (i, balance) in transaction.pre_token_balances.iter().enumerate() {
+        //     handle_token_balances("pre_token_balances", tables, clock, transaction, balance, transaction_index, i);
+        // }
+        for (i, instruction) in transaction.instructions.iter().enumerate() {
+            match &instruction.instruction {
+                // Transfers
+                Some(pb::instruction::Instruction::Transfer(data)) => {
+                    handle_transfer(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::Mint(data)) => {
+                    handle_transfer(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::Burn(data)) => {
+                    handle_transfer(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+
+                // Permissions
+                Some(pb::instruction::Instruction::Approve(data)) => {
+                    handle_approve(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::Revoke(data)) => {
+                    handle_revoke(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::FreezeAccount(data)) => {
+                    handle_freeze_account(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::ThawAccount(data)) => {
+                    handle_thaw_account(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+
+                // Mints
+                Some(pb::instruction::Instruction::InitializeMint(data)) => {
+                    handle_initialize_mint(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+
+                // Accounts
+                Some(pb::instruction::Instruction::InitializeAccount(data)) => {
+                    handle_initialize_account(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::InitializeImmutableOwner(data)) => {
+                    handle_initialize_immutable_owner(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::SetAuthority(data)) => {
+                    handle_set_authority(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::CloseAccount(data)) => {
+                    handle_close_account(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+
+                // Metadata
+                Some(pb::instruction::Instruction::InitializeTokenMetadata(data)) => {
+                    handle_initialize_token_metadata(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::UpdateTokenMetadataField(data)) => {
+                    handle_update_token_metadata_field(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::UpdateTokenMetadataAuthority(data)) => {
+                    handle_update_token_metadata_authority(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                Some(pb::instruction::Instruction::RemoveTokenMetadataField(data)) => {
+                    handle_remove_token_metadata_field(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+fn handle_transfer(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::Transfer,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let mint_raw = match &data.mint {
+        Some(mint) => base58::encode(mint),
+        None => "".to_string(),
+    };
+    let decimals_raw = match &data.decimals {
+        Some(decimals) => decimals.to_string(),
+        None => "".to_string(),
+    };
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("spl_token_transfers", key)
+        .set("source", base58::encode(&data.source))
+        .set("destination", base58::encode(&data.destination))
+        .set("amount", data.amount)
+        // -- SPL Token-2022 --
+        .set("mint_raw", mint_raw)
+        .set("decimals_raw", decimals_raw);
+
+    set_authority(&data.authority, &data.multisig_authority, row);
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_initialize_mint(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::InitializeMint,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let freeze_authority_raw = match &data.freeze_authority {
+        Some(freeze_authority) => base58::encode(freeze_authority),
+        None => "".to_string(),
+    };
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("initialize_mint", key)
+        .set("mint", base58::encode(&data.mint))
+        .set("mint_authority", base58::encode(&data.mint_authority))
+        .set("decimals", data.decimals)
+        // -- SPL Token-2022 --
+        .set("freeze_authority_raw", freeze_authority_raw);
+
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_initialize_account(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::InitializeAccount,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("initialize_account", key)
+        .set("account", base58::encode(&data.account))
+        .set("mint", base58::encode(&data.mint))
+        .set("owner", base58::encode(&data.owner));
+
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_initialize_immutable_owner(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::InitializeImmutableOwner,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("initialize_immutable_owner", key)
+        .set("account", base58::encode(&data.account));
+
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_set_authority(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::SetAuthority,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let new_authority_raw = match &data.new_authority {
+        Some(new_authority) => base58::encode(new_authority),
+        None => "".to_string(),
+    };
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("set_authority", key)
+        .set("account", base58::encode(&data.account))
+        .set("authority_type", data.authority_type().as_str_name())
+        .set("new_authority_raw", new_authority_raw);
+
+    set_authority(&data.authority, &data.multisig_authority, row);
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_close_account(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::CloseAccount,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("close_account", key)
+        .set("account", base58::encode(&data.account))
+        .set("destination", base58::encode(&data.destination));
+
+    set_authority(&data.authority, &data.multisig_authority, row);
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_initialize_token_metadata(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::InitializeTokenMetadata,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("initialize_token_metadata", key)
+        .set("metadata", base58::encode(&data.metadata))
+        .set("update_authority", base58::encode(&data.update_authority))
+        .set("mint", base58::encode(&data.mint))
+        .set("mint_authority", base58::encode(&data.mint_authority))
+        .set("name", &data.name)
+        .set("symbol", &data.symbol)
+        .set("uri", &data.uri);
+
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+fn handle_update_token_metadata_field(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::UpdateTokenMetadataField,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("update_token_metadata_field", key)
+        .set("metadata", base58::encode(&data.metadata))
+        .set("update_authority", base58::encode(&data.update_authority))
+        .set("field", &data.field)
+        .set("value", &data.value);
+
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_update_token_metadata_authority(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::UpdateTokenMetadataAuthority,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("update_token_metadata_authority", key)
+        .set("metadata", base58::encode(&data.metadata))
+        .set("update_authority", base58::encode(&data.update_authority))
+        .set("new_authority", base58::encode(&data.new_authority));
+
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_remove_token_metadata_field(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::RemoveTokenMetadataField,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("remove_token_metadata_field", key)
+        .set("metadata", base58::encode(&data.metadata))
+        .set("update_authority", base58::encode(&data.update_authority))
+        .set("key", &data.key)
+        .set("idempotent", data.idempotent);
+
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_approve(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::Approve,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let mint = match &data.mint {
+        Some(mint) => base58::encode(mint),
+        None => "".to_string(),
+    };
+    let decimals_raw = match &data.decimals {
+        Some(decimals) => decimals.to_string(),
+        None => "".to_string(),
+    };
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("approve", key)
+        .set("source", base58::encode(&data.source))
+        .set("mint", mint)
+        .set("delegate", base58::encode(&data.delegate))
+        .set("owner", base58::encode(&data.owner))
+        .set("amount", data.amount)
+        .set("decimals_raw", decimals_raw);
+
+    set_authority(&data.authority, &data.multisig_authority, row);
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_revoke(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::Revoke,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("revoke", key)
+        .set("source", base58::encode(&data.source))
+        .set("owner", base58::encode(&data.owner));
+
+    set_authority(&data.authority, &data.multisig_authority, row);
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_freeze_account(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::FreezeAccount,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("freeze_account", key)
+        .set("account", base58::encode(&data.account))
+        .set("mint", base58::encode(&data.mint));
+
+    set_authority(&data.authority, &data.multisig_authority, row);
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_thaw_account(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::ThawAccount,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables
+        .create_row("thaw_account", key)
+        .set("account", base58::encode(&data.account))
+        .set("mint", base58::encode(&data.mint));
+
+    set_authority(&data.authority, &data.multisig_authority, row);
+    set_spl_token_instruction_v2(instruction, row);
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_token_balances(
+    table_name: &str,
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    data: &pb::TokenBalance,
+    transaction_index: usize,
+    token_balance_index: usize,
+) {
+    let key = [
+        ("block_hash", clock.id.to_string()),
+        ("transaction_index", transaction_index.to_string()),
+        ("token_balance_index", token_balance_index.to_string()),
+    ];
+    let row = tables
+        .create_row(table_name, key)
+        .set("program_id", base58::encode(&data.program_id))
+        .set("account", base58::encode(&data.account))
+        .set("mint", base58::encode(&data.mint))
+        .set("amount", data.amount)
+        .set("decimals", data.decimals);
+
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
