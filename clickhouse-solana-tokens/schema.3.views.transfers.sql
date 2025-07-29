@@ -9,7 +9,11 @@ ALTER TABLE transfers
     -- require `decimals` to be present for token transfers
     DROP COLUMN IF EXISTS decimals,
     DROP COLUMN IF EXISTS decimals_raw,
-    ADD COLUMN decimals UInt8;
+    ADD COLUMN decimals UInt8,
+    -- require `mint` to be present for token transfers
+    DROP COLUMN IF EXISTS mint,
+    DROP COLUMN IF EXISTS mint_raw,
+    ADD COLUMN mint FixedString(44);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_token_transfers
 TO transfers AS
@@ -34,7 +38,7 @@ SELECT
     t.source AS source,
     t.destination AS destination,
     t.amount AS amount,
-    t.mint_raw AS mint_raw,
+    t.mint AS mint,
     -- if transfer.decimals is not null, use mint.decimals
     ifNull(t.decimals, m.decimals) AS decimals,
 
@@ -42,8 +46,8 @@ SELECT
     a1.owner AS source_owner,
     a2.owner AS destination_owner
 FROM spl_token_transfers AS t
-JOIN initialize_account AS a1 ON (t.source = a1.account AND t.mint = a1.mint)
-JOIN initialize_account AS a2 ON (t.destination = a2.account AND t.mint = a2.mint)
-JOIN initialize_mint AS m ON m.mint = t.mint
+JOIN accounts AS a1 ON (t.mint = a1.mint AND t.source = a1.account)
+JOIN accounts AS a2 ON (t.mint = a2.mint AND t.destination = a2.account)
+JOIN mints AS m ON m.mint = t.mint
 -- ignore 0 transfers
-WHERE t.amount > 0;
+WHERE t.amount > 0 AND t.mint IS NOT NULL;

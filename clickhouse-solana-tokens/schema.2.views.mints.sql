@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS mints (
     block_num           UInt32,
-    mint                String,
-    mint_authority      String,
+    mint                FixedString(44),
+    mint_authority      FixedString(44),
     decimals            UInt8
 ) ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (mint, mint_authority)

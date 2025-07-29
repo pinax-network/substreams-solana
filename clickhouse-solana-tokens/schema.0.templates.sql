@@ -34,15 +34,7 @@ ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );
-
--- 'drop': fastest merges; if a deduplicating merge touches a projection, that projection is removed only for the affected parts.
--- Queries still run (the optimizer just won’t pick that projection for those parts until you rebuild).
--- Good default for high‑ingest systems.
-
--- 'rebuild': keeps projections available but makes deduplicating merges heavier.
--- Use if you depend heavily on the projection for latency and can afford the CPU/IO.
-ALTER TABLE base_events
-  MODIFY SETTING deduplicate_merge_projection_mode = 'drop';  -- or 'rebuild'
+ALTER TABLE base_events MODIFY SETTING deduplicate_merge_projection_mode = 'drop';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field

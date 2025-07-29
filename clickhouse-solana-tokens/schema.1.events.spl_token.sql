@@ -14,7 +14,7 @@ ALTER TABLE spl_token_transfers
 
     -- Optional
     ADD COLUMN IF NOT EXISTS mint_raw                String,
-    ADD COLUMN IF NOT EXISTS mint                    Nullable(String) MATERIALIZED string_or_null(mint_raw),
+    ADD COLUMN IF NOT EXISTS mint                    Nullable(FixedString(44)) MATERIALIZED fixed_string_or_null(mint_raw),
     ADD COLUMN IF NOT EXISTS decimals_raw            String,
     ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw);
 
@@ -33,7 +33,7 @@ ALTER TABLE initialize_mint
     ADD COLUMN IF NOT EXISTS mint                    FixedString(44),
     ADD COLUMN IF NOT EXISTS mint_authority          FixedString(44),
     ADD COLUMN IF NOT EXISTS freeze_authority_raw    String,
-    ADD COLUMN IF NOT EXISTS freeze_authority        Nullable(String) MATERIALIZED string_or_null(freeze_authority_raw),
+    ADD COLUMN IF NOT EXISTS freeze_authority        Nullable(FixedString(44)) MATERIALIZED fixed_string_or_null(freeze_authority_raw),
     ADD COLUMN IF NOT EXISTS decimals                UInt8;
 
 -- InitializeImmutableOwner --
@@ -49,7 +49,7 @@ ALTER TABLE set_authority
     ADD COLUMN IF NOT EXISTS account                 FixedString(44),
     ADD COLUMN IF NOT EXISTS authority_type          LowCardinality(String), -- AuthorityType enum as string
     ADD COLUMN IF NOT EXISTS new_authority_raw       String,
-    ADD COLUMN IF NOT EXISTS new_authority           Nullable(String) MATERIALIZED string_or_null(new_authority_raw),
+    ADD COLUMN IF NOT EXISTS new_authority           Nullable(FixedString(44)) MATERIALIZED fixed_string_or_null(new_authority_raw),
     ADD COLUMN IF NOT EXISTS authority               FixedString(44),
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
     ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
