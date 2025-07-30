@@ -34,7 +34,7 @@ ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );
-ALTER TABLE base_events MODIFY SETTING deduplicate_merge_projection_mode = 'drop';
+ALTER TABLE base_events MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field

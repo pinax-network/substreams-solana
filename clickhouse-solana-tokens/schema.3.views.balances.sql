@@ -10,13 +10,12 @@ CREATE TABLE IF NOT EXISTS spl_balances (
     -- indexes --
     INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
     INDEX idx_amount (amount) TYPE minmax GRANULARITY 1
-
 )
 ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (program_id, mint, account)
 COMMENT 'SPL token balances (SPL tokens, not native SOL)';
 
-ALTER TABLE spl_balances MODIFY SETTING deduplicate_merge_projection_mode = 'drop';
+ALTER TABLE spl_balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 ALTER TABLE spl_balances
     ADD PROJECTION IF NOT EXISTS prj_amount (SELECT * ORDER BY (amount, account)),
     ADD PROJECTION IF NOT EXISTS prj_account (SELECT * ORDER BY (account));
@@ -49,7 +48,7 @@ ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (account)
 COMMENT 'Native SOL balances (lamports, not SPL tokens)';
 
-ALTER TABLE native_balances MODIFY SETTING deduplicate_merge_projection_mode = 'drop';
+ALTER TABLE native_balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 ALTER TABLE native_balances
     ADD PROJECTION IF NOT EXISTS prj_amount (SELECT * ORDER BY (amount, account));
 

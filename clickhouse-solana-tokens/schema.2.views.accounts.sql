@@ -3,13 +3,22 @@ CREATE TABLE IF NOT EXISTS accounts (
     is_closed       Boolean DEFAULT false COMMENT 'true = closed, false = open',
     account         FixedString(44),
     owner           FixedString(44),
-    mint            FixedString(44)
+    mint            FixedString(44),
+
+    -- indexes --
+    INDEX idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1,
+    INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
+    INDEX idx_is_closed (is_closed) TYPE minmax GRANULARITY 1
+
 ) ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (mint, account)
-COMMENT 'Solana Accounts, used by SPL Tokens';
+COMMENT 'SPL Token Accounts';
 
-ALTER TABLE accounts MODIFY SETTING deduplicate_merge_projection_mode = 'drop';
-ALTER TABLE accounts ADD PROJECTION IF NOT EXISTS prj_owner (SELECT * ORDER BY owner);
+ALTER TABLE accounts MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+ALTER TABLE accounts
+    ADD PROJECTION IF NOT EXISTS prj_owner (SELECT * ORDER BY owner),
+    ADD PROJECTION IF NOT EXISTS prj_account (SELECT * ORDER BY account);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_account
 TO accounts AS
