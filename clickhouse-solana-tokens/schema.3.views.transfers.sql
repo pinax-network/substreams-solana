@@ -18,29 +18,14 @@ ALTER TABLE transfers
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
 SELECT
+    * EXCEPT (block_num, mint_raw, mint, is_closed, account, owner, decimals_raw, decimals, mint_authority, freeze_authority),
+
     -- base fields --
     t.block_num AS block_num,
-    t.block_hash AS block_hash,
-    t.timestamp AS timestamp,
-    t.transaction_index AS transaction_index,
-    t.instruction_index AS instruction_index,
-    t.signature AS signature,
-    t.fee_payer AS fee_payer,
-    t.signers_raw AS signers_raw,
-    t.fee AS fee,
-    t.compute_units_consumed AS compute_units_consumed,
-    t.program_id AS program_id,
-    t.stack_height AS stack_height,
 
-    -- events fields --
-    t.authority AS authority,
-    t.multisig_authority_raw AS multisig_authority_raw,
-    t.source AS source,
-    t.destination AS destination,
-    t.amount AS amount,
-    t.mint AS mint,
-    -- if transfer.decimals is not null, use mint.decimals
+    -- mint --
     ifNull(t.decimals, m.decimals) AS decimals,
+    t.mint AS mint,
 
     -- JOIN fields --
     a1.owner AS source_owner,
@@ -51,3 +36,33 @@ JOIN accounts AS a2 ON (t.mint = a2.mint AND t.destination = a2.account)
 JOIN mints AS m ON m.mint = t.mint
 -- ignore 0 transfers
 WHERE t.amount > 0 AND t.mint IS NOT NULL;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_system_transfer
+TO transfers AS
+SELECT
+    * EXCEPT (lamports),
+    lamports AS amount,
+    'So11111111111111111111111111111111111111111' AS mint, -- native
+    toUInt8(9) AS decimals,
+    source as authority,
+    source AS source_owner,
+    destination AS destination_owner
+FROM system_transfer
+-- ignore 0 transfers
+WHERE lamports > 0;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_system_transfer_with_seed
+TO transfers AS
+SELECT
+    * EXCEPT (lamports, source, destination, source_base, source_seed, source_owner),
+    lamports AS amount,
+    'So11111111111111111111111111111111111111111' AS mint, -- native
+    toUInt8(9) AS decimals,
+    source_base AS authority,
+    source_seed AS source,
+    destination AS destination,
+    source_seed AS source_owner,
+    destination AS destination_owner
+FROM system_transfer_with_seed
+-- ignore 0 transfers
+WHERE lamports > 0;
