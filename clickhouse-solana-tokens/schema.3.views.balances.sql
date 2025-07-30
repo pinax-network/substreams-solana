@@ -35,8 +35,11 @@ FROM post_token_balances;
 -- Native SOL Balances --
 CREATE TABLE IF NOT EXISTS native_balances (
     block_num       UInt32,
+    program_id      FixedString(44) MATERIALIZED '11111111111111111111111111111111',
     account         FixedString(44),
     amount          UInt64,
+    mint            FixedString(44) MATERIALIZED 'So11111111111111111111111111111111111111111',
+    decimals        UInt8 MATERIALIZED 9,
 
     -- indexes --
     INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
@@ -70,10 +73,8 @@ FROM spl_balances;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_native_balances
 TO balances AS
 SELECT
-    block_num,
-    account,
-    amount,
-    '11111111111111111111111111111111' AS program_id,
-    'So11111111111111111111111111111111111111111' AS mint,
-    9 AS decimals
+    *,
+    program_id,
+    mint,
+    decimals
 FROM native_balances;
