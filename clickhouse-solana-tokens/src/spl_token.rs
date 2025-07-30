@@ -322,7 +322,7 @@ fn handle_approve(
     transaction_index: usize,
     instruction_index: usize,
 ) {
-    let mint = match &data.mint {
+    let mint_raw = match &data.mint {
         Some(mint) => base58::encode(mint),
         None => "".to_string(),
     };
@@ -334,7 +334,7 @@ fn handle_approve(
     let row = tables
         .create_row("approve", key)
         .set("source", base58::encode(&data.source))
-        .set("mint", mint)
+        .set("mint_raw", mint_raw)
         .set("delegate", base58::encode(&data.delegate))
         .set("owner", base58::encode(&data.owner))
         .set("amount", data.amount)

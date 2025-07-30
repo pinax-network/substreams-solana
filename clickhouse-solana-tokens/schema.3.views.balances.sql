@@ -1,13 +1,14 @@
 -- SPL Token Balances --
 CREATE TABLE IF NOT EXISTS spl_balances (
     block_num       UInt32,
-    program_id      FixedString(44),
-    account         FixedString(44),
+    program_id      LowCardinality(String),
+    account         String,
     amount          UInt64,
-    mint            FixedString(44),
+    mint            LowCardinality(String),
     decimals        UInt8,
 
     -- indexes --
+    INDEX idx_program_id (program_id) TYPE set(3) GRANULARITY 1, -- SPL Token, Token-2022 & Native SOL
     INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
     INDEX idx_amount (amount) TYPE minmax GRANULARITY 1
 )

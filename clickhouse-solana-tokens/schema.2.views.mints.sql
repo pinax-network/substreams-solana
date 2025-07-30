@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS mints (
     block_num           UInt32,
-    mint                FixedString(44),
-    mint_authority      FixedString(44),
-    freeze_authority    Nullable(FixedString(44)),
+    mint                LowCardinality(String),
+    mint_authority      String,
+    freeze_authority    Nullable(String),
     decimals            UInt8,
 
     -- indexes --

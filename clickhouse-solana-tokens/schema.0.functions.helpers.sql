@@ -15,6 +15,6 @@ CREATE FUNCTION IF NOT EXISTS string_to_uint8 AS raw ->
 
 -- Accurate cast or NULL
 -- Returns NULL if the input is empty or NULL
-CREATE FUNCTION IF NOT EXISTS fixed_string_or_null AS raw ->
-    accurateCastOrNull(nullIf(raw, ''), 'FixedString(44)');
+CREATE FUNCTION IF NOT EXISTS string_or_null AS raw ->
+    accurateCastOrNull(nullIf(raw, ''), 'String');
 

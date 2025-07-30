@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS accounts (
     block_num       UInt32,
     is_closed       Boolean DEFAULT false COMMENT 'true = closed, false = open',
-    account         FixedString(44),
-    owner           FixedString(44),
-    mint            FixedString(44),
+    account         String,
+    owner           String,
+    mint            LowCardinality(String),
 
     -- indexes --
     INDEX idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1,

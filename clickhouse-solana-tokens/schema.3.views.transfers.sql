@@ -4,8 +4,8 @@ COMMENT 'SPL 2022 & Native token transfers';
 -- SPL Token Transfers --
 ALTER TABLE transfers
     -- JOIN `*_owner` with `initialize_accounts` TABLE --
-    ADD COLUMN IF NOT EXISTS source_owner            FixedString(44),
-    ADD COLUMN IF NOT EXISTS destination_owner       FixedString(44),
+    ADD COLUMN IF NOT EXISTS source_owner            String,
+    ADD COLUMN IF NOT EXISTS destination_owner       String,
     -- require `decimals` to be present for token transfers
     DROP COLUMN IF EXISTS decimals,
     DROP COLUMN IF EXISTS decimals_raw,
@@ -13,7 +13,7 @@ ALTER TABLE transfers
     -- require `mint` to be present for token transfers
     DROP COLUMN IF EXISTS mint,
     DROP COLUMN IF EXISTS mint_raw,
-    ADD COLUMN mint FixedString(44);
+    ADD COLUMN mint LowCardinality(String);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
