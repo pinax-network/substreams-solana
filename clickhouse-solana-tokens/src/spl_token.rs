@@ -5,13 +5,13 @@ use substreams_solana::base58;
 
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
-        // // Token Balances
-        // for (i, balance) in transaction.post_token_balances.iter().enumerate() {
-        //     handle_token_balances("post_token_balances", tables, clock, transaction, balance, transaction_index, i);
-        // }
-        // for (i, balance) in transaction.pre_token_balances.iter().enumerate() {
-        //     handle_token_balances("pre_token_balances", tables, clock, transaction, balance, transaction_index, i);
-        // }
+        // Token Balances
+        for (i, balance) in transaction.post_token_balances.iter().enumerate() {
+            handle_token_balances("post_token_balances", tables, clock, transaction, balance, transaction_index, i);
+        }
+        for (i, balance) in transaction.pre_token_balances.iter().enumerate() {
+            handle_token_balances("pre_token_balances", tables, clock, transaction, balance, transaction_index, i);
+        }
         for (i, instruction) in transaction.instructions.iter().enumerate() {
             match &instruction.instruction {
                 // Transfers
@@ -418,11 +418,7 @@ fn handle_token_balances(
     transaction_index: usize,
     token_balance_index: usize,
 ) {
-    let key = [
-        ("block_hash", clock.id.to_string()),
-        ("transaction_index", transaction_index.to_string()),
-        ("token_balance_index", token_balance_index.to_string()),
-    ];
+    let key = common_key_v2(&clock, transaction_index, token_balance_index);
     let row = tables
         .create_row(table_name, key)
         .set("program_id", base58::encode(&data.program_id))

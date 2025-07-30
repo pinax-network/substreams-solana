@@ -5,13 +5,13 @@ use substreams_solana::base58;
 
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
-        // // Token Balances
-        // for (i, balance) in transaction.post_token_balances.iter().enumerate() {
-        //     handle_token_balances("post_token_balances", tables, clock, transaction, balance, transaction_index, i);
-        // }
-        // for (i, balance) in transaction.pre_token_balances.iter().enumerate() {
-        //     handle_token_balances("pre_token_balances", tables, clock, transaction, balance, transaction_index, i);
-        // }
+        // Token Balances
+        for (i, balance) in transaction.post_balances.iter().enumerate() {
+            handle_balances("system_post_balances", tables, clock, transaction, balance, transaction_index, i);
+        }
+        for (i, balance) in transaction.pre_balances.iter().enumerate() {
+            handle_balances("system_pre_balances", tables, clock, transaction, balance, transaction_index, i);
+        }
         for (i, instruction) in transaction.instructions.iter().enumerate() {
             match &instruction.instruction {
                 Some(pb::instruction::Instruction::Transfer(data)) => {
@@ -46,7 +46,7 @@ fn handle_transfer(
 ) {
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("native_transfer", key)
+        .create_row("system_transfer", key)
         .set("source", base58::encode(&data.source))
         .set("destination", base58::encode(&data.destination))
         .set("lamports", data.lamports);
@@ -67,7 +67,7 @@ fn handle_transfer_with_seed(
 ) {
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
-        .create_row("native_transfer_with_seed", key)
+        .create_row("system_transfer_with_seed", key)
         .set("source", base58::encode(&data.source))
         .set("destination", base58::encode(&data.destination))
         .set("lamports", data.lamports)
@@ -151,6 +151,25 @@ fn handle_withdraw_nonce_account(
         .set("nonce_authority", base58::encode(&data.nonce_authority));
 
     set_native_token_instruction_v2(instruction, row);
+    set_native_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_balances(
+    table_name: &str,
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    data: &pb::Balance,
+    transaction_index: usize,
+    token_balance_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, token_balance_index);
+    let row = tables
+        .create_row(table_name, key)
+        .set("account", base58::encode(&data.account))
+        .set("amount", data.amount);
+
     set_native_token_transaction_v2(transaction, row);
     set_clock(clock, row);
 }

@@ -38,7 +38,15 @@ ALTER TABLE base_events MODIFY SETTING deduplicate_merge_projection_mode = 'drop
 
 -- PROJECTIONS (Part) --
 -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE base_events ADD PROJECTION IF NOT EXISTS prj_part_signature_hash (SELECT signature_hash, _part_offset ORDER BY signature_hash);
-ALTER TABLE base_events ADD PROJECTION IF NOT EXISTS prj_part_program_id (SELECT program_id, timestamp, _part_offset ORDER BY program_id, timestamp);
-ALTER TABLE base_events ADD PROJECTION IF NOT EXISTS prj_part_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY fee_payer, timestamp);
-ALTER TABLE base_events ADD PROJECTION IF NOT EXISTS prj_part_signer (SELECT signer, timestamp, _part_offset ORDER BY signer, timestamp);
+ALTER TABLE base_events
+    ADD PROJECTION IF NOT EXISTS prj_part_signature_hash (SELECT signature_hash, _part_offset ORDER BY signature_hash),
+    ADD PROJECTION IF NOT EXISTS prj_part_program_id (SELECT program_id, timestamp, _part_offset ORDER BY program_id, timestamp),
+    ADD PROJECTION IF NOT EXISTS prj_part_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY fee_payer, timestamp),
+    ADD PROJECTION IF NOT EXISTS prj_part_signer (SELECT signer, timestamp, _part_offset ORDER BY signer, timestamp);
+
+CREATE TABLE IF NOT EXISTS base_transactions AS base_events;
+ALTER TABLE base_transactions
+    DROP PROJECTION IF EXISTS prj_part_program_id,
+    DROP INDEX IF EXISTS idx_program_id,
+    DROP COLUMN IF EXISTS program_id,
+    DROP COLUMN IF EXISTS stack_height;
