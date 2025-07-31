@@ -90,7 +90,7 @@ pub struct TransferWithSeed {
     pub lamports: u64,
     #[prost(bytes="vec", tag="3")]
     pub source: ::prost::alloc::vec::Vec<u8>,
-    /// Base account addresss for the seed.
+    /// Base account address for the seed.
     #[prost(bytes="vec", tag="4")]
     pub source_base: ::prost::alloc::vec::Vec<u8>,
     /// Owner of the source account.
@@ -128,10 +128,10 @@ pub struct CreateAccountWithSeed {
     /// New account address.
     #[prost(bytes="vec", tag="2")]
     pub new_account: ::prost::alloc::vec::Vec<u8>,
-    /// Base account address for the seed.
+    /// Primary base account address used for deriving the seed.
     #[prost(bytes="vec", tag="3")]
     pub base: ::prost::alloc::vec::Vec<u8>,
-    /// Base account address for the seed.
+    /// Optional secondary account related to the base.
     #[prost(bytes="vec", optional, tag="4")]
     pub base_account: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     /// Owner program account address

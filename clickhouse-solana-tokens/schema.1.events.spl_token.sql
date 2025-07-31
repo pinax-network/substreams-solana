@@ -1,113 +1,163 @@
--- SPL Token-2022 & Classic approves --
-CREATE TABLE IF NOT EXISTS approves (
-    -- block --
-    block_num                   UInt32,
-    block_hash                  FixedString(44),
-    timestamp                   DateTime(0, 'UTC'),
-    timestamp_since_genesis     DateTime(0, 'UTC')
-        MATERIALIZED if (
-            timestamp = 0,
-            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
-            timestamp
-        ),
+-- SPL Token Transfers --
+CREATE TABLE IF NOT EXISTS spl_transfer AS base_events
+COMMENT 'SPL Token Transfer/Burn/Mint events';
+ALTER TABLE spl_transfer
+    -- authority --
+    ADD COLUMN IF NOT EXISTS authority               String,
+    ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw),
 
-    -- ordering --
-    transaction_index           UInt32,
-    instruction_index           UInt32,
+    -- events --
+    ADD COLUMN IF NOT EXISTS source                  String,
+    ADD COLUMN IF NOT EXISTS destination             String,
+    ADD COLUMN IF NOT EXISTS amount                  UInt64,
 
-    -- transaction --
-    signature                   FixedString(88),
-    fee_payer                   FixedString(44),
-    signers_raw                 String,
-    signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
-    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
-    fee                         UInt64 DEFAULT 0,
-    compute_units_consumed      UInt64 DEFAULT 0,
+    -- Optional
+    ADD COLUMN IF NOT EXISTS mint_raw                String,
+    ADD COLUMN IF NOT EXISTS mint                    Nullable(String) MATERIALIZED string_or_null(mint_raw),
+    ADD COLUMN IF NOT EXISTS decimals_raw            String,
+    ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw);
 
-    -- instruction --
-    program_id                  LowCardinality(FixedString(44)),
-    stack_height                UInt32,
-    is_root                     Bool COMMENT 'Indicates if the instruction is a root instruction or an inner instruction',
-    discriminator               FixedString(16) COMMENT 'Discriminator for the instruction, used to identify the type of instruction',
+-- InitializeAccount --
+CREATE TABLE IF NOT EXISTS initialize_account AS base_events
+COMMENT 'SPL Token InitializeAccount events';
+ALTER TABLE initialize_account
+    ADD COLUMN IF NOT EXISTS account                 String,
+    ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
+    ADD COLUMN IF NOT EXISTS owner                   String;
 
-    -- accounts --
-    authority                   FixedString(44),
-    multisig_authority_raw      String, -- comma-separated list of multisig authorities
-    multisig_authority          Array(FixedString(44)) MATERIALIZED splitByChar(',', multisig_authority_raw),
+-- InitializeMint --
+CREATE TABLE IF NOT EXISTS initialize_mint AS base_events
+COMMENT 'SPL Token InitializeMint events';
+ALTER TABLE initialize_mint
+    ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
+    ADD COLUMN IF NOT EXISTS mint_authority          String,
+    ADD COLUMN IF NOT EXISTS freeze_authority_raw    String,
+    ADD COLUMN IF NOT EXISTS freeze_authority        Nullable(String) MATERIALIZED string_or_null(freeze_authority_raw),
+    ADD COLUMN IF NOT EXISTS decimals                UInt8;
 
-    -- event --
-    source                      FixedString(44),
-    delegate                    FixedString(44),
-    owner                       FixedString(44),
-    amount                      UInt64,
+-- InitializeImmutableOwner --
+CREATE TABLE IF NOT EXISTS initialize_immutable_owner AS base_events
+COMMENT 'SPL Token InitializeImmutableOwner events';
+ALTER TABLE initialize_immutable_owner
+    ADD COLUMN IF NOT EXISTS account                 String;
 
-    -- event (Optional) --
-    mint_raw                    String, -- can be empty
-    mint                        Nullable(FixedString(44)) MATERIALIZED accurateCastOrNull(nullIf(mint_raw, ''), 'FixedString(44)'),
-    decimals_raw                String, -- can be empty
-    decimals                    Nullable(UInt8) MATERIALIZED toUInt8OrNull(nullIf(decimals_raw, '')),
+-- SetAuthority --
+CREATE TABLE IF NOT EXISTS set_authority AS base_events
+COMMENT 'SPL Token SetAuthority events';
+ALTER TABLE set_authority
+    ADD COLUMN IF NOT EXISTS account                 String,
+    ADD COLUMN IF NOT EXISTS authority_type          LowCardinality(String), -- AuthorityType enum as string
+    ADD COLUMN IF NOT EXISTS new_authority_raw       String,
+    ADD COLUMN IF NOT EXISTS new_authority           Nullable(String) MATERIALIZED string_or_null(new_authority_raw),
+    ADD COLUMN IF NOT EXISTS authority               String,
+    ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
 
-    -- projections (parts) --
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
-    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
-    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
-)
-ENGINE = MergeTree
-ORDER BY (
-    timestamp, block_num,
-    block_hash, transaction_index, instruction_index
-);
+-- CloseAccount --
+CREATE TABLE IF NOT EXISTS close_account AS base_events
+COMMENT 'SPL Token CloseAccount events';
+ALTER TABLE close_account
+    ADD COLUMN IF NOT EXISTS account                 String,
+    ADD COLUMN IF NOT EXISTS destination             String,
+    ADD COLUMN IF NOT EXISTS authority               String,
+    ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
 
--- SPL Token-2022 & Classic revokes --
-CREATE TABLE IF NOT EXISTS revokes (
-    -- block --
-    block_num                   UInt32,
-    block_hash                  FixedString(44),
-    timestamp                   DateTime(0, 'UTC'),
-    timestamp_since_genesis     DateTime(0, 'UTC')
-        MATERIALIZED if (
-            timestamp = 0,
-            toDateTime(1584332940 + intDiv(block_num * 2, 5), 'UTC'),
-            timestamp
-        ),
+-- FreezeAccount --
+CREATE TABLE IF NOT EXISTS freeze_account AS base_events
+COMMENT 'SPL Token FreezeAccount events';
+ALTER TABLE freeze_account
+    ADD COLUMN IF NOT EXISTS account                 String,
+    ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
+    ADD COLUMN IF NOT EXISTS authority               String,
+    ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
 
-    -- ordering --
-    transaction_index           UInt32,
-    instruction_index           UInt32,
+-- ThawAccount --
+CREATE TABLE IF NOT EXISTS thaw_account AS base_events
+COMMENT 'SPL Token ThawAccount events';
+ALTER TABLE thaw_account
+    ADD COLUMN IF NOT EXISTS account                 String,
+    ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
+    ADD COLUMN IF NOT EXISTS authority               String,
+    ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
 
-    -- transaction --
-    signature                   FixedString(88),
-    fee_payer                   FixedString(44),
-    signers_raw                 String,
-    signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
-    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
-    fee                         UInt64 DEFAULT 0,
-    compute_units_consumed      UInt64 DEFAULT 0,
+-- Approve --
+CREATE TABLE IF NOT EXISTS approve AS base_events
+COMMENT 'SPL Token Approve events';
+ALTER TABLE approve
+    ADD COLUMN IF NOT EXISTS source                  String,
+    ADD COLUMN IF NOT EXISTS mint_raw                String,
+    ADD COLUMN IF NOT EXISTS mint                    Nullable(String) MATERIALIZED string_or_null(mint_raw),
+    ADD COLUMN IF NOT EXISTS delegate                String,
+    ADD COLUMN IF NOT EXISTS owner                   String,
+    ADD COLUMN IF NOT EXISTS amount                  UInt64,
+    ADD COLUMN IF NOT EXISTS decimals_raw            String,
+    ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw),
+    ADD COLUMN IF NOT EXISTS authority               String,
+    ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
 
-    -- instruction --
-    program_id                  LowCardinality(FixedString(44)),
-    stack_height                UInt32,
-    is_root                     Bool COMMENT 'Indicates if the instruction is a root instruction or an inner instruction',
-    discriminator               FixedString(16) COMMENT 'Discriminator for the instruction, used to identify the type of instruction',
+-- Revoke --
+CREATE TABLE IF NOT EXISTS revoke AS base_events
+COMMENT 'SPL Token Revoke events';
+ALTER TABLE revoke
+    ADD COLUMN IF NOT EXISTS source                  String,
+    ADD COLUMN IF NOT EXISTS owner                   String,
+    ADD COLUMN IF NOT EXISTS authority               String,
+    ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
 
-    -- accounts --
-    authority                   FixedString(44),
-    multisig_authority_raw      String, -- comma-separated list of multisig authorities
-    multisig_authority          Array(FixedString(44)) MATERIALIZED splitByChar(',', multisig_authority_raw),
+-- InitializeTokenMetadata --
+CREATE TABLE IF NOT EXISTS initialize_token_metadata AS base_events
+COMMENT 'SPL Token InitializeTokenMetadata events';
+ALTER TABLE initialize_token_metadata
+    ADD COLUMN IF NOT EXISTS metadata                String,
+    ADD COLUMN IF NOT EXISTS update_authority        String,
+    ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
+    ADD COLUMN IF NOT EXISTS mint_authority          String,
+    ADD COLUMN IF NOT EXISTS name                    String,
+    ADD COLUMN IF NOT EXISTS symbol                  LowCardinality(String),
+    ADD COLUMN IF NOT EXISTS uri                     String;
 
-    -- event --
-    source                      FixedString(44),
-    owner                       FixedString(44),
+-- UpdateTokenMetadataField --
+CREATE TABLE IF NOT EXISTS update_token_metadata_field AS base_events
+COMMENT 'SPL Token UpdateTokenMetadataField events';
+ALTER TABLE update_token_metadata_field
+    ADD COLUMN IF NOT EXISTS metadata                String,
+    ADD COLUMN IF NOT EXISTS update_authority        String,
+    ADD COLUMN IF NOT EXISTS field                   LowCardinality(String),
+    ADD COLUMN IF NOT EXISTS value                   String;
 
-    -- projections (parts) --
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    PROJECTION prj_part_signature       (SELECT signature,      _part_offset ORDER BY signature),
-    PROJECTION prj_part_fee_payer       (SELECT fee_payer,      _part_offset ORDER BY fee_payer),
-    PROJECTION prj_part_signer          (SELECT signer,         _part_offset ORDER BY signer)
-)
-ENGINE = MergeTree
-ORDER BY (
-    timestamp, block_num,
-    block_hash, transaction_index, instruction_index
-);
+-- UpdateTokenMetadataAuthority --
+CREATE TABLE IF NOT EXISTS update_token_metadata_authority AS base_events
+COMMENT 'SPL Token UpdateTokenMetadataAuthority events';
+ALTER TABLE update_token_metadata_authority
+    ADD COLUMN IF NOT EXISTS metadata                String,
+    ADD COLUMN IF NOT EXISTS update_authority        String,
+    ADD COLUMN IF NOT EXISTS new_authority           String;
+
+-- RemoveTokenMetadataField --
+CREATE TABLE IF NOT EXISTS remove_token_metadata_field AS base_events
+COMMENT 'SPL Token RemoveTokenMetadataField events';
+ALTER TABLE remove_token_metadata_field
+    ADD COLUMN IF NOT EXISTS metadata                String,
+    ADD COLUMN IF NOT EXISTS update_authority        String,
+    ADD COLUMN IF NOT EXISTS `key`                   String,
+    ADD COLUMN IF NOT EXISTS idempotent              Bool DEFAULT false COMMENT 'Whether the removal is idempotent';
+
+-- SPL Token Post Balance --
+CREATE TABLE IF NOT EXISTS post_token_balances AS base_transactions
+COMMENT 'SPL Token Post Balance events';
+ALTER TABLE post_token_balances
+    ADD COLUMN IF NOT EXISTS program_id         LowCardinality(String) COMMENT 'Program ID of the SPL Token program.',
+    ADD COLUMN IF NOT EXISTS account            String COMMENT 'Account address.',
+    ADD COLUMN IF NOT EXISTS mint               String COMMENT 'Mint address',
+    ADD COLUMN IF NOT EXISTS amount             UInt64 COMMENT 'Balance amount in lamports.',
+    ADD COLUMN IF NOT EXISTS decimals           UInt8;
+
+-- SPL Token Pre Balance --
+CREATE TABLE IF NOT EXISTS pre_token_balances AS post_token_balances
+COMMENT 'SPL Token Pre Balance events';
