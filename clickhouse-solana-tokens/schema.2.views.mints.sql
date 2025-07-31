@@ -1,17 +1,16 @@
 CREATE TABLE IF NOT EXISTS mints (
-    block_num           UInt32,
-    mint                LowCardinality(String),
-    mint_authority      String,
-    freeze_authority    Nullable(String),
-    decimals            UInt8,
+    version           UInt64,
+    mint              LowCardinality(String),
+    mint_authority    String,
+    freeze_authority  Nullable(String),
+    decimals          UInt8,
 
     -- indexes --
     INDEX idx_mint_authority (mint_authority) TYPE bloom_filter(0.005) GRANULARITY 1,
     INDEX idx_freeze_authority (freeze_authority) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_decimals (decimals) TYPE minmax GRANULARITY 1,
-    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1
+    INDEX idx_decimals (decimals) TYPE minmax GRANULARITY 1
 
-) ENGINE = ReplacingMergeTree(block_num)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (mint, mint_authority)
 COMMENT 'SPL Token Mints';
 
@@ -23,7 +22,7 @@ ALTER TABLE mints
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_mint
 TO mints AS
 SELECT
-    block_num,
+    to_version(block_num, transaction_index, instruction_index) AS version,
     mint,
     mint_authority,
     freeze_authority,
