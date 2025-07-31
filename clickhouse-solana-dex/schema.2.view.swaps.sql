@@ -25,17 +25,7 @@ ALTER TABLE swaps
     ADD INDEX IF NOT EXISTS idx_input_amount      (input_amount)      TYPE minmax                 GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_output_amount     (output_amount)     TYPE minmax                 GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_mint_pair         (input_mint, output_mint)    TYPE bloom_filter(0.005)    GRANULARITY 1,
-    ADD INDEX IF NOT EXISTS idx_mint_pair_inverse (output_mint, input_mint)    TYPE bloom_filter(0.005)    GRANULARITY 1,
-
-    -- PROJECTION (Part) --
-    -- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-    ADD PROJECTION IF NOT EXISTS prj_part_amm (SELECT amm, timestamp, _part_offset ORDER BY (amm, timestamp)),
-    ADD PROJECTION IF NOT EXISTS prj_part_amm_pool (SELECT amm_pool, timestamp, _part_offset ORDER BY (amm_pool, timestamp)),
-    ADD PROJECTION IF NOT EXISTS prj_part_user (SELECT user, timestamp, _part_offset ORDER BY (user, timestamp)),
-    ADD PROJECTION IF NOT EXISTS prj_part_input_mint (SELECT input_mint, timestamp, _part_offset ORDER BY (input_mint, timestamp)),
-    ADD PROJECTION IF NOT EXISTS prj_part_output_mint (SELECT output_mint, timestamp, _part_offset ORDER BY (output_mint, timestamp)),
-    ADD PROJECTION IF NOT EXISTS prj_part_input_amount (SELECT input_amount, timestamp, _part_offset ORDER BY (input_amount, timestamp)),
-    ADD PROJECTION IF NOT EXISTS prj_part_output_amount (SELECT output_amount, timestamp, _part_offset ORDER BY (output_amount, timestamp));
+    ADD INDEX IF NOT EXISTS idx_mint_pair_inverse (output_mint, input_mint)    TYPE bloom_filter(0.005)    GRANULARITY 1;
 
 /* ──────────────────────────────────────────────────────────────────────────
    1.  Raydium-AMM → swaps
