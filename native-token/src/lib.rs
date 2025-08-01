@@ -26,27 +26,33 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
         }
 
         // Native Token Balances
-        match &tx.meta {
-            Some(meta) => {
-                // Resolved accounts (same order as Balances)
-                let resolved_accounts = tx.resolved_accounts();
+        if let Some(meta) = &tx.meta {
+            let resolved_accounts = tx.resolved_accounts();
 
-                // PostTokenBalances
-                for (i, amount) in meta.post_balances.iter().enumerate() {
-                    transaction.post_balances.push(pb::Balance {
-                        account: resolved_accounts.get(i as usize).unwrap().to_vec(),
-                        amount: *amount,
-                    });
+            // Helper function to create balances from account/amount pairs
+            let create_balances = |balances: &[u64], tag: &str| -> Vec<pb::Balance> {
+                if balances.len() != resolved_accounts.len() {
+                    substreams::log::info!(
+                        "Skipping {tag} balances update: {tag}_balances length ({}) != resolved_accounts length ({})",
+                        balances.len(),
+                        resolved_accounts.len()
+                    );
+                    return Vec::new();
                 }
-                // PreTokenBalances
-                for (i, amount) in meta.pre_balances.iter().enumerate() {
-                    transaction.pre_balances.push(pb::Balance {
-                        account: resolved_accounts.get(i as usize).unwrap().to_vec(),
-                        amount: *amount,
-                    });
-                }
-            }
-            None => {}
+                balances
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, amount)| {
+                        resolved_accounts.get(i).map(|account| pb::Balance {
+                            account: account.to_vec(),
+                            amount: *amount,
+                        })
+                    })
+                    .collect()
+            };
+
+            transaction.post_balances = create_balances(&meta.post_balances, "post");
+            transaction.pre_balances = create_balances(&meta.pre_balances, "pre");
         }
 
         // Native Token Instructions
