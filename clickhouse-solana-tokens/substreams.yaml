@@ -12,12 +12,8 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # Substreams
-  spl_token: ../spl-token/substreams.yaml
-  native_token: ../native-token/substreams.yaml
-
-  # # SPL Token
-  # spl_token_balances: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-balances-v0.1.0.spkg
-  # spl_token_transfers: https://github.com/pinax-network/substreams-solana/releases/download/spl-token-v0.1.0/spl-token-transfers-v0.1.0.spkg
+  spl_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.0/spl-token-v0.2.0.spkg
+  native_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.0/native-token-v0.2.0.spkg
 
 binaries:
   default:
