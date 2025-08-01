@@ -57,11 +57,7 @@ pub fn unpack_transfers(instruction: &InstructionView) -> Option<pb::instruction
         } if lamports > 0 => {
             let source = instruction.accounts()[0].0.to_vec();
             let new_account = instruction.accounts()[1].0.to_vec();
-            let base_account = if instruction.accounts().len() > 2 {
-                Some(instruction.accounts()[2].0.to_vec())
-            } else {
-                None
-            };
+            let base_account = instruction.accounts().get(2).map(|account| account.0.to_vec());
 
             Some(pb::instruction::Instruction::CreateAccountWithSeed(pb::CreateAccountWithSeed {
                 source,
@@ -75,9 +71,12 @@ pub fn unpack_transfers(instruction: &InstructionView) -> Option<pb::instruction
             }))
         }
         SystemInstruction::WithdrawNonceAccount { 0: lamports } if lamports > 0 => {
-            let nonce_account = instruction.accounts()[0].0.to_vec();
-            let destination = instruction.accounts()[1].0.to_vec();
-            let nonce_authority = instruction.accounts()[4].0.to_vec();
+            let accounts = instruction.accounts();
+
+            let nonce_account = accounts[0].0.to_vec();
+            let destination = accounts[1].0.to_vec();
+            // If nonce_authority isn't specified (at index 4), use the nonce_account as the authority
+            let nonce_authority = accounts.get(4).map_or(nonce_account.clone(), |account| account.0.to_vec());
 
             Some(pb::instruction::Instruction::WithdrawNonceAccount(pb::WithdrawNonceAccount {
                 nonce_account,
