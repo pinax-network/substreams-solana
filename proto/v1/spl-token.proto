@@ -44,14 +44,15 @@ message Instruction {
         CloseAccount close_account = 21;
 
         // Metadata
+        // https://github.com/solana-program/token-metadata
         InitializeTokenMetadata initialize_token_metadata = 22; // SPL-2022 Initialize Token Metadata
         UpdateTokenMetadataField update_token_metadata_field = 23; // SPL-2022 Update Field
         UpdateTokenMetadataAuthority update_token_metadata_authority = 24; // SPL-2022 Update Authority
         RemoveTokenMetadataField remove_token_metadata_field = 25; // SPL-2022 Remove Key
 
-        // Extensions
-        MemoTransferExtension memo_transfer_extension = 26; // SPL-2022 Memo Transfer Extension
-        InitializeMetadataPointer initialize_metadata_pointer = 27; // SPL-2022 Initialize Metadata Pointer
+        // Memo
+        // https://github.com/solana-program/memo
+        Memo memo = 26; // SPL Memo Program
     }
 }
 
@@ -164,16 +165,9 @@ message ThawAccount {
   repeated bytes multisig_authority = 4; // The multisig authority to thaw the account
 }
 
-// TO-DO: not yet implemented
-message MemoTransferExtension {
+message Memo {
   bytes data = 1; // instruction data, typically a memo
-}
-
-// TO-DO: partially implemented
-message InitializeMetadataPointer {
-  bytes metadata_address = 1; // Metadata account address
-  bytes mint = 2; // Mint account address (TO-DO: not implemented yet)
-  bytes authority = 3; // Authority account address (TO-DO: not implemented yet)
+  string memo = 2; // UTF-8 decoded memo data
 }
 
 message InitializeTokenMetadata {
