@@ -8,96 +8,72 @@ mod transfers;
 use common::solana::{get_fee_payer, get_signers, is_spl_token_program};
 use proto::pb::solana::spl::token::v1 as pb;
 use substreams::errors::Error;
-use substreams_solana::{base58, pb::sf::solana::r#type::v1::Block};
+use substreams_solana::block_view::InstructionView;
+use substreams_solana::{
+    base58,
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
+};
 
 #[substreams::handlers::map]
 fn map_events(block: Block) -> Result<pb::Events, Error> {
-    let mut events = pb::Events::default();
+    Ok(pb::Events {
+        transactions: block.transactions_owned().filter_map(process_transaction).collect(),
+    })
+}
 
-    // transactions
-    for tx in block.transactions() {
-        let mut transaction = pb::Transaction::default();
-        let tx_meta = tx.meta.as_ref().expect("Transaction meta should be present");
-        transaction.fee = tx_meta.fee;
-        transaction.compute_units_consumed = tx_meta.compute_units_consumed();
-        transaction.signature = tx.hash().to_vec();
+fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
+    let tx_meta = tx.meta.as_ref()?;
+    let mut transaction = pb::Transaction {
+        fee: tx_meta.fee,
+        compute_units_consumed: tx_meta.compute_units_consumed(),
+        signature: tx.hash().to_vec(),
+        fee_payer: get_fee_payer(&tx).unwrap_or_default(),
+        signers: get_signers(&tx).unwrap_or_default(),
+        ..Default::default()
+    };
 
-        if let Some(fee_payer) = get_fee_payer(tx) {
-            transaction.fee_payer = fee_payer;
-        }
-        if let Some(signers) = get_signers(tx) {
-            transaction.signers = signers;
-        }
+    // Process SPL-Token Balances
+    transaction.post_token_balances = tx_meta
+        .post_token_balances
+        .iter()
+        .filter_map(|balance| balances::get_token_balance(&tx, balance))
+        .collect();
 
-        // SPL-Token Balances
-        match &tx.meta {
-            Some(meta) => {
-                // PostTokenBalances
-                for balance in meta.post_token_balances.iter() {
-                    if let Some(token_balance) = balances::get_token_balance(tx, balance) {
-                        transaction.post_token_balances.push(token_balance);
-                    }
-                }
-                // PreTokenBalances
-                for balance in meta.pre_token_balances.iter() {
-                    if let Some(token_balance) = balances::get_token_balance(tx, balance) {
-                        transaction.pre_token_balances.push(token_balance);
-                    }
-                }
-            }
-            None => {}
-        }
+    transaction.pre_token_balances = tx_meta
+        .pre_token_balances
+        .iter()
+        .filter_map(|balance| balances::get_token_balance(&tx, balance))
+        .collect();
 
-        // SPL-Token Instructions
-        for instruction in tx.walk_instructions() {
-            let program_id = instruction.program_id().0;
+    transaction.instructions = tx.walk_instructions().filter_map(|iview| process_instruction(&iview)).collect();
 
-            // Skip instructions
-            if !is_spl_token_program(&base58::encode(program_id)) {
-                continue;
-            }
-
-            let mut base = pb::Instruction {
-                program_id: program_id.to_vec(),
-                stack_height: instruction.stack_height(),
-                is_root: instruction.is_root(),
-                instruction: None,
-            };
-
-            // Unpack transfers
-            if let Some(instruction) = transfers::unpack_transfers(&instruction) {
-                base.instruction = Some(instruction);
-                transaction.instructions.push(base.clone());
-            }
-            // Unpack permissions
-            else if let Some(instruction) = permissions::unpack_permissions(&instruction) {
-                base.instruction = Some(instruction);
-                transaction.instructions.push(base.clone());
-            }
-            // Unpack mints
-            else if let Some(instruction) = mints::unpack_mints(&instruction) {
-                base.instruction = Some(instruction);
-                transaction.instructions.push(base.clone());
-            }
-            // Unpack accounts
-            else if let Some(instruction) = accounts::unpack_permissions(&instruction) {
-                base.instruction = Some(instruction);
-                transaction.instructions.push(base.clone());
-            }
-            // Unpack extensions
-            else if let Some(instruction) = extensions::unpack_extensions(&instruction) {
-                base.instruction = Some(instruction);
-                transaction.instructions.push(base.clone());
-            }
-            // Unpack metadata
-            else if let Some(instruction) = metadata::unpack_metadata(&instruction) {
-                base.instruction = Some(instruction);
-                transaction.instructions.push(base.clone());
-            }
-        }
-        if !transaction.instructions.is_empty() || !transaction.pre_token_balances.is_empty() || !transaction.post_token_balances.is_empty() {
-            events.transactions.push(transaction);
-        }
+    if transaction.instructions.is_empty() && transaction.pre_token_balances.is_empty() && transaction.post_token_balances.is_empty() {
+        None
+    } else {
+        Some(transaction)
     }
-    Ok(events)
+}
+
+fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction> {
+    let program_id = instruction.program_id().0;
+
+    // Skip non-SPL-Token instructions
+    if !is_spl_token_program(&base58::encode(program_id)) {
+        return None;
+    }
+
+    // Try each instruction parser in sequence
+    let parsed_instruction = transfers::unpack_transfers(instruction)
+        .or_else(|| permissions::unpack_permissions(instruction))
+        .or_else(|| mints::unpack_mints(instruction))
+        .or_else(|| accounts::unpack_permissions(instruction))
+        .or_else(|| extensions::unpack_extensions(instruction))
+        .or_else(|| metadata::unpack_metadata(instruction));
+
+    parsed_instruction.map(|parsed| pb::Instruction {
+        program_id: program_id.to_vec(),
+        stack_height: instruction.stack_height(),
+        is_root: instruction.is_root(),
+        instruction: Some(parsed),
+    })
 }

@@ -12,15 +12,10 @@ pub fn get_token_balance(tx: &ConfirmedTransaction, balance: &TokenBalance) -> O
     if !is_spl_token_program(&balance.program_id) {
         return None;
     }
-    let ui_token_amount = match &balance.ui_token_amount {
-        Some(amount) => amount,
-        None => return None, // skip if ui_token_amount is None
-    };
+    let ui_token_amount = balance.ui_token_amount.as_ref()?;
     // convert ui_token_amount to a u64
-    let amount = match ui_token_amount.amount.as_str().parse::<u64>() {
-        Ok(amount) => amount,
-        Err(_) => return None, // skip if parsing fails
-    };
+    let amount = ui_token_amount.amount.as_str().parse::<u64>().ok()?;
+
     Some(pb::TokenBalance {
         program_id: base58::decode(&balance.program_id).unwrap(),
         account: account.0.to_vec(),

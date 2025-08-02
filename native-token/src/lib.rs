@@ -12,7 +12,6 @@ use substreams_solana::{
 fn map_events(block: Block) -> Result<pb::Events, Error> {
     Ok(pb::Events {
         transactions: block.transactions_owned().filter_map(process_transaction).collect(),
-        ..Default::default()
     })
 }
 
