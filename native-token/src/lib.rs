@@ -1,12 +1,18 @@
 mod system;
 
-use common::solana::{get_fee_payer, get_signers, is_system_program};
+use common::solana::{get_fee_payer, get_signers};
 use proto::pb::solana::native::token::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
     base58,
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
 };
+
+pub const SYSTEM_PROGRAM: &str = "11111111111111111111111111111111";
+
+pub fn is_system_program(program_id: &str) -> bool {
+    program_id == SYSTEM_PROGRAM
+}
 
 #[substreams::handlers::map]
 fn map_events(block: Block) -> Result<pb::Events, Error> {

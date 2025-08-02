@@ -1,9 +1,10 @@
-use common::solana::is_spl_token_program;
 use proto::pb::solana::spl::token::v1 as pb;
 use substreams_solana::{
     base58,
     pb::sf::solana::r#type::v1::{ConfirmedTransaction, TokenBalance},
 };
+
+use crate::is_spl_token_program;
 
 pub fn get_token_balance(tx: &ConfirmedTransaction, balance: &TokenBalance) -> Option<pb::TokenBalance> {
     let account = tx.account_at(balance.account_index as u8);

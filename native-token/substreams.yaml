@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: native_token
-  version: v0.2.0
+  version: v0.2.1
   url: https://github.com/pinax-network/substreams-solana
   description: Native Token
   image: ../image.png
@@ -26,10 +26,10 @@ modules:
     doc: Native Token
     inputs:
       - map: solana_common:blocks_without_votes
-    # blockFilter:
-    #   module: solana_common:program_ids_without_votes
-    #   query:
-    #     string: "program:So11111111111111111111111111111111111111111"
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:11111111111111111111111111111111"
     output:
       type: proto:solana.native.token.v1.Events
 
