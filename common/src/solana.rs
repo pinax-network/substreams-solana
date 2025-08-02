@@ -1,26 +1,28 @@
 use base64::Engine;
+use prost_types::Timestamp;
 use substreams::pb::substreams::Clock;
 use substreams_solana::{base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
 
 const GENESIS_TIMESTAMP: u64 = 1584332940; // Genesis timestamp in seconds
 const SLOT_DURATION_MS: u64 = 400; // Slot duration in milliseconds
 
-pub const SOLANA_TOKEN_PROGRAM_KEG: &str = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
-pub const SOLANA_TOKEN_PROGRAM_ZQB: &str = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
-pub const SYSTEM_PROGRAM: &str = "11111111111111111111111111111111";
-
-pub fn is_spl_token_program(program_id: &str) -> bool {
-    program_id == SOLANA_TOKEN_PROGRAM_KEG || program_id == SOLANA_TOKEN_PROGRAM_ZQB
-}
-
-pub fn is_system_program(program_id: &str) -> bool {
-    program_id == SYSTEM_PROGRAM
-}
-
-pub fn to_timestamp(clock: &Clock) -> u64 {
+pub fn to_timestamp(clock: &Clock) -> i64 {
     // GENESIS_TIMESTAMP is the genesis timestamp
     // SLOT_DURATION_MS per slot, so we multiply the slot number by SLOT_DURATION_MS and divide by 1000 to get seconds
-    GENESIS_TIMESTAMP + (clock.number * SLOT_DURATION_MS) / 1000
+    (GENESIS_TIMESTAMP + (clock.number * SLOT_DURATION_MS) / 1000) as i64
+}
+
+pub fn update_genesis_clock(mut clock: Clock) -> Clock {
+    // only apply if the clock has not been set yet
+    // early votes in Solana that do not contain votes do not include a timestamp
+    if clock.timestamp.unwrap().seconds > 0 {
+        return clock;
+    }
+    clock.timestamp = Some(Timestamp {
+        seconds: to_timestamp(&clock),
+        nanos: 0,
+    });
+    clock
 }
 
 pub fn get_fee_payer(tx: &ConfirmedTransaction) -> Option<Vec<u8>> {
