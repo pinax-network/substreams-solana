@@ -8,8 +8,8 @@ pub fn unpack_memo(instruction: &InstructionView) -> Option<pb::instruction::Ins
     if is_spl_token_memo_program(&base58::encode(instruction.program_id().0)) {
         let memo = from_utf8(instruction.data()).ok();
         if let Some(memo) = memo {
-            // Create a MemoTransferExtension instruction
-            return Some(pb::instruction::Instruction::MemoTransferExtension(pb::MemoTransferExtension {
+            // Create a Memo instruction
+            return Some(pb::instruction::Instruction::Memo(pb::Memo {
                 data: instruction.data().to_vec(),
                 memo: memo.to_string(),
             }));
