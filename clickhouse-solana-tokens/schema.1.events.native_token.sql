@@ -56,7 +56,3 @@ COMMENT 'System post balances';
 ALTER TABLE system_post_balances
     ADD COLUMN IF NOT EXISTS account                  String COMMENT 'Account address.',
     ADD COLUMN IF NOT EXISTS amount                   UInt64 COMMENT 'Balance amount in lamports.';
-
--- System Pre Balance --
-CREATE TABLE IF NOT EXISTS system_pre_balances AS system_post_balances
-COMMENT 'System pre balances';
