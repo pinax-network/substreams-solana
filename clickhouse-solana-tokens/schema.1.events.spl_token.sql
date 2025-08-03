@@ -16,7 +16,13 @@ ALTER TABLE spl_transfer
     ADD COLUMN IF NOT EXISTS mint_raw                String,
     ADD COLUMN IF NOT EXISTS mint                    Nullable(String) MATERIALIZED string_or_null(mint_raw),
     ADD COLUMN IF NOT EXISTS decimals_raw            String,
-    ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw);
+    ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_source (source) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_destination (destination) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_amount (amount) TYPE minmax GRANULARITY 1;
 
 -- InitializeAccount --
 CREATE TABLE IF NOT EXISTS initialize_account AS base_events

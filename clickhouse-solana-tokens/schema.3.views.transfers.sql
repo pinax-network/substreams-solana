@@ -13,7 +13,10 @@ ALTER TABLE transfers
     -- require `mint` to be present for token transfers
     DROP COLUMN IF EXISTS mint,
     DROP COLUMN IF EXISTS mint_raw,
-    ADD COLUMN mint LowCardinality(String);
+    ADD COLUMN mint LowCardinality(String),
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_source_owner (source_owner) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_destination_owner (destination_owner) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
