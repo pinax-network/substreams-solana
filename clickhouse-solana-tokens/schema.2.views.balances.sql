@@ -1,6 +1,7 @@
 -- SPL Token Balances --
-CREATE TABLE IF NOT EXISTS spl_balances (
+CREATE TABLE IF NOT EXISTS balances (
     block_num       UInt32,
+    timestamp       DateTime(0, 'UTC'),
     program_id      LowCardinality(String),
     account         String,
     amount          UInt64,
@@ -10,21 +11,22 @@ CREATE TABLE IF NOT EXISTS spl_balances (
     -- indexes --
     INDEX idx_program_id (program_id) TYPE set(3) GRANULARITY 1, -- SPL Token, Token-2022 & Native SOL
     INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_amount (amount) TYPE minmax GRANULARITY 1
+    INDEX idx_amount (amount) TYPE minmax GRANULARITY 1,
+    INDEX idx_decimals (decimals) TYPE minmax GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (program_id, mint, account)
-COMMENT 'SPL token balances (SPL tokens, not native SOL)';
+COMMENT 'SPL Token & Native SOL balances';
 
-ALTER TABLE spl_balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
-ALTER TABLE spl_balances
-    ADD PROJECTION IF NOT EXISTS prj_amount (SELECT * ORDER BY (amount, account)),
+ALTER TABLE balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+ALTER TABLE balances
     ADD PROJECTION IF NOT EXISTS prj_account (SELECT * ORDER BY (account));
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_post_token_balances
-TO spl_balances AS
+TO balances AS
 SELECT
     block_num,
+    timestamp,
     program_id,
     account,
     amount,
@@ -32,49 +34,14 @@ SELECT
     decimals
 FROM post_token_balances;
 
--- Native SOL Balances --
-CREATE TABLE IF NOT EXISTS native_balances (
-    block_num       UInt32,
-    program_id      FixedString(44) MATERIALIZED '11111111111111111111111111111111',
-    account         FixedString(44),
-    amount          UInt64,
-    mint            FixedString(44) MATERIALIZED 'So11111111111111111111111111111111111111111',
-    decimals        UInt8 MATERIALIZED 9,
-
-    -- indexes --
-    INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_amount (amount) TYPE minmax GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (account)
-COMMENT 'Native SOL balances (lamports, not SPL tokens)';
-
-ALTER TABLE native_balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
-ALTER TABLE native_balances
-    ADD PROJECTION IF NOT EXISTS prj_amount (SELECT * ORDER BY (amount, account));
-
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_system_post_balances
-TO native_balances AS
+TO balances AS
 SELECT
     block_num,
+    timestamp,
+    '11111111111111111111111111111111' AS program_id,
     account,
-    amount
+    amount,
+    'So11111111111111111111111111111111111111111' AS mint,
+    9 AS decimals
 FROM system_post_balances;
-
--- All Balances --
-CREATE TABLE IF NOT EXISTS balances AS spl_balances
-COMMENT 'All token balances (SPL and native SOL)';
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_balances
-TO balances AS
-SELECT *
-FROM spl_balances;
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_native_balances
-TO balances AS
-SELECT
-    *,
-    program_id,
-    mint,
-    decimals
-FROM native_balances;

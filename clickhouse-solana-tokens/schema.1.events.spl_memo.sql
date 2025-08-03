@@ -5,4 +5,4 @@ ALTER TABLE spl_memo
     ADD COLUMN IF NOT EXISTS memo String;
 
 ALTER TABLE spl_memo
-    ADD PROJECTION IF NOT EXISTS prj_signature (SELECT * ORDER BY signature);
+    ADD PROJECTION IF NOT EXISTS prj_signature (SELECT signature, block_num, timestamp, transaction_index, memo ORDER BY (signature, transaction_index));
