@@ -55,7 +55,7 @@ ALTER TABLE system_create_account
     ADD INDEX IF NOT EXISTS idx_source (source) TYPE bloom_filter(0.005) GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_new_account (new_account) TYPE bloom_filter(0.005) GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1,
-    ADD INDEX IF NOT EXISTS idx_space (space) TYPE minmax GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_space (space) TYPE set(32) GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_lamports (lamports) TYPE minmax GRANULARITY 1;
 
 -- CreateAccountWithSeed --
@@ -77,7 +77,7 @@ ALTER TABLE system_create_account_with_seed
     ADD INDEX IF NOT EXISTS idx_base (base) TYPE bloom_filter(0.005) GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_base_account (base_account) TYPE bloom_filter(0.005) GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1,
-    ADD INDEX IF NOT EXISTS idx_space (space) TYPE minmax GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_space (space) TYPE set(32) GRANULARITY 1,
     ADD INDEX IF NOT EXISTS idx_lamports (lamports) TYPE minmax GRANULARITY 1;
 
 -- System Post Balance --
