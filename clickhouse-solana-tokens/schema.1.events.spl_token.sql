@@ -157,10 +157,3 @@ ALTER TABLE post_token_balances
     ADD COLUMN IF NOT EXISTS mint               String COMMENT 'Mint address',
     ADD COLUMN IF NOT EXISTS amount             UInt64 COMMENT 'Balance amount in lamports.',
     ADD COLUMN IF NOT EXISTS decimals           UInt8;
-
--- SPL Token Memo --
-CREATE TABLE IF NOT EXISTS spl_memo AS base_events
-ORDER BY (signature, instruction_index)
-COMMENT 'SPL Token Memo events';
-ALTER TABLE spl_memo
-    ADD COLUMN IF NOT EXISTS memo                   String;

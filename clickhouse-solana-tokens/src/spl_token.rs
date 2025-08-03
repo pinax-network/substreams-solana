@@ -452,7 +452,7 @@ fn handle_memo(
     instruction_index: usize,
 ) {
     let key = common_key_v2(&clock, transaction_index, instruction_index);
-    let row = tables.create_row("spl_memo", key).set("memo", base58::encode(&data.memo));
+    let row = tables.create_row("spl_memo", key).set("memo", &data.memo);
 
     set_spl_token_instruction_v2(instruction, row);
     set_spl_token_transaction_v2(transaction, row);

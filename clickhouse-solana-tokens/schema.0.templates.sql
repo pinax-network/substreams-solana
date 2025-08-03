@@ -34,6 +34,7 @@ ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );
+ALTER TABLE base_events MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 
 CREATE TABLE IF NOT EXISTS base_transactions AS base_events;
 ALTER TABLE base_transactions
