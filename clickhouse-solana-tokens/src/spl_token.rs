@@ -1,16 +1,20 @@
+use std::collections::HashMap;
+
 use common::clickhouse::{common_key_v2, set_authority, set_clock, set_spl_token_instruction_v2, set_spl_token_transaction_v2};
 use proto::pb::solana::spl::token::v1 as pb;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
 
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
+    // Only keep last balance change per block
+    let mut post_token_balances_per_block = HashMap::new();
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
         // Token Balances
         for (i, balance) in transaction.post_token_balances.iter().enumerate() {
-            handle_token_balances("post_token_balances", tables, clock, transaction, balance, transaction_index, i);
-        }
-        for (i, balance) in transaction.pre_token_balances.iter().enumerate() {
-            handle_token_balances("pre_token_balances", tables, clock, transaction, balance, transaction_index, i);
+            let mut key = Vec::new(); // Create a unique key for the balance
+            key.extend(balance.account.to_vec());
+            key.extend(balance.mint.to_vec());
+            post_token_balances_per_block.insert(key, (balance, transaction, transaction_index, i));
         }
         for (i, instruction) in transaction.instructions.iter().enumerate() {
             match &instruction.instruction {
@@ -23,6 +27,10 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
                 }
                 Some(pb::instruction::Instruction::Burn(data)) => {
                     handle_transfer(tables, clock, transaction, instruction, data, transaction_index, i);
+                }
+                // Memo
+                Some(pb::instruction::Instruction::Memo(data)) => {
+                    handle_memo(tables, clock, transaction, instruction, data, transaction_index, i);
                 }
 
                 // Permissions
@@ -74,6 +82,9 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
                 _ => {}
             }
         }
+    }
+    for (balance, transaction, transaction_index, i) in post_token_balances_per_block.values() {
+        handle_token_balances("post_token_balances", tables, clock, transaction, balance, *transaction_index, *i);
     }
 }
 
@@ -427,6 +438,23 @@ fn handle_token_balances(
         .set("amount", data.amount)
         .set("decimals", data.decimals);
 
+    set_spl_token_transaction_v2(transaction, row);
+    set_clock(clock, row);
+}
+
+fn handle_memo(
+    tables: &mut substreams_database_change::tables::Tables,
+    clock: &Clock,
+    transaction: &pb::Transaction,
+    instruction: &pb::Instruction,
+    data: &pb::Memo,
+    transaction_index: usize,
+    instruction_index: usize,
+) {
+    let key = common_key_v2(&clock, transaction_index, instruction_index);
+    let row = tables.create_row("spl_memo", key).set("memo", base58::encode(&data.memo));
+
+    set_spl_token_instruction_v2(instruction, row);
     set_spl_token_transaction_v2(transaction, row);
     set_clock(clock, row);
 }

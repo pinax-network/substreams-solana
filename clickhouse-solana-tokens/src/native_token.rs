@@ -6,12 +6,13 @@ use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
 
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
-    // Only keep last balance change per block
     let mut system_post_balances_per_block = HashMap::new();
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
         // Native Token Balances
-        for (i, balance) in transaction.post_balances.iter().enumerate() {
-            system_post_balances_per_block.insert(balance.account.to_vec(), (balance, transaction, transaction_index, i));
+        // Only keep last post balance change per block
+        for (i, post_balance) in transaction.post_balances.iter().enumerate() {
+            let key = post_balance.account.to_vec();
+            system_post_balances_per_block.insert(key, (post_balance, transaction, transaction_index, i));
         }
         // Native Token Instructions
         for (i, instruction) in transaction.instructions.iter().enumerate() {
@@ -35,8 +36,8 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
             }
         }
     }
-    for (balance, transaction, transaction_index, i) in system_post_balances_per_block.values() {
-        handle_balances("system_post_balances", tables, clock, transaction, balance, *transaction_index, *i);
+    for (post_balance, transaction, transaction_index, i) in system_post_balances_per_block.values() {
+        handle_balances("system_post_balances", tables, clock, transaction, post_balance, *transaction_index, *i);
     }
 }
 

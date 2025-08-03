@@ -150,7 +150,7 @@ ALTER TABLE remove_token_metadata_field
 
 -- SPL Token Post Balance --
 CREATE TABLE IF NOT EXISTS post_token_balances AS base_transactions
-COMMENT 'SPL Token Post Balance events';
+COMMENT 'SPL Token Post Balance events (only last transaction in block which effects the balance)';
 ALTER TABLE post_token_balances
     ADD COLUMN IF NOT EXISTS program_id         LowCardinality(String) COMMENT 'Program ID of the SPL Token program.',
     ADD COLUMN IF NOT EXISTS account            String COMMENT 'Account address.',
@@ -158,6 +158,9 @@ ALTER TABLE post_token_balances
     ADD COLUMN IF NOT EXISTS amount             UInt64 COMMENT 'Balance amount in lamports.',
     ADD COLUMN IF NOT EXISTS decimals           UInt8;
 
--- SPL Token Pre Balance --
-CREATE TABLE IF NOT EXISTS pre_token_balances AS post_token_balances
-COMMENT 'SPL Token Pre Balance events';
+-- SPL Token Memo --
+CREATE TABLE IF NOT EXISTS spl_memo AS base_events
+ORDER BY (signature, instruction_index)
+COMMENT 'SPL Token Memo events';
+ALTER TABLE spl_memo
+    ADD COLUMN IF NOT EXISTS memo                   String;
