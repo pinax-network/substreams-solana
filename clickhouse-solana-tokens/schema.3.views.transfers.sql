@@ -34,8 +34,8 @@ SELECT
     a1.owner AS source_owner,
     a2.owner AS destination_owner
 FROM spl_transfer AS t
-JOIN accounts AS a1 ON (t.mint = a1.mint AND t.source = a1.account)
-JOIN accounts AS a2 ON (t.mint = a2.mint AND t.destination = a2.account)
+LEFT JOIN accounts AS a1 ON (t.mint = a1.mint AND t.source = a1.account)
+LEFT JOIN accounts AS a2 ON (t.mint = a2.mint AND t.destination = a2.account)
 JOIN mints AS m ON m.mint = t.mint
 -- ignore 0 transfers
 WHERE t.amount > 0 AND t.mint IS NOT NULL;
