@@ -20,13 +20,10 @@ pub const SOLANA_MEMO_PROGRAM_V1: &str = "Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQD
 pub const SOLANA_MEMO_PROGRAM_V2: &str = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 pub fn is_spl_token_program(program_id: &str) -> bool {
-    program_id == SOLANA_TOKEN_PROGRAM_KEG
-        || program_id == SOLANA_TOKEN_PROGRAM_ZQB
-        || program_id == SOLANA_MEMO_PROGRAM_V1
-        || program_id == SOLANA_MEMO_PROGRAM_V2
+    program_id == SOLANA_TOKEN_PROGRAM_KEG || program_id == SOLANA_TOKEN_PROGRAM_ZQB
 }
 
-pub fn is_spl_token_memo_program(program_id: &str) -> bool {
+pub fn is_spl_memo_program(program_id: &str) -> bool {
     program_id == SOLANA_MEMO_PROGRAM_V1 || program_id == SOLANA_MEMO_PROGRAM_V2
 }
 
@@ -72,23 +69,23 @@ fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
 }
 
 fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction> {
-    let program_id = instruction.program_id().0;
+    let program_id = base58::encode(instruction.program_id().0);
 
-    // Skip non-SPL-Token instructions
-    if !is_spl_token_program(&base58::encode(program_id)) {
+    // Skip non-SPL-Token & SPL Memo instructions
+    if !is_spl_token_program(&program_id) && !is_spl_memo_program(&program_id) {
         return None;
     }
 
     // Try each instruction parser in sequence
-    let parsed_instruction = transfers::unpack_transfers(instruction)
-        .or_else(|| permissions::unpack_permissions(instruction))
-        .or_else(|| mints::unpack_mints(instruction))
-        .or_else(|| accounts::unpack_permissions(instruction))
-        .or_else(|| memo::unpack_memo(instruction))
-        .or_else(|| metadata::unpack_metadata(instruction));
+    let parsed_instruction = transfers::unpack_transfers(instruction, &program_id)
+        .or_else(|| permissions::unpack_permissions(instruction, &program_id))
+        .or_else(|| mints::unpack_mints(instruction, &program_id))
+        .or_else(|| accounts::unpack_accounts(instruction, &program_id))
+        .or_else(|| metadata::unpack_metadata(instruction, &program_id))
+        .or_else(|| memo::unpack_memo(instruction, &program_id));
 
     parsed_instruction.map(|parsed| pb::Instruction {
-        program_id: program_id.to_vec(),
+        program_id: instruction.program_id().0.to_vec(),
         stack_height: instruction.stack_height(),
         is_root: instruction.is_root(),
         instruction: Some(parsed),

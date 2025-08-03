@@ -1,8 +1,15 @@
+use core::panic;
+
 use proto::pb::solana::spl::token::v1 as pb;
-use substreams_solana::block_view::InstructionView;
+use substreams_solana::{base58, block_view::InstructionView};
 use substreams_solana_program_instructions::{option::COption, token_instruction_2022::TokenInstruction};
 
-pub fn unpack_permissions(instruction: &InstructionView) -> Option<pb::instruction::Instruction> {
+use crate::is_spl_token_program;
+
+pub fn unpack_accounts(instruction: &InstructionView, program_id: &str) -> Option<pb::instruction::Instruction> {
+    if !is_spl_token_program(&program_id) {
+        return None;
+    }
     match TokenInstruction::unpack(&instruction.data()) {
         Err(_err) => return None,
         Ok(token_instruction) => match token_instruction {
@@ -48,6 +55,9 @@ pub fn unpack_permissions(instruction: &InstructionView) -> Option<pb::instructi
             }
             // -- CloseAccount --
             TokenInstruction::CloseAccount {} => {
+                if instruction.accounts().len() < 3 {
+                    panic!("CloseAccount requires at least 3 accounts {}", base58::encode(instruction.transaction().hash()));
+                }
                 // accounts
                 let account = instruction.accounts()[0].0.to_vec();
                 let destination = instruction.accounts()[1].0.to_vec();

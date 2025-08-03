@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS balances (
     decimals        UInt8,
 
     -- indexes --
-    INDEX idx_program_id (program_id) TYPE set(3) GRANULARITY 1, -- SPL Token, Token-2022 & Native SOL
     INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
     INDEX idx_amount (amount) TYPE minmax GRANULARITY 1,
     INDEX idx_decimals (decimals) TYPE minmax GRANULARITY 1
