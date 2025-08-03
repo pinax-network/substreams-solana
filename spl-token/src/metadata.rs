@@ -2,7 +2,12 @@ use proto::pb::solana::spl::token::v1 as pb;
 use spl_token_metadata_interface::{instruction::TokenMetadataInstruction, state::Field};
 use substreams_solana::block_view::InstructionView;
 
-pub fn unpack_metadata(instruction: &InstructionView) -> Option<pb::instruction::Instruction> {
+use crate::is_spl_token_program;
+
+pub fn unpack_metadata(instruction: &InstructionView, program_id: &str) -> Option<pb::instruction::Instruction> {
+    if !is_spl_token_program(&program_id) {
+        return None;
+    }
     match TokenMetadataInstruction::unpack(&instruction.data()) {
         Err(_err) => return None,
         Ok(token_instruction) => match token_instruction {

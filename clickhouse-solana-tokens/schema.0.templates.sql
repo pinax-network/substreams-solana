@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS base_events (
     -- block --
     block_num                   UInt32,
-    block_hash                  FixedString(44),
+    block_hash                  String,
     timestamp                   DateTime(0, 'UTC'),
 
     -- ordering --
@@ -9,17 +9,17 @@ CREATE TABLE IF NOT EXISTS base_events (
     instruction_index           UInt32,
 
     -- transaction --
-    signature                   FixedString(88),
+    signature                   String,
     signature_hash              UInt64  MATERIALIZED cityHash64(signature),
-    fee_payer                   FixedString(44),
+    fee_payer                   String,
     signers_raw                 String,
-    signers                     Array(FixedString(44)) MATERIALIZED arrayMap(x -> toFixedString(x, 44), splitByChar(',', signers_raw)),
-    signer                      FixedString(44) MATERIALIZED if(length(signers) > 0, signers[1], ''),
+    signers                     Array(String) MATERIALIZED string_to_array(signers_raw),
+    signer                      String MATERIALIZED if(length(signers) > 0, signers[1], ''),
     fee                         UInt64 DEFAULT 0,
     compute_units_consumed      UInt64 DEFAULT 0,
 
     -- instruction --
-    program_id                  LowCardinality(FixedString(44)),
+    program_id                  LowCardinality(String),
     stack_height                UInt32,
 
     -- indexes -
@@ -29,11 +29,19 @@ CREATE TABLE IF NOT EXISTS base_events (
     INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
-PARTITION BY toYYYYMM(timestamp)
+PARTITION BY toYYYYMMDD(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
 );
+
+ALTER TABLE base_events
+  MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+
+-- PROJECTIONS (Part) --
+-- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
+ALTER TABLE base_events
+    ADD PROJECTION IF NOT EXISTS prj_part_signature (SELECT signature, _part_offset ORDER BY signature);
 
 CREATE TABLE IF NOT EXISTS base_transactions AS base_events;
 ALTER TABLE base_transactions

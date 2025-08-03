@@ -16,7 +16,13 @@ ALTER TABLE spl_transfer
     ADD COLUMN IF NOT EXISTS mint_raw                String,
     ADD COLUMN IF NOT EXISTS mint                    Nullable(String) MATERIALIZED string_or_null(mint_raw),
     ADD COLUMN IF NOT EXISTS decimals_raw            String,
-    ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw);
+    ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_source (source) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_destination (destination) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_amount (amount) TYPE minmax GRANULARITY 1;
 
 -- InitializeAccount --
 CREATE TABLE IF NOT EXISTS initialize_account AS base_events
@@ -150,14 +156,10 @@ ALTER TABLE remove_token_metadata_field
 
 -- SPL Token Post Balance --
 CREATE TABLE IF NOT EXISTS post_token_balances AS base_transactions
-COMMENT 'SPL Token Post Balance events';
+COMMENT 'SPL Token Post Balance events (only last transaction in block which effects the balance)';
 ALTER TABLE post_token_balances
     ADD COLUMN IF NOT EXISTS program_id         LowCardinality(String) COMMENT 'Program ID of the SPL Token program.',
     ADD COLUMN IF NOT EXISTS account            String COMMENT 'Account address.',
     ADD COLUMN IF NOT EXISTS mint               String COMMENT 'Mint address',
     ADD COLUMN IF NOT EXISTS amount             UInt64 COMMENT 'Balance amount in lamports.',
     ADD COLUMN IF NOT EXISTS decimals           UInt8;
-
--- SPL Token Pre Balance --
-CREATE TABLE IF NOT EXISTS pre_token_balances AS post_token_balances
-COMMENT 'SPL Token Pre Balance events';

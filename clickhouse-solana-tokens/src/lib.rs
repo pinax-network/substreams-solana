@@ -1,12 +1,13 @@
 mod native_token;
 mod spl_token;
-use common::clickhouse::set_clock;
+use common::{clickhouse::set_clock, solana::update_genesis_clock};
 use proto::pb::solana as pb;
 use substreams::{errors::Error, pb::substreams::Clock};
 use substreams_database_change::pb::database::DatabaseChanges;
 
 #[substreams::handlers::map]
 pub fn db_out(mut clock: Clock, spl_token: pb::spl::token::v1::Events, native_token: pb::native::token::v1::Events) -> Result<DatabaseChanges, Error> {
+    clock = update_genesis_clock(clock);
     let mut tables = substreams_database_change::tables::Tables::new();
 
     spl_token::process_events(&mut tables, &clock, &spl_token);

@@ -13,7 +13,10 @@ ALTER TABLE transfers
     -- require `mint` to be present for token transfers
     DROP COLUMN IF EXISTS mint,
     DROP COLUMN IF EXISTS mint_raw,
-    ADD COLUMN mint LowCardinality(String);
+    ADD COLUMN mint LowCardinality(String),
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_source_owner (source_owner) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_destination_owner (destination_owner) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
@@ -31,8 +34,8 @@ SELECT
     a1.owner AS source_owner,
     a2.owner AS destination_owner
 FROM spl_transfer AS t
-JOIN accounts AS a1 ON (t.mint = a1.mint AND t.source = a1.account)
-JOIN accounts AS a2 ON (t.mint = a2.mint AND t.destination = a2.account)
+LEFT JOIN accounts AS a1 ON (t.mint = a1.mint AND t.source = a1.account)
+LEFT JOIN accounts AS a2 ON (t.mint = a2.mint AND t.destination = a2.account)
 JOIN mints AS m ON m.mint = t.mint
 -- ignore 0 transfers
 WHERE t.amount > 0 AND t.mint IS NOT NULL;

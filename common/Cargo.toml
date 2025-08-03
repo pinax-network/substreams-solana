@@ -15,4 +15,3 @@ prost = { workspace = true }
 prost-types = { workspace = true }
 proto = { path = "../proto" }
 base64 = "0.22.1"
-# solana-sdk = "2.3.1"

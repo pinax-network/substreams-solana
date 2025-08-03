@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: spl_token
-  version: v0.2.0
+  version: v0.2.1
   url: https://github.com/pinax-network/substreams-solana
   description: SPL Token
   image: ../image.png
@@ -29,7 +29,10 @@ modules:
     blockFilter:
       module: solana_common:program_ids_without_votes
       query:
-        string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA || program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA ||
+                 program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb ||
+                 program:Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo ||
+                 program:MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
     output:
       type: proto:solana.spl.token.v1.Events
 

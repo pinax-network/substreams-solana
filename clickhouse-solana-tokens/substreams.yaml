@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: solana_tokens
-  version: v0.2.0
+  version: v0.2.1
   url: https://github.com/pinax-network/substreams-solana
   description: SPL, SPL-20222 & Native transfers and balances for Solana blockchains.
   image: ../image.png
@@ -11,9 +11,13 @@ imports:
   database_changes: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
+  # # Substreams
+  # spl_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.0/spl-token-v0.2.0.spkg
+  # native_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.0/native-token-v0.2.0.spkg
+
   # Substreams
-  spl_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.0/spl-token-v0.2.0.spkg
-  native_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.0/native-token-v0.2.0.spkg
+  spl_token: ../spl-token/substreams.yaml
+  native_token: ../native-token/substreams.yaml
 
 binaries:
   default:

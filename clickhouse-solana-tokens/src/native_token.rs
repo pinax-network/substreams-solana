@@ -1,17 +1,20 @@
+use std::collections::HashMap;
+
 use common::clickhouse::{common_key_v2, set_clock, set_native_token_instruction_v2, set_native_token_transaction_v2};
 use proto::pb::solana::native::token::v1 as pb;
 use substreams::pb::substreams::Clock;
 use substreams_solana::base58;
 
 pub fn process_events(tables: &mut substreams_database_change::tables::Tables, clock: &Clock, events: &pb::Events) {
+    let mut system_post_balances_per_block = HashMap::new();
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
-        // Token Balances
-        for (i, balance) in transaction.post_balances.iter().enumerate() {
-            handle_balances("system_post_balances", tables, clock, transaction, balance, transaction_index, i);
+        // Native Token Balances
+        // Only keep last post balance change per block
+        for (i, post_balance) in transaction.post_balances.iter().enumerate() {
+            let key = post_balance.account.to_vec();
+            system_post_balances_per_block.insert(key, (post_balance, transaction, transaction_index, i));
         }
-        for (i, balance) in transaction.pre_balances.iter().enumerate() {
-            handle_balances("system_pre_balances", tables, clock, transaction, balance, transaction_index, i);
-        }
+        // Native Token Instructions
         for (i, instruction) in transaction.instructions.iter().enumerate() {
             match &instruction.instruction {
                 Some(pb::instruction::Instruction::Transfer(data)) => {
@@ -32,6 +35,9 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
                 _ => {}
             }
         }
+    }
+    for (post_balance, transaction, transaction_index, i) in system_post_balances_per_block.values() {
+        handle_balances("system_post_balances", tables, clock, transaction, post_balance, *transaction_index, *i);
     }
 }
 

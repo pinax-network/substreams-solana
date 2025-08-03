@@ -43,7 +43,7 @@ pub struct Instruction {
     /// Indicates if this instruction is a root instruction.
     #[prost(bool, tag="3")]
     pub is_root: bool,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -80,6 +80,7 @@ pub mod instruction {
         #[prost(message, tag="21")]
         CloseAccount(super::CloseAccount),
         /// Metadata
+        /// <https://github.com/solana-program/token-metadata>
         ///
         /// SPL-2022 Initialize Token Metadata
         #[prost(message, tag="22")]
@@ -93,14 +94,12 @@ pub mod instruction {
         /// SPL-2022 Remove Key
         #[prost(message, tag="25")]
         RemoveTokenMetadataField(super::RemoveTokenMetadataField),
-        /// Extensions
+        /// Memo
+        /// <https://github.com/solana-program/memo>
         ///
-        /// SPL-2022 Memo Transfer Extension
+        /// SPL Memo Program
         #[prost(message, tag="26")]
-        MemoTransferExtension(super::MemoTransferExtension),
-        /// SPL-2022 Initialize Metadata Pointer
-        #[prost(message, tag="27")]
-        InitializeMetadataPointer(super::InitializeMetadataPointer),
+        Memo(super::Memo),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -273,27 +272,15 @@ pub struct ThawAccount {
     #[prost(bytes="vec", repeated, tag="4")]
     pub multisig_authority: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
 }
-/// TO-DO: not yet implemented
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MemoTransferExtension {
+pub struct Memo {
     /// instruction data, typically a memo
     #[prost(bytes="vec", tag="1")]
     pub data: ::prost::alloc::vec::Vec<u8>,
-}
-/// TO-DO: partially implemented
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct InitializeMetadataPointer {
-    /// Metadata account address
-    #[prost(bytes="vec", tag="1")]
-    pub metadata_address: ::prost::alloc::vec::Vec<u8>,
-    /// Mint account address (TO-DO: not implemented yet)
-    #[prost(bytes="vec", tag="2")]
-    pub mint: ::prost::alloc::vec::Vec<u8>,
-    /// Authority account address (TO-DO: not implemented yet)
-    #[prost(bytes="vec", tag="3")]
-    pub authority: ::prost::alloc::vec::Vec<u8>,
+    /// UTF-8 decoded memo data
+    #[prost(string, tag="2")]
+    pub memo: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
