@@ -53,7 +53,7 @@ pub fn get_signers(tx: &ConfirmedTransaction) -> Option<Vec<Vec<u8>>> {
         })
 }
 
-pub fn parse_program_data(log_message: &String) -> Option<Vec<u8>> {
+pub fn parse_program_data(log_message: &str) -> Option<Vec<u8>> {
     if let Some(b64) = log_message.strip_prefix("Program data:") {
         // remove embedded whitespace, if any
         let clean: String = b64.chars().filter(|c| !c.is_whitespace()).collect();
@@ -63,7 +63,7 @@ pub fn parse_program_data(log_message: &String) -> Option<Vec<u8>> {
 }
 
 // Program log: ray_log: A2vOXFR2BAAAAAAAAAAAAAABAAAAAAAAAGdf5p0tPAYAS3d05xcAAAAKLhn2iZx5BJPGFwAAAAAA
-pub fn parse_raydium_log(log_message: &String) -> Option<Vec<u8>> {
+pub fn parse_raydium_log(log_message: &str) -> Option<Vec<u8>> {
     if let Some(b64) = log_message.strip_prefix("Program log: ray_log:") {
         // remove embedded whitespace, if any
         let clean: String = b64.chars().filter(|c| !c.is_whitespace()).collect();
