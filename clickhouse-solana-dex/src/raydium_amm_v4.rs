@@ -145,8 +145,5 @@ fn set_swap_accounts(accounts: &pb::SwapAccounts, row: &mut Row) {
         .set("user_token_destination", base58::encode(&accounts.user_token_destination))
         .set("user_source_owner", base58::encode(&accounts.user_source_owner))
         // optional fields
-        .set(
-            "amm_target_orders",
-            accounts.amm_target_orders.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)),
-        );
+        .set("amm_target_orders", accounts.amm_target_orders.as_ref().map(base58::encode).unwrap_or_default());
 }
