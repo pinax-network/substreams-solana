@@ -11,9 +11,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
         // Token Balances
         for (i, balance) in transaction.post_token_balances.iter().enumerate() {
-            let mut key = Vec::new(); // Create a unique key for the balance
-            key.extend(balance.account.to_vec());
-            key.extend(balance.mint.to_vec());
+            let key = (balance.account.as_slice(), balance.mint.as_slice());
             post_token_balances_per_block.insert(key, (balance, transaction, transaction_index, i));
         }
         for (i, instruction) in transaction.instructions.iter().enumerate() {
@@ -97,14 +95,8 @@ fn handle_transfer(
     transaction_index: usize,
     instruction_index: usize,
 ) {
-    let mint_raw = match &data.mint {
-        Some(mint) => base58::encode(mint),
-        None => "".to_string(),
-    };
-    let decimals_raw = match &data.decimals {
-        Some(decimals) => decimals.to_string(),
-        None => "".to_string(),
-    };
+    let mint_raw = data.mint.as_ref().map(base58::encode).unwrap_or_default();
+    let decimals_raw = data.decimals.map(|d| d.to_string()).unwrap_or_default();
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
         .create_row("spl_transfer", key)
@@ -130,10 +122,7 @@ fn handle_initialize_mint(
     transaction_index: usize,
     instruction_index: usize,
 ) {
-    let freeze_authority_raw = match &data.freeze_authority {
-        Some(freeze_authority) => base58::encode(freeze_authority),
-        None => "".to_string(),
-    };
+    let freeze_authority_raw = data.freeze_authority.as_ref().map(base58::encode).unwrap_or_default();
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
         .create_row("initialize_mint", key)
@@ -197,10 +186,7 @@ fn handle_set_authority(
     transaction_index: usize,
     instruction_index: usize,
 ) {
-    let new_authority_raw = match &data.new_authority {
-        Some(new_authority) => base58::encode(new_authority),
-        None => "".to_string(),
-    };
+    let new_authority_raw = data.new_authority.as_ref().map(base58::encode).unwrap_or_default();
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
         .create_row("set_authority", key)
@@ -333,14 +319,8 @@ fn handle_approve(
     transaction_index: usize,
     instruction_index: usize,
 ) {
-    let mint_raw = match &data.mint {
-        Some(mint) => base58::encode(mint),
-        None => "".to_string(),
-    };
-    let decimals_raw = match &data.decimals {
-        Some(decimals) => decimals.to_string(),
-        None => "".to_string(),
-    };
+    let mint_raw = data.mint.as_ref().map(base58::encode).unwrap_or_default();
+    let decimals_raw = data.decimals.map(|d| d.to_string()).unwrap_or_default();
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
         .create_row("approve", key)

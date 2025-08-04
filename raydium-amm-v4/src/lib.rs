@@ -1,189 +1,195 @@
 use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_id, parse_raydium_log};
 use proto::pb::raydium::amm::v1 as pb;
-use substreams_solana::{block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
+use substreams::errors::Error;
+use substreams_solana::{
+    block_view::InstructionView,
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, TransactionStatusMeta},
+};
 use substreams_solana_idls::raydium;
 
 #[substreams::handlers::map]
-fn map_events(block: Block) -> Result<pb::Events, substreams::errors::Error> {
-    let mut events = pb::Events::default();
-
-    // transactions
-    for tx in block.transactions() {
-        let mut transaction = pb::Transaction::default();
-        let tx_meta = tx.meta.as_ref().expect("Transaction meta should be present");
-        transaction.fee = tx_meta.fee;
-        transaction.compute_units_consumed = tx_meta.compute_units_consumed();
-        transaction.signature = tx.hash().to_vec();
-
-        if let Some(fee_payer) = get_fee_payer(tx) {
-            transaction.fee_payer = fee_payer;
-        }
-        if let Some(signers) = get_signers(tx) {
-            transaction.signers = signers;
-        }
-
-        // -- Instructions --
-        // Include instructions and events
-        for instruction in tx.walk_instructions() {
-            let program_id = instruction.program_id().0;
-
-            // Skip instructions
-            if program_id != &raydium::amm::v4::PROGRAM_ID.to_vec() {
-                continue;
-            }
-            let mut base = pb::Instruction {
-                program_id: program_id.to_vec(),
-                stack_height: instruction.stack_height(),
-                instruction: None,
-            };
-            // -- Events --
-            match raydium::amm::v4::instructions::unpack(instruction.data()) {
-                // -- SwapBaseIn --
-                Ok(raydium::amm::v4::instructions::RaydiumV4Instruction::SwapBaseIn(event)) => {
-                    base.instruction = Some(pb::instruction::Instruction::SwapBaseIn(pb::SwapBaseInInstruction {
-                        accounts: Some(get_swap_accounts(&instruction)),
-                        amount_in: event.amount_in,
-                        minimum_amount_out: event.minimum_amount_out,
-                    }));
-                    transaction.instructions.push(base.clone());
-                }
-                // -- SwapBaseOut --
-                Ok(raydium::amm::v4::instructions::RaydiumV4Instruction::SwapBaseOut(event)) => {
-                    base.instruction = Some(pb::instruction::Instruction::SwapBaseOut(pb::SwapBaseOutInstruction {
-                        accounts: Some(get_swap_accounts(&instruction)),
-                        amount_out: event.amount_out,
-                        max_amount_in: event.max_amount_in,
-                    }));
-                    transaction.instructions.push(base.clone());
-                }
-                _ => {}
-            }
-        }
-
-        // -- Logs --
-        let mut is_invoked = false;
-        for log_message in tx_meta.log_messages.iter() {
-            // -- must match program ID --
-            let match_program_id = match parse_program_id(log_message) {
-                Some(id) => id == raydium::amm::v4::PROGRAM_ID.to_vec(),
-                None => false,
-            };
-
-            let mut base = pb::Log {
-                program_id: raydium::amm::v4::PROGRAM_ID.to_vec(),
-                invoke_depth: 0,
-                log: None,
-            };
-
-            // ─── NEW: track invoke / success & stack height ─────────────────────────────
-            if is_invoke(log_message) && match_program_id {
-                if let Some(i) = parse_invoke_depth(log_message) {
-                    base.invoke_depth = i;
-                    is_invoked = true;
-                }
-            }
-
-            // Not invoked, skip
-            // makes sure we only process logs that are invoked by the program
-            // in case of multiple invocations using the same Program Data
-            if !is_invoked {
-                continue;
-            }
-
-            if let Some(data) = parse_raydium_log(&log_message) {
-                // -- Events --
-                match raydium::amm::v4::logs::unpack(data.as_slice()) {
-                    // -- SwapBaseIn --
-                    Ok(raydium::amm::v4::logs::RaydiumV4Log::SwapBaseIn(event)) => {
-                        base.log = Some(pb::log::Log::SwapBaseIn(pb::SwapBaseInLog {
-                            amount_in: event.amount_in,
-                            minimum_out: event.minimum_out,
-                            direction: event.direction,
-                            user_source: event.user_source,
-                            pool_coin: event.pool_coin,
-                            pool_pc: event.pool_pc,
-                            out_amount: event.out_amount,
-                        }));
-                        transaction.logs.push(base.clone());
-                    }
-                    // -- SwapBaseOut --
-                    Ok(raydium::amm::v4::logs::RaydiumV4Log::SwapBaseOut(event)) => {
-                        base.log = Some(pb::log::Log::SwapBaseOut(pb::SwapBaseOutLog {
-                            max_in: event.max_in,
-                            amount_out: event.amount_out,
-                            direction: event.direction,
-                            user_source: event.user_source,
-                            pool_coin: event.pool_coin,
-                            pool_pc: event.pool_pc,
-                            deduct_in: event.deduct_in,
-                        }));
-                        transaction.logs.push(base.clone());
-                    }
-                    // // -- InitLog --
-                    // Ok(raydium::amm::v4::events::RaydiumV4Event::Init(event)) => {
-                    //     base.log = Some(pb::log::Log::Init(pb::InitLog {
-                    //         pc_decimals: event.pc_decimals as u32,
-                    //         coin_decimals: event.coin_decimals as u32,
-                    //         pc_lot_size: event.pc_lot_size,
-                    //         coin_lot_size: event.coin_lot_size,
-                    //         pc_amount: event.pc_amount,
-                    //         coin_amount: event.coin_amount,
-                    //         market: event.market.to_bytes().to_vec(),
-                    //     }));
-                    //     transaction.logs.push(base.clone());
-                    // }
-                    // // -- DepositLog --
-                    // Ok(raydium::amm::v4::events::RaydiumV4Event::Deposit(event)) => {
-                    //     base.log = Some(pb::log::Log::Deposit(pb::DepositLog {
-                    //         max_coin: event.max_coin,
-                    //         max_pc: event.max_pc,
-                    //         base: event.base,
-                    //         pool_coin: event.pool_coin,
-                    //         pool_pc: event.pool_pc,
-                    //         pool_lp: event.pool_lp,
-                    //         calc_pnl_x: event.calc_pnl_x.to_string(),
-                    //         calc_pnl_y: event.calc_pnl_y.to_string(),
-                    //         deduct_coin: event.deduct_coin,
-                    //         deduct_pc: event.deduct_pc,
-                    //         mint_lp: event.mint_lp,
-                    //     }));
-                    //     transaction.logs.push(base.clone());
-                    // }
-                    // // -- WithdrawLog --
-                    // Ok(raydium::amm::v4::events::RaydiumV4Event::Withdraw(event)) => {
-                    //     base.log = Some(pb::log::Log::Withdraw(pb::WithdrawLog {
-                    //         withdraw_lp: event.withdraw_lp,
-                    //         user_lp: event.user_lp,
-                    //         pool_coin: event.pool_coin,
-                    //         pool_pc: event.pool_pc,
-                    //         pool_lp: event.pool_lp,
-                    //         calc_pnl_x: event.calc_pnl_x.to_string(),
-                    //         calc_pnl_y: event.calc_pnl_y.to_string(),
-                    //         out_coin: event.out_coin,
-                    //         out_pc: event.out_pc,
-                    //     }));
-                    //     transaction.logs.push(base.clone());
-                    // }
-                    _ => {}
-                }
-            }
-        }
-        if !transaction.logs.is_empty() || !transaction.instructions.is_empty() {
-            // if transaction.logs.len() != transaction.instructions.len() {
-            //     panic!(
-            //         "Transaction logs and instructions count mismatch: {} logs, {} instructions - transaction:\n{}",
-            //         transaction.logs.len(),
-            //         transaction.instructions.len(),
-            //         base58::encode(transaction.clone().signature)
-            //     );
-            // }
-            events.transactions.push(transaction);
-        }
-    }
-    Ok(events)
+fn map_events(block: Block) -> Result<pb::Events, Error> {
+    Ok(pb::Events {
+        transactions: block.transactions_owned().filter_map(process_transaction).collect(),
+    })
 }
 
-/// Convenience: return the `idx`-th account’s pubkey bytes.
+fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
+    let tx_meta = tx.meta.as_ref()?;
+
+    // Process instructions first
+    let instructions: Vec<pb::Instruction> = tx.walk_instructions().filter_map(|iview| process_instruction(&iview)).collect();
+
+    // Process logs
+    let logs = process_logs(tx_meta, &raydium::amm::v4::PROGRAM_ID.to_vec());
+
+    // Only return a transaction if it has either instructions or logs
+    if instructions.is_empty() && logs.is_empty() {
+        return None;
+    }
+
+    Some(pb::Transaction {
+        fee: tx_meta.fee,
+        compute_units_consumed: tx_meta.compute_units_consumed(),
+        signature: tx.hash().to_vec(),
+        fee_payer: get_fee_payer(&tx).unwrap_or_default(),
+        signers: get_signers(&tx).unwrap_or_default(),
+        instructions,
+        logs,
+    })
+}
+
+fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction> {
+    let program_id = instruction.program_id().0;
+
+    // Skip instructions that don't match our program ID
+    if program_id != &raydium::amm::v4::PROGRAM_ID {
+        return None;
+    }
+
+    // Try to unpack the instruction data
+    match raydium::amm::v4::instructions::unpack(instruction.data()) {
+        // -- SwapBaseIn --
+        Ok(raydium::amm::v4::instructions::RaydiumV4Instruction::SwapBaseIn(event)) => Some(pb::Instruction {
+            program_id: program_id.to_vec(),
+            stack_height: instruction.stack_height(),
+            instruction: Some(pb::instruction::Instruction::SwapBaseIn(pb::SwapBaseInInstruction {
+                accounts: Some(get_swap_accounts(instruction)),
+                amount_in: event.amount_in,
+                minimum_amount_out: event.minimum_amount_out,
+            })),
+        }),
+        // -- SwapBaseOut --
+        Ok(raydium::amm::v4::instructions::RaydiumV4Instruction::SwapBaseOut(event)) => Some(pb::Instruction {
+            program_id: program_id.to_vec(),
+            stack_height: instruction.stack_height(),
+            instruction: Some(pb::instruction::Instruction::SwapBaseOut(pb::SwapBaseOutInstruction {
+                accounts: Some(get_swap_accounts(instruction)),
+                amount_out: event.amount_out,
+                max_amount_in: event.max_amount_in,
+            })),
+        }),
+        _ => None,
+    }
+}
+
+fn process_logs(tx_meta: &TransactionStatusMeta, program_id_bytes: &[u8]) -> Vec<pb::Log> {
+    let mut logs = Vec::new();
+    let mut is_invoked = false;
+
+    for log_message in tx_meta.log_messages.iter() {
+        // Check if the log matches our program ID
+        let match_program_id = parse_program_id(log_message).map_or(false, |id| id == program_id_bytes.to_vec());
+
+        // Track invoke depth and program context
+        if is_invoke(log_message) && match_program_id {
+            if let Some(invoke_depth) = parse_invoke_depth(log_message) {
+                is_invoked = true;
+
+                if let Some(log_data) = parse_log_data(log_message, program_id_bytes, invoke_depth) {
+                    logs.push(log_data);
+                }
+            }
+        } else if is_invoked {
+            // Process logs within an invoked context
+            if let Some(log_data) = parse_log_data(log_message, program_id_bytes, 0) {
+                logs.push(log_data);
+            }
+        }
+    }
+
+    logs
+}
+
+fn parse_log_data(log_message: &str, program_id_bytes: &[u8], invoke_depth: u32) -> Option<pb::Log> {
+    let data = parse_raydium_log(log_message)?;
+
+    // Create base log structure
+    let mut log = pb::Log {
+        program_id: program_id_bytes.to_vec(),
+        invoke_depth,
+        log: None,
+    };
+
+    // Process different log types
+    match raydium::amm::v4::logs::unpack(data.as_slice()) {
+        // -- SwapBaseIn --
+        Ok(raydium::amm::v4::logs::RaydiumV4Log::SwapBaseIn(event)) => {
+            log.log = Some(pb::log::Log::SwapBaseIn(pb::SwapBaseInLog {
+                amount_in: event.amount_in,
+                minimum_out: event.minimum_out,
+                direction: event.direction,
+                user_source: event.user_source,
+                pool_coin: event.pool_coin,
+                pool_pc: event.pool_pc,
+                out_amount: event.out_amount,
+            }));
+            Some(log)
+        }
+        // -- SwapBaseOut --
+        Ok(raydium::amm::v4::logs::RaydiumV4Log::SwapBaseOut(event)) => {
+            log.log = Some(pb::log::Log::SwapBaseOut(pb::SwapBaseOutLog {
+                max_in: event.max_in,
+                amount_out: event.amount_out,
+                direction: event.direction,
+                user_source: event.user_source,
+                pool_coin: event.pool_coin,
+                pool_pc: event.pool_pc,
+                deduct_in: event.deduct_in,
+            }));
+            Some(log)
+        }
+
+        // // -- InitLog --
+        // Ok(raydium::amm::v4::events::RaydiumV4Event::Init(event)) => {
+        //     base.log = Some(pb::log::Log::Init(pb::InitLog {
+        //         pc_decimals: event.pc_decimals as u32,
+        //         coin_decimals: event.coin_decimals as u32,
+        //         pc_lot_size: event.pc_lot_size,
+        //         coin_lot_size: event.coin_lot_size,
+        //         pc_amount: event.pc_amount,
+        //         coin_amount: event.coin_amount,
+        //         market: event.market.to_bytes().to_vec(),
+        //     }));
+        //     transaction.logs.push(base.clone());
+        // }
+        // // -- DepositLog --
+        // Ok(raydium::amm::v4::events::RaydiumV4Event::Deposit(event)) => {
+        //     base.log = Some(pb::log::Log::Deposit(pb::DepositLog {
+        //         max_coin: event.max_coin,
+        //         max_pc: event.max_pc,
+        //         base: event.base,
+        //         pool_coin: event.pool_coin,
+        //         pool_pc: event.pool_pc,
+        //         pool_lp: event.pool_lp,
+        //         calc_pnl_x: event.calc_pnl_x.to_string(),
+        //         calc_pnl_y: event.calc_pnl_y.to_string(),
+        //         deduct_coin: event.deduct_coin,
+        //         deduct_pc: event.deduct_pc,
+        //         mint_lp: event.mint_lp,
+        //     }));
+        //     transaction.logs.push(base.clone());
+        // }
+        // // -- WithdrawLog --
+        // Ok(raydium::amm::v4::events::RaydiumV4Event::Withdraw(event)) => {
+        //     base.log = Some(pb::log::Log::Withdraw(pb::WithdrawLog {
+        //         withdraw_lp: event.withdraw_lp,
+        //         user_lp: event.user_lp,
+        //         pool_coin: event.pool_coin,
+        //         pool_pc: event.pool_pc,
+        //         pool_lp: event.pool_lp,
+        //         calc_pnl_x: event.calc_pnl_x.to_string(),
+        //         calc_pnl_y: event.calc_pnl_y.to_string(),
+        //         out_coin: event.out_coin,
+        //         out_pc: event.out_pc,
+        //     }));
+        //     transaction.logs.push(base.clone());
+        // }
+        _ => None,
+    }
+}
+
+/// Safely get the `idx`-th account's pubkey bytes or empty vector if not found.
 ///
 /// * `ix`   – the fully-parsed instruction (`InstructionView`)
 /// * `idx`  – the position in the account vector

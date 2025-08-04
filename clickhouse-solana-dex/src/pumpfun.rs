@@ -112,13 +112,10 @@ fn set_trade_event(event: &pb::TradeEvent, accounts: &pb::TradeAccounts, row: &m
         .set("real_sol_reserves", event.real_sol_reserves.unwrap_or(0))
         .set("real_token_reserves", event.real_token_reserves.unwrap_or(0))
         // (optional) TradeEventV2
-        .set(
-            "protocol_fee_recipient",
-            event.fee_recipient.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)),
-        )
+        .set("protocol_fee_recipient", event.fee_recipient.as_ref().map(base58::encode).unwrap_or_default())
         .set("protocol_fee_basis_points", event.fee_basis_points.unwrap_or(0))
         .set("protocol_fee", event.fee.unwrap_or(0))
-        .set("creator", event.creator.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)))
+        .set("creator", event.creator.as_ref().map(base58::encode).unwrap_or_default())
         .set("creator_fee_basis_points", event.creator_fee_basis_points.unwrap_or(0))
         .set("creator_fee", event.creator_fee.unwrap_or(0));
 }

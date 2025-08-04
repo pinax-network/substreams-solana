@@ -8,156 +8,123 @@ pub fn unpack_transfers(instruction: &InstructionView, program_id: &str) -> Opti
     if !is_spl_token_program(&program_id) {
         return None;
     }
-    match TokenInstruction::unpack(&instruction.data()) {
-        Err(_err) => return None,
-        Ok(token_instruction) => match token_instruction {
-            // -- TransferChecked --
-            TokenInstruction::TransferChecked { amount, decimals } => {
-                if amount > 0 {
-                    // accounts
-                    let source = instruction.accounts()[0].0.to_vec();
-                    let mint = instruction.accounts()[1].0.to_vec();
-                    let destination = instruction.accounts()[2].0.to_vec();
-                    let authority = instruction.accounts()[3].0.to_vec();
-                    let multisig_authority = instruction.accounts()[4..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+    match TokenInstruction::unpack(&instruction.data()).ok()? {
+        // -- TransferChecked --
+        TokenInstruction::TransferChecked { amount, decimals } => {
+            if amount > 0 {
+                return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
+                    // authority
+                    authority: instruction.accounts()[3].0.to_vec(),
+                    multisig_authority: instruction.accounts()[4..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>(),
 
-                    return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
-                        // authority
-                        authority,
-                        multisig_authority: multisig_authority.to_vec(),
-
-                        // event
-                        source,
-                        destination,
-                        amount,
-                        mint: Some(mint),
-                        decimals: Some(decimals as u32),
-                    }));
-                }
-                return None;
+                    // event
+                    source: instruction.accounts()[0].0.to_vec(),
+                    destination: instruction.accounts()[2].0.to_vec(),
+                    amount,
+                    mint: Some(instruction.accounts()[1].0.to_vec()),
+                    decimals: Some(decimals as u32),
+                }));
             }
-            // -- Transfer (DEPRECATED, but still active) --
-            #[allow(deprecated)]
-            TokenInstruction::Transfer { amount } => {
-                if amount > 0 {
-                    // accounts
-                    let source = instruction.accounts()[0].0.to_vec();
-                    let destination = instruction.accounts()[1].0.to_vec();
-                    let authority = instruction.accounts()[2].0.to_vec();
-                    let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+            return None;
+        }
+        // -- Transfer (DEPRECATED, but still active) --
+        #[allow(deprecated)]
+        TokenInstruction::Transfer { amount } => {
+            if amount > 0 {
+                return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
+                    // authority
+                    authority: instruction.accounts()[2].0.to_vec(),
+                    multisig_authority: instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>(),
 
-                    return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
-                        // authority
-                        authority,
-                        multisig_authority: multisig_authority.to_vec(),
-
-                        // event
-                        source,
-                        destination,
-                        amount,
-                        decimals: None,
-                        mint: None,
-                    }));
-                }
-                return None;
+                    // event
+                    source: instruction.accounts()[0].0.to_vec(),
+                    destination: instruction.accounts()[1].0.to_vec(),
+                    amount,
+                    decimals: None,
+                    mint: None,
+                }));
             }
-            // -- Mint To --
-            TokenInstruction::MintTo { amount } => {
-                if amount > 0 {
-                    // accounts
-                    let mint = instruction.accounts()[0].0.to_vec();
-                    let destination = instruction.accounts()[1].0.to_vec();
-                    let authority = instruction.accounts()[2].0.to_vec();
-                    let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+            return None;
+        }
+        // -- Mint To --
+        TokenInstruction::MintTo { amount } => {
+            if amount > 0 {
+                let mint = instruction.accounts()[0].0.to_vec();
+                return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
+                    // authority
+                    authority: instruction.accounts()[2].0.to_vec(),
+                    multisig_authority: instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>(),
 
-                    return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
-                        // authority
-                        authority,
-                        multisig_authority: multisig_authority.to_vec(),
-
-                        // event
-                        source: mint.to_vec(),
-                        destination,
-                        amount,
-                        decimals: None,
-                        mint: Some(mint),
-                    }));
-                }
-                return None;
+                    // event
+                    source: mint.clone(),
+                    destination: instruction.accounts()[1].0.to_vec(),
+                    amount,
+                    decimals: None,
+                    mint: Some(mint),
+                }));
             }
-            // -- Mint To Checked --
-            TokenInstruction::MintToChecked { amount, decimals } => {
-                if amount > 0 {
-                    // accounts
-                    let mint = instruction.accounts()[0].0.to_vec();
-                    let destination = instruction.accounts()[1].0.to_vec();
-                    let authority = instruction.accounts()[2].0.to_vec();
-                    let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+            return None;
+        }
+        // -- Mint To Checked --
+        TokenInstruction::MintToChecked { amount, decimals } => {
+            if amount > 0 {
+                // accounts
+                let mint = instruction.accounts()[0].0.to_vec();
+                return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
+                    // authority
+                    authority: instruction.accounts()[2].0.to_vec(),
+                    multisig_authority: instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>(),
 
-                    return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
-                        // authority
-                        authority,
-                        multisig_authority: multisig_authority.to_vec(),
-
-                        // event
-                        source: mint.to_vec(),
-                        destination,
-                        amount,
-                        decimals: Some(decimals as u32),
-                        mint: Some(mint),
-                    }));
-                }
-                return None;
+                    // event
+                    source: mint.clone(),
+                    destination: instruction.accounts()[1].0.to_vec(),
+                    amount,
+                    decimals: Some(decimals as u32),
+                    mint: Some(mint),
+                }));
             }
-            // -- Burn --
-            TokenInstruction::Burn { amount } => {
-                if amount > 0 {
-                    // accounts
-                    let source = instruction.accounts()[0].0.to_vec();
-                    let mint = instruction.accounts()[1].0.to_vec();
-                    let authority = instruction.accounts()[2].0.to_vec();
-                    let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+            return None;
+        }
+        // -- Burn --
+        TokenInstruction::Burn { amount } => {
+            if amount > 0 {
+                // accounts
+                let mint = instruction.accounts()[1].0.to_vec();
+                return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
+                    // authority
+                    authority: instruction.accounts()[2].0.to_vec(),
+                    multisig_authority: instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>(),
 
-                    return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
-                        // authority
-                        authority,
-                        multisig_authority: multisig_authority.to_vec(),
-
-                        // event
-                        source,
-                        destination: mint.to_vec(),
-                        amount,
-                        decimals: None,
-                        mint: Some(mint),
-                    }));
-                }
-                return None;
+                    // event
+                    source: instruction.accounts()[0].0.to_vec(),
+                    destination: mint.clone(),
+                    amount,
+                    decimals: None,
+                    mint: Some(mint),
+                }));
             }
-            // -- BurnChecked --
-            TokenInstruction::BurnChecked { amount, decimals } => {
-                if amount > 0 {
-                    // accounts
-                    let source = instruction.accounts()[0].0.to_vec();
-                    let mint = instruction.accounts()[1].0.to_vec();
-                    let authority = instruction.accounts()[2].0.to_vec();
-                    let multisig_authority = instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>();
+            return None;
+        }
+        // -- BurnChecked --
+        TokenInstruction::BurnChecked { amount, decimals } => {
+            if amount > 0 {
+                // accounts
+                let mint = instruction.accounts()[1].0.to_vec();
+                return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
+                    // authority
+                    authority: instruction.accounts()[2].0.to_vec(),
+                    multisig_authority: instruction.accounts()[3..].iter().map(|a| a.0.to_vec()).collect::<Vec<_>>(),
 
-                    return Some(pb::instruction::Instruction::Transfer(pb::Transfer {
-                        // authority
-                        authority,
-                        multisig_authority: multisig_authority.to_vec(),
-
-                        // event
-                        source,
-                        destination: mint.to_vec(),
-                        amount,
-                        decimals: Some(decimals as u32),
-                        mint: Some(mint),
-                    }));
-                }
-                return None;
+                    // event
+                    source: instruction.accounts()[0].0.to_vec(),
+                    destination: mint.clone(),
+                    amount,
+                    decimals: Some(decimals as u32),
+                    mint: Some(mint),
+                }));
             }
-            _ => None,
-        },
+            return None;
+        }
+        _ => None,
     }
 }

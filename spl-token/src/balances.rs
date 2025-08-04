@@ -14,14 +14,13 @@ pub fn get_token_balance(tx: &ConfirmedTransaction, balance: &TokenBalance) -> O
         return None;
     }
     let ui_token_amount = balance.ui_token_amount.as_ref()?;
-    // convert ui_token_amount to a u64
-    let amount = ui_token_amount.amount.as_str().parse::<u64>().ok()?;
 
     Some(pb::TokenBalance {
-        program_id: base58::decode(&balance.program_id).unwrap(),
+        program_id: base58::decode(&balance.program_id)
+            .expect(&format!("Invalid program ID: {}", &balance.program_id)),
         account: account.0.to_vec(),
-        mint: base58::decode(&balance.mint).unwrap(),
-        amount,
+        mint: base58::decode(&balance.mint).expect("Invalid mint"),
+        amount: ui_token_amount.amount.as_str().parse::<u64>().ok()?, // convert ui_token_amount to a u64
         decimals: ui_token_amount.decimals as u32,
     })
 }

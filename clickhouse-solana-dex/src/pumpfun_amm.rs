@@ -110,30 +110,27 @@ fn handle_sell(
 }
 
 fn set_trade_account(accounts: &pb::TradeAccounts, row: &mut Row) {
-    row.set("pool", base58::encode(accounts.pool.to_vec()))
-        .set("user", base58::encode(accounts.user.to_vec()))
-        .set("global_config", base58::encode(accounts.global_config.to_vec()))
-        .set("base_mint", base58::encode(accounts.base_mint.to_vec()))
-        .set("quote_mint", base58::encode(accounts.quote_mint.to_vec()))
-        .set("user_base_token_account", base58::encode(accounts.user_base_token_account.to_vec()))
-        .set("user_quote_token_account", base58::encode(accounts.user_quote_token_account.to_vec()))
-        .set("pool_base_token_account", base58::encode(accounts.pool_base_token_account.to_vec()))
-        .set("pool_quote_token_account", base58::encode(accounts.pool_quote_token_account.to_vec()))
-        .set("protocol_fee_recipient", base58::encode(accounts.protocol_fee_recipient.to_vec()))
+    row.set("pool", base58::encode(accounts.pool.as_slice()))
+        .set("user", base58::encode(accounts.user.as_slice()))
+        .set("global_config", base58::encode(accounts.global_config.as_slice()))
+        .set("base_mint", base58::encode(accounts.base_mint.as_slice()))
+        .set("quote_mint", base58::encode(accounts.quote_mint.as_slice()))
+        .set("user_base_token_account", base58::encode(accounts.user_base_token_account.as_slice()))
+        .set("user_quote_token_account", base58::encode(accounts.user_quote_token_account.as_slice()))
+        .set("pool_base_token_account", base58::encode(accounts.pool_base_token_account.as_slice()))
+        .set("pool_quote_token_account", base58::encode(accounts.pool_quote_token_account.as_slice()))
+        .set("protocol_fee_recipient", base58::encode(accounts.protocol_fee_recipient.as_slice()))
         .set(
             "protocol_fee_recipient_token_account",
-            base58::encode(accounts.protocol_fee_recipient_token_account.to_vec()),
+            base58::encode(accounts.protocol_fee_recipient_token_account.as_slice()),
         )
         // optional fields
         .set(
             "coin_creator_vault_ata",
-            accounts.coin_creator_vault_ata.as_ref().map_or_else(|| "".to_string(), |c| base58::encode(c)),
+            accounts.coin_creator_vault_ata.as_ref().map(base58::encode).unwrap_or_default(),
         )
         .set(
             "coin_creator_vault_authority",
-            accounts
-                .coin_creator_vault_authority
-                .as_ref()
-                .map_or_else(|| "".to_string(), |c| base58::encode(c)),
+            accounts.coin_creator_vault_authority.as_ref().map(base58::encode).unwrap_or_default(),
         );
 }

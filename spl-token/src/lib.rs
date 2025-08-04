@@ -76,11 +76,11 @@ fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction>
         return None;
     }
 
-    // Try each instruction parser in sequence
+    // Try each instruction parser in sequence ordered by frequency
     let parsed_instruction = transfers::unpack_transfers(instruction, &program_id)
+        .or_else(|| accounts::unpack_accounts(instruction, &program_id))
         .or_else(|| permissions::unpack_permissions(instruction, &program_id))
         .or_else(|| mints::unpack_mints(instruction, &program_id))
-        .or_else(|| accounts::unpack_accounts(instruction, &program_id))
         .or_else(|| metadata::unpack_metadata(instruction, &program_id))
         .or_else(|| memo::unpack_memo(instruction, &program_id));
 
