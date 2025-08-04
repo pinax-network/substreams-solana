@@ -71,12 +71,10 @@ pub fn unpack_transfers(instruction: &InstructionView) -> Option<pb::instruction
             }))
         }
         SystemInstruction::WithdrawNonceAccount { 0: lamports } if lamports > 0 => {
-            let accounts = instruction.accounts();
-
-            let nonce_account = accounts[0].0.to_vec();
-            let destination = accounts[1].0.to_vec();
+            let nonce_account = instruction.accounts()[0].0.to_vec();
+            let destination = instruction.accounts()[1].0.to_vec();
             // If nonce_authority isn't specified (at index 4), use the nonce_account as the authority
-            let nonce_authority = accounts.get(4).map_or(nonce_account.clone(), |account| account.0.to_vec());
+            let nonce_authority = instruction.accounts().get(4).map_or(nonce_account.clone(), |account| account.0.to_vec());
 
             Some(pb::instruction::Instruction::WithdrawNonceAccount(pb::WithdrawNonceAccount {
                 nonce_account,
