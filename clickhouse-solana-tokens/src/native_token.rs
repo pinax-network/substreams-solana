@@ -11,7 +11,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
         // Native Token Balances
         // Only keep last post balance change per block
         for (i, post_balance) in transaction.post_balances.iter().enumerate() {
-            let key = &post_balance.account;
+            let key = post_balance.account.as_slice();
             system_post_balances_per_block.insert(key, (post_balance, transaction, transaction_index, i));
         }
         // Native Token Instructions

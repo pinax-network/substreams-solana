@@ -11,9 +11,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
         // Token Balances
         for (i, balance) in transaction.post_token_balances.iter().enumerate() {
-            let mut key = Vec::new(); // Create a unique key for the balance
-            key.extend(balance.account.to_vec());
-            key.extend(balance.mint.to_vec());
+            let key = (balance.account.as_slice(), balance.mint.as_slice());
             post_token_balances_per_block.insert(key, (balance, transaction, transaction_index, i));
         }
         for (i, instruction) in transaction.instructions.iter().enumerate() {
