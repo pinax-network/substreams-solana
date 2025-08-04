@@ -43,7 +43,7 @@ fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction>
     let program_id = instruction.program_id().0;
 
     // Skip instructions that don't match our program ID
-    if program_id != &raydium::amm::v4::PROGRAM_ID.to_vec() {
+    if program_id != &raydium::amm::v4::PROGRAM_ID {
         return None;
     }
 

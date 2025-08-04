@@ -32,7 +32,7 @@ fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
 fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction> {
     let program_id = instruction.program_id().0;
 
-    if program_id != &pumpfun::PROGRAM_ID.to_vec() {
+    if program_id != &pumpfun::PROGRAM_ID {
         return None;
     }
 
