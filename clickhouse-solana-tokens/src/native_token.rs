@@ -11,7 +11,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
         // Native Token Balances
         // Only keep last post balance change per block
         for (i, post_balance) in transaction.post_balances.iter().enumerate() {
-            let key = post_balance.account.to_vec();
+            let key = &post_balance.account;
             system_post_balances_per_block.insert(key, (post_balance, transaction, transaction_index, i));
         }
         // Native Token Instructions
@@ -79,7 +79,7 @@ fn handle_transfer_with_seed(
         .set("lamports", data.lamports)
         .set("source_base", base58::encode(&data.source_base))
         .set("source_owner", base58::encode(&data.source_owner))
-        .set("source_seed", data.source_seed.clone());
+        .set("source_seed", &data.source_seed);
 
     set_native_token_instruction_v2(instruction, row);
     set_native_token_transaction_v2(transaction, row);
@@ -132,7 +132,7 @@ fn create_account_with_seed(
         .set("owner", base58::encode(&data.owner))
         .set("lamports", data.lamports)
         .set("space", data.space)
-        .set("seed", data.seed.clone());
+        .set("seed", &data.seed);
 
     set_native_token_instruction_v2(instruction, row);
     set_native_token_transaction_v2(transaction, row);
