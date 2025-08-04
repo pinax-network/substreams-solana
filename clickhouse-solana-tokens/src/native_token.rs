@@ -118,10 +118,7 @@ fn create_account_with_seed(
     transaction_index: usize,
     instruction_index: usize,
 ) {
-    let base_account_raw = match &data.base_account {
-        Some(base_account) => base58::encode(base_account),
-        None => "".to_string(),
-    };
+    let base_account_raw = data.base_account.as_ref().map(base58::encode).unwrap_or_default();
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
         .create_row("system_create_account_with_seed", key)
