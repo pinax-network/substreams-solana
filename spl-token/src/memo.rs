@@ -9,8 +9,8 @@ pub fn unpack_memo(instruction: &InstructionView, program_id: &str) -> Option<pb
     }
 
     // Check if the instruction is from a Memo program
-    let memo = from_utf8(instruction.data()).ok();
-    if let Some(memo) = memo {
+    let memo = from_utf8(instruction.data());
+    if let Ok(memo) = memo {
         // Create a Memo instruction
         return Some(pb::instruction::Instruction::Memo(pb::Memo {
             data: instruction.data().to_vec(),

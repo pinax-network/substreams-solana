@@ -8,47 +8,39 @@ pub fn unpack_mints(instruction: &InstructionView, program_id: &str) -> Option<p
     if !is_spl_token_program(&program_id) {
         return None;
     }
-    match TokenInstruction::unpack(&instruction.data()) {
-        Err(_err) => return None,
-        Ok(token_instruction) => match token_instruction {
-            // -- InitializeMint --
-            TokenInstruction::InitializeMint {
-                decimals,
-                mint_authority,
-                freeze_authority,
-            } => {
-                // accounts
-                let mint = instruction.accounts()[0].0.to_vec();
-                return Some(pb::instruction::Instruction::InitializeMint(pb::InitializeMint {
-                    mint,
-                    mint_authority: mint_authority.to_bytes().to_vec(),
-                    freeze_authority: match freeze_authority {
-                        COption::Some(key) => Some(key.to_bytes().to_vec()),
-                        COption::None => None,
-                    },
-                    decimals: decimals as u32,
-                }));
-            }
-            // -- InitializeMint2 --
-            TokenInstruction::InitializeMint2 {
-                decimals,
-                mint_authority,
-                freeze_authority,
-            } => {
-                // accounts
-                let mint = instruction.accounts()[0].0.to_vec();
-
-                return Some(pb::instruction::Instruction::InitializeMint(pb::InitializeMint {
-                    mint,
-                    mint_authority: mint_authority.to_bytes().to_vec(),
-                    freeze_authority: match freeze_authority {
-                        COption::Some(key) => Some(key.to_bytes().to_vec()),
-                        COption::None => None,
-                    },
-                    decimals: decimals as u32,
-                }));
-            }
-            _ => None,
-        },
+    match TokenInstruction::unpack(&instruction.data()).ok()? {
+        // -- InitializeMint --
+        TokenInstruction::InitializeMint {
+            decimals,
+            mint_authority,
+            freeze_authority,
+        } => {
+            return Some(pb::instruction::Instruction::InitializeMint(pb::InitializeMint {
+                mint: instruction.accounts()[0].0.to_vec(),
+                mint_authority: mint_authority.to_bytes().to_vec(),
+                freeze_authority: match freeze_authority {
+                    COption::Some(key) => Some(key.to_bytes().to_vec()),
+                    COption::None => None,
+                },
+                decimals: decimals as u32,
+            }));
+        }
+        // -- InitializeMint2 --
+        TokenInstruction::InitializeMint2 {
+            decimals,
+            mint_authority,
+            freeze_authority,
+        } => {
+            return Some(pb::instruction::Instruction::InitializeMint(pb::InitializeMint {
+                mint: instruction.accounts()[0].0.to_vec(),
+                mint_authority: mint_authority.to_bytes().to_vec(),
+                freeze_authority: match freeze_authority {
+                    COption::Some(key) => Some(key.to_bytes().to_vec()),
+                    COption::None => None,
+                },
+                decimals: decimals as u32,
+            }));
+        }
+        _ => None,
     }
 }
