@@ -66,7 +66,7 @@ ALTER TABLE system_create_account_with_seed
     ADD COLUMN IF NOT EXISTS new_account             String COMMENT 'New account address.',
     ADD COLUMN IF NOT EXISTS base                    String COMMENT 'Primary base account address used for deriving the seed.',
     ADD COLUMN IF NOT EXISTS base_account_raw        String COMMENT 'Optional secondary account related to the base.',
-    ADD COLUMN IF NOT EXISTS base_account            Nullable(String) MATERIALIZED string_or_null(base_account_raw),
+    ADD COLUMN IF NOT EXISTS base_account            Nullable(String) MATERIALIZED if(empty(base_account_raw), NULL, base_account_raw),
     ADD COLUMN IF NOT EXISTS owner                   String COMMENT 'Owner program account address',
     ADD COLUMN IF NOT EXISTS lamports                UInt64 COMMENT 'Initial balance in lamports.',
     ADD COLUMN IF NOT EXISTS space                   UInt64 COMMENT 'Space allocated for the new account.',
