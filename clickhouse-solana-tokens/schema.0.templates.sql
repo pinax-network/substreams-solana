@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS base_events (
     block_num                   UInt32,
     block_hash                  String,
     timestamp                   DateTime(0, 'UTC'),
+    version                     UInt64  MATERIALIZED to_version(block_num, transaction_index, instruction_index),
 
     -- ordering --
     transaction_index           UInt32,

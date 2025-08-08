@@ -1,14 +1,19 @@
 CREATE TABLE IF NOT EXISTS accounts (
-    version         UInt64,
-    sign            Int8 COMMENT '-1 = closed, +1 = open',
-    account         String,
-    mint            LowCardinality(String),
-    owner           String,
+    -- block --
+    block_num           UInt32,
+    timestamp           DateTime(0, 'UTC'),
+    version             UInt64,
 
-    -- indexes --
+    -- account/mint --
+    account   String,
+    owner     Nullable(String),
+    mint      Nullable(String),
+    closed    UInt8 COMMENT '1 ⇒ account closed',
+
     INDEX idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1,
     INDEX idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1
-) ENGINE = VersionedCollapsingMergeTree(sign, version)
+)
+ENGINE = CoalescingMergeTree(version)
 ORDER BY account
 COMMENT 'SPL Token Accounts (one current row per open account)';
 
@@ -20,59 +25,36 @@ ALTER TABLE accounts
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_account
 TO accounts AS
 SELECT
-    to_version(block_num, transaction_index, instruction_index) AS version,
-    1 AS sign,
+    block_num,
+    timestamp,
+    version,
     account,
     owner,
-    mint
+    mint,
+    0            AS closed
 FROM initialize_account;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account
 TO accounts AS
 SELECT
-    to_version(block_num, transaction_index, instruction_index) AS version,
-    -1 AS sign,
+    block_num,
+    timestamp,
+    version,
     account,
-    '' AS mint,
-    '' AS owner
+    Null::Nullable(String) AS owner,      -- keep previous owner
+    Null::Nullable(String) AS mint,       -- keep previous mint
+    1           AS closed
 FROM close_account;
 
-
--- commented out because the cluster errors with `System call renameat2() is not supported`
-
--- CREATE OR REPLACE VIEW accounts_current AS
--- SELECT
---   account,
---   argMax(mint, version) AS mint,
---   argMax(owner, version) AS owner
--- FROM accounts
--- GROUP BY account
--- HAVING sum(sign) = 1;
-
--- CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority
--- TO accounts AS
-
--- -- 1) “revoke” the old owner
--- SELECT
---   to_version(block_num, transaction_index, instruction_index) AS version,
---   -1 AS sign,
---   sa.account,
---   ac.mint,
---   sa.authority AS owner
--- FROM set_authority AS sa
--- INNER JOIN accounts_current AS ac USING (account)
--- WHERE sa.authority_type = 'AccountOwner'
-
--- UNION ALL
-
--- -- 2) “grant” the new owner (if any)
--- SELECT
---   to_version(block_num, transaction_index, instruction_index) AS version,
---   +1 AS sign,
---   sa.account,
---   ac.mint,
---   sa.new_authority AS owner
--- FROM set_authority AS sa
--- INNER JOIN accounts_current AS ac USING (account)
--- WHERE sa.authority_type = 'AccountOwner'
---   AND sa.new_authority IS NOT NULL;
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority
+TO accounts AS
+SELECT
+    block_num,
+    timestamp,
+    version,
+    account,
+    new_authority AS owner,    -- changed column
+    Null::Nullable(String)          AS mint,     -- unchanged, let the engine reuse prior value
+    0             AS closed
+FROM set_authority
+WHERE authority_type = 'AccountOwner';
