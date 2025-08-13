@@ -1,5 +1,10 @@
 CREATE TABLE IF NOT EXISTS mints (
-    version           UInt64,
+    -- block --
+    block_num           UInt32,
+    timestamp           DateTime(0, 'UTC'),
+    version             UInt64,
+
+    -- mint --
     mint              LowCardinality(String),
     mint_authority    String,
     freeze_authority  Nullable(String),
@@ -11,7 +16,7 @@ CREATE TABLE IF NOT EXISTS mints (
     INDEX idx_decimals (decimals) TYPE minmax GRANULARITY 1
 
 ) ENGINE = ReplacingMergeTree(version)
-ORDER BY (mint, mint_authority)
+ORDER BY mint
 COMMENT 'SPL Token Mints';
 
 ALTER TABLE mints MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
@@ -22,7 +27,9 @@ ALTER TABLE mints
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_mint
 TO mints AS
 SELECT
-    to_version(block_num, transaction_index, instruction_index) AS version,
+    block_num,
+    timestamp,
+    version,
     mint,
     mint_authority,
     freeze_authority,

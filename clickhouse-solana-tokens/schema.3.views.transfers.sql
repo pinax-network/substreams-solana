@@ -15,10 +15,11 @@ ALTER TABLE transfers
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
 SELECT
-    * EXCEPT (block_num, mint_raw, mint, is_closed, account, owner, decimals_raw, decimals, mint_authority, freeze_authority, version, sign),
+    * EXCEPT (block_num, timestamp, mint_raw, mint, is_closed, account, owner, decimals_raw, decimals, mint_authority, freeze_authority, version, sign),
 
     -- base fields --
     t.block_num AS block_num,
+    t.timestamp AS timestamp,
 
     -- mint --
     ifNull(t.decimals, m.decimals) AS decimals,

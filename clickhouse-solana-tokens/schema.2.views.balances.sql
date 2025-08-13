@@ -1,7 +1,10 @@
 -- SPL Token Balances --
 CREATE TABLE IF NOT EXISTS balances (
+    -- block --
     block_num       UInt32,
     timestamp       DateTime(0, 'UTC'),
+
+    -- balance --
     program_id      LowCardinality(String),
     account         String,
     amount          UInt64,
@@ -15,7 +18,7 @@ CREATE TABLE IF NOT EXISTS balances (
 )
 ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (program_id, mint, account)
-COMMENT 'SPL Token & Native SOL balances';
+COMMENT 'SPL Token & Native SOL balances (single balance per-block per-account/mint)';
 
 ALTER TABLE balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 ALTER TABLE balances

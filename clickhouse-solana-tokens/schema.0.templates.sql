@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS base_events (
     stack_height                UInt32,
 
     -- indexes -
+    INDEX idx_timestamp         (timestamp)         TYPE minmax                 GRANULARITY 1,
+    INDEX idx_block_num         (block_num)         TYPE minmax                 GRANULARITY 1,
     INDEX idx_program_id        (program_id)        TYPE set(8)                 GRANULARITY 1,
     INDEX idx_fee_payer         (fee_payer)         TYPE bloom_filter(0.005)    GRANULARITY 1,
     INDEX idx_signature         (signature)         TYPE bloom_filter(0.005)    GRANULARITY 1,
