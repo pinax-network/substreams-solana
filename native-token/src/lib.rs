@@ -3,15 +3,12 @@ mod system;
 use common::solana::{get_fee_payer, get_signers};
 use proto::pb::solana::native::token::v1 as pb;
 use substreams::errors::Error;
-use substreams_solana::{
-    base58,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
-};
+use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction};
 
-pub const SYSTEM_PROGRAM: &str = "11111111111111111111111111111111";
+pub const SYSTEM_PROGRAM: [u8; 32] = [0; 32];
 
-pub fn is_system_program(program_id: &str) -> bool {
-    program_id == SYSTEM_PROGRAM
+pub fn is_system_program(program_id: &[u8]) -> bool {
+    program_id == &SYSTEM_PROGRAM
 }
 
 #[substreams::handlers::map]
@@ -24,14 +21,6 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
 fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
     let tx_meta = tx.meta.as_ref()?;
     let resolved_accounts = tx.resolved_accounts();
-    let mut transaction = pb::Transaction {
-        fee: tx_meta.fee,
-        compute_units_consumed: tx_meta.compute_units_consumed(),
-        signature: tx.hash().to_vec(),
-        fee_payer: get_fee_payer(&tx).unwrap_or_default(),
-        signers: get_signers(&tx).unwrap_or_default(),
-        ..Default::default()
-    };
 
     let create_balances = |balances: &[u64], tag: &str| -> Vec<pb::Balance> {
         if balances.len() != resolved_accounts.len() {
@@ -52,14 +41,11 @@ fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
             .collect()
     };
 
-    transaction.post_balances = create_balances(&tx_meta.post_balances, "post");
-    transaction.pre_balances = create_balances(&tx_meta.pre_balances, "pre");
-
-    transaction.instructions = tx
+    let instructions: Vec<_> = tx
         .walk_instructions()
         .filter_map(|iview| {
             let program_id = iview.program_id().0;
-            if !is_system_program(&base58::encode(program_id)) {
+            if !is_system_program(&program_id) {
                 return None;
             }
 
@@ -72,9 +58,21 @@ fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
         })
         .collect();
 
-    if transaction.instructions.is_empty() && transaction.post_balances.is_empty() && transaction.pre_balances.is_empty() {
-        None
-    } else {
-        Some(transaction)
+    let post_balances = create_balances(&tx_meta.post_balances, "post");
+    let pre_balances = create_balances(&tx_meta.pre_balances, "pre");
+
+    if instructions.is_empty() && post_balances.is_empty() && pre_balances.is_empty() {
+        return None;
     }
+
+    Some(pb::Transaction {
+        fee: tx_meta.fee,
+        compute_units_consumed: tx_meta.compute_units_consumed(),
+        signature: tx.hash().to_vec(),
+        fee_payer: get_fee_payer(&tx).unwrap_or_default(),
+        signers: get_signers(&tx).unwrap_or_default(),
+        instructions,
+        post_balances,
+        pre_balances,
+    })
 }
