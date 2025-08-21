@@ -3,7 +3,7 @@ use proto::pb::solana::spl::token::v1 as pb;
 use std::str::from_utf8;
 use substreams_solana::block_view::InstructionView;
 
-pub fn unpack_memo(instruction: &InstructionView, program_id: &str) -> Option<pb::instruction::Instruction> {
+pub fn unpack_memo(instruction: &InstructionView, program_id: &[u8]) -> Option<pb::instruction::Instruction> {
     if !is_spl_memo_program(&program_id) {
         return None;
     }

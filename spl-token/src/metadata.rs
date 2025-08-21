@@ -4,8 +4,8 @@ use substreams_solana::block_view::InstructionView;
 
 use crate::is_spl_token_program;
 
-pub fn unpack_metadata(instruction: &InstructionView, program_id: &str) -> Option<pb::instruction::Instruction> {
-    if !is_spl_token_program(&program_id) {
+pub fn unpack_metadata(instruction: &InstructionView, program_id: &[u8]) -> Option<pb::instruction::Instruction> {
+    if !is_spl_token_program(program_id) {
         return None;
     }
     match TokenMetadataInstruction::unpack(&instruction.data()) {

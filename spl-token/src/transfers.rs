@@ -4,7 +4,7 @@ use substreams_solana_program_instructions::token_instruction_2022::TokenInstruc
 
 use crate::is_spl_token_program;
 
-pub fn unpack_transfers(instruction: &InstructionView, program_id: &str) -> Option<pb::instruction::Instruction> {
+pub fn unpack_transfers(instruction: &InstructionView, program_id: &[u8]) -> Option<pb::instruction::Instruction> {
     if !is_spl_token_program(&program_id) {
         return None;
     }
