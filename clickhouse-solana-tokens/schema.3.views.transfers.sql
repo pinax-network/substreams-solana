@@ -6,7 +6,7 @@ ALTER TABLE transfers
     -- require `decimals` to be present for token transfers
     DROP COLUMN IF EXISTS decimals,
     DROP COLUMN IF EXISTS decimals_raw,
-    ADD COLUMN decimals UInt8,
+    ADD COLUMN decimals Nullable(UInt8),
     -- require `mint` to be present for token transfers
     DROP COLUMN IF EXISTS mint,
     DROP COLUMN IF EXISTS mint_raw,
@@ -15,19 +15,14 @@ ALTER TABLE transfers
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
 SELECT
-    * EXCEPT (block_num, timestamp, mint_raw, mint, is_closed, account, owner, decimals_raw, decimals, mint_authority, freeze_authority, version, sign),
-
-    -- base fields --
-    t.block_num AS block_num,
-    t.timestamp AS timestamp,
+    * EXCEPT (decimals_raw, mint_raw),
 
     -- mint --
-    ifNull(t.decimals, m.decimals) AS decimals,
-    t.mint AS mint
-FROM spl_transfer AS t
-JOIN mints AS m ON m.mint = t.mint
+    mint AS mint,
+    decimals AS decimals
+FROM spl_transfer
 -- ignore 0 transfers
-WHERE t.amount > 0 AND t.mint IS NOT NULL;
+WHERE amount > 0 AND mint IS NOT NULL;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_system_transfer
 TO transfers AS
