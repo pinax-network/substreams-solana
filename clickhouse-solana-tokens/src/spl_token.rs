@@ -111,6 +111,10 @@ fn handle_transfer(
     transaction_index: usize,
     instruction_index: usize,
 ) {
+    // Skip transfers to self
+    if data.source == data.destination {
+        return;
+    }
     let mint_raw = data.mint.as_ref().map(base58::encode).unwrap_or_default();
     let decimals_raw = data.decimals.map(|d| d.to_string()).unwrap_or_default();
     let key = common_key_v2(&clock, transaction_index, instruction_index);

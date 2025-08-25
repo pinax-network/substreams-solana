@@ -66,6 +66,10 @@ fn handle_transfer(
     transaction_index: usize,
     instruction_index: usize,
 ) {
+    // Skip transfers to self
+    if data.source == data.destination {
+        return;
+    }
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
         .create_row("system_transfer", key)
