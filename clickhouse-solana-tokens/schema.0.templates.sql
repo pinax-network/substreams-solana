@@ -40,11 +40,6 @@ ORDER BY (
 ALTER TABLE base_events
   MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 
--- PROJECTIONS (Part) --
--- https://clickhouse.com/docs/sql-reference/statements/alter/projection#normal-projection-with-part-offset-field
-ALTER TABLE base_events
-    ADD PROJECTION IF NOT EXISTS prj_part_signature (SELECT signature, _part_offset ORDER BY signature);
-
 CREATE TABLE IF NOT EXISTS base_transactions AS base_events;
 ALTER TABLE base_transactions
     DROP PROJECTION IF EXISTS prj_part_program_id,
