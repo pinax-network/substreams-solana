@@ -115,7 +115,6 @@ fn handle_transfer(
     if data.source == data.destination {
         return;
     }
-    let mint_raw = data.mint.as_ref().map(base58::encode).unwrap_or_default();
     let decimals_raw = data.decimals.map(|d| d.to_string()).unwrap_or_default();
     let key = common_key_v2(&clock, transaction_index, instruction_index);
     let row = tables
@@ -123,8 +122,8 @@ fn handle_transfer(
         .set("source", base58::encode(&data.source))
         .set("destination", base58::encode(&data.destination))
         .set("amount", data.amount)
+        .set("mint", base58::encode(&data.mint))
         // -- SPL Token-2022 --
-        .set("mint_raw", mint_raw)
         .set("decimals_raw", decimals_raw);
 
     set_authority(&data.authority, &data.multisig_authority, row);

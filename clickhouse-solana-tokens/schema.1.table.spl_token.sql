@@ -11,10 +11,9 @@ ALTER TABLE spl_transfer
     ADD COLUMN IF NOT EXISTS source                  String,
     ADD COLUMN IF NOT EXISTS destination             String,
     ADD COLUMN IF NOT EXISTS amount                  UInt64,
+    ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
 
     -- Optional
-    ADD COLUMN IF NOT EXISTS mint_raw                String,
-    ADD COLUMN IF NOT EXISTS mint                    Nullable(String) MATERIALIZED string_or_null(mint_raw),
     ADD COLUMN IF NOT EXISTS decimals_raw            String,
     ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw),
 

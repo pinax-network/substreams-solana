@@ -6,19 +6,14 @@ ALTER TABLE transfers
     -- require `decimals` to be present for token transfers
     DROP COLUMN IF EXISTS decimals,
     DROP COLUMN IF EXISTS decimals_raw,
-    ADD COLUMN decimals Nullable(UInt8),
-    -- require `mint` to be present for token transfers
-    DROP COLUMN IF EXISTS mint,
-    DROP COLUMN IF EXISTS mint_raw,
-    ADD COLUMN mint LowCardinality(String);
+    ADD COLUMN decimals Nullable(UInt8);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_spl_transfer
 TO transfers AS
 SELECT
-    * EXCEPT (decimals_raw, mint_raw),
+    * EXCEPT (decimals_raw),
 
-    -- mint --
-    mint AS mint,
+    -- optional fields --
     decimals AS decimals
 FROM spl_transfer
 -- ignore 0 transfers
