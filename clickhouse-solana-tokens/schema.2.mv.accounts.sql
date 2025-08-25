@@ -100,6 +100,26 @@ SELECT
   timestamp
 FROM close_account;
 
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_owner
+TO owner_state_latest AS
+SELECT
+  account,
+  '' as owner,
+  version,
+  block_num,
+  timestamp
+FROM close_account;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_mint
+TO mint_state_latest AS
+SELECT
+  account,
+  '' as mint,
+  version,
+  block_num,
+  timestamp
+FROM close_account;
+
 -- SET AUTHORITY (owner)
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_owner
 TO owner_state_latest AS
