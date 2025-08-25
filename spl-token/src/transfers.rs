@@ -21,7 +21,7 @@ pub fn unpack_transfers(instruction: &InstructionView, program_id: &[u8]) -> Opt
                     source: instruction.accounts()[0].0.to_vec(),
                     destination: instruction.accounts()[2].0.to_vec(),
                     amount,
-                    mint: Some(instruction.accounts()[1].0.to_vec()),
+                    mint: instruction.accounts()[1].0.to_vec(),
                     decimals: Some(decimals as u32),
                 }));
             }
@@ -38,10 +38,10 @@ pub fn unpack_transfers(instruction: &InstructionView, program_id: &[u8]) -> Opt
 
                     // event
                     source: instruction.accounts()[0].0.to_vec(),
-                    destination: instruction.accounts()[1].0.to_vec(),
+                    destination: instruction.accounts()[2].0.to_vec(),
                     amount,
                     decimals: None,
-                    mint: None,
+                    mint: instruction.accounts()[1].0.to_vec(),
                 }));
             }
             return None;
@@ -59,8 +59,8 @@ pub fn unpack_transfers(instruction: &InstructionView, program_id: &[u8]) -> Opt
                     source: mint.clone(),
                     destination: instruction.accounts()[1].0.to_vec(),
                     amount,
+                    mint,
                     decimals: None,
-                    mint: Some(mint),
                 }));
             }
             return None;
@@ -79,8 +79,8 @@ pub fn unpack_transfers(instruction: &InstructionView, program_id: &[u8]) -> Opt
                     source: mint.clone(),
                     destination: instruction.accounts()[1].0.to_vec(),
                     amount,
+                    mint: mint,
                     decimals: Some(decimals as u32),
-                    mint: Some(mint),
                 }));
             }
             return None;
@@ -99,8 +99,8 @@ pub fn unpack_transfers(instruction: &InstructionView, program_id: &[u8]) -> Opt
                     source: instruction.accounts()[0].0.to_vec(),
                     destination: mint.clone(),
                     amount,
+                    mint,
                     decimals: None,
-                    mint: Some(mint),
                 }));
             }
             return None;
@@ -119,8 +119,8 @@ pub fn unpack_transfers(instruction: &InstructionView, program_id: &[u8]) -> Opt
                     source: instruction.accounts()[0].0.to_vec(),
                     destination: mint.clone(),
                     amount,
+                    mint,
                     decimals: Some(decimals as u32),
-                    mint: Some(mint),
                 }));
             }
             return None;

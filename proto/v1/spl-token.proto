@@ -73,8 +73,8 @@ message Transfer {
   bytes source = 10;
   bytes destination = 11;
   uint64 amount = 12;
+  bytes mint = 13;
   // SPL-2022
-  optional bytes mint = 13;
   optional uint32 decimals = 14; // uint8
 }
 

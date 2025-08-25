@@ -132,9 +132,10 @@ pub struct Transfer {
     pub destination: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint64, tag="12")]
     pub amount: u64,
+    #[prost(bytes="vec", tag="13")]
+    pub mint: ::prost::alloc::vec::Vec<u8>,
     /// SPL-2022
-    #[prost(bytes="vec", optional, tag="13")]
-    pub mint: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    ///
     /// uint8
     #[prost(uint32, optional, tag="14")]
     pub decimals: ::core::option::Option<u32>,
