@@ -54,7 +54,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
         }
         handle_balances("system_post_balances", tables, clock, transaction, post_balance, *transaction_index, *i);
     }
-    substreams::log::info!("Skipped {} native balances, {} total", skipped, system_post_balances_per_block.len());
+    substreams::log::info!("Skipped {} out of {} native token balances", skipped, system_post_balances_per_block.len());
 }
 
 fn handle_transfer(

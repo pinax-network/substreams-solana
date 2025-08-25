@@ -99,7 +99,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
         }
         handle_token_balances("post_token_balances", tables, clock, transaction, post_balance, *transaction_index, *i);
     }
-    substreams::log::info!("Skipped {} spl balances, {} total", skipped, post_token_balances_per_block.len());
+    substreams::log::info!("Skipped {} out of {} spl token balances", skipped, post_token_balances_per_block.len());
 }
 
 fn handle_transfer(
