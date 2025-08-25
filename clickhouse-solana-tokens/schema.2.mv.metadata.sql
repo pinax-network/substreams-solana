@@ -1,117 +1,157 @@
-CREATE TABLE IF NOT EXISTS metadata (
-    -- block --
-    block_num               UInt32,
-    timestamp               DateTime(0, 'UTC'),
-    version                 UInt64,
+/* MINT */
+CREATE TABLE IF NOT EXISTS metadata_mint_state_latest (
+    metadata   String,
+    mint       LowCardinality(String),        -- '' means removed
+    version    UInt64,
+    block_num  UInt32,
+    timestamp  DateTime('UTC'),
 
-    -- metadata --
-    metadata                String,
-    update_authority        Nullable(String),
-    mint                    Nullable(String) COMMENT 'typically same as metadata',
-    mint_authority          Nullable(String),
-    name                    Nullable(String),
-    symbol                  Nullable(String),
-    uri                     Nullable(String),
+    INDEX idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1
+)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (metadata);
 
-    -- indexes --
-    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
-    INDEX idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_mint_authority (mint_authority) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_update_authority (update_authority) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_metadata (metadata) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_name (name) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_symbol (symbol) TYPE bloom_filter(0.005) GRANULARITY 1,
+/* MINT AUTHORITY */
+CREATE TABLE IF NOT EXISTS metadata_mint_authority_state_latest (
+    metadata       String,
+    mint_authority String,                    -- '' means removed
+    version        UInt64,
+    block_num      UInt32,
+    timestamp      DateTime('UTC'),
+
+    INDEX idx_mint_authority (mint_authority) TYPE bloom_filter(0.005) GRANULARITY 1
+)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (metadata);
+
+/* NAME */
+CREATE TABLE IF NOT EXISTS metadata_name_state_latest (
+    metadata   String,
+    name       LowCardinality(String),        -- '' means removed
+    version    UInt64,
+    block_num  UInt32,
+    timestamp  DateTime('UTC'),
+
+    INDEX idx_name (name) TYPE bloom_filter(0.005) GRANULARITY 1
+)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (metadata);
+
+/* SYMBOL */
+CREATE TABLE IF NOT EXISTS metadata_symbol_state_latest (
+    metadata   String,
+    symbol     LowCardinality(String),        -- '' means removed
+    version    UInt64,
+    block_num  UInt32,
+    timestamp  DateTime('UTC'),
+
+    INDEX idx_symbol (symbol) TYPE bloom_filter(0.005) GRANULARITY 1
+)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (metadata);
+
+/* URI */
+CREATE TABLE IF NOT EXISTS metadata_uri_state_latest (
+    metadata   String,
+    uri        String,                        -- '' means removed
+    version    UInt64,
+    block_num  UInt32,
+    timestamp  DateTime('UTC'),
+
     INDEX idx_uri (uri) TYPE bloom_filter(0.005) GRANULARITY 1
+)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (metadata);
 
-) ENGINE = CoalescingMergeTree
-ORDER BY metadata
-COMMENT 'SPL Token Metadata';
+/* UPDATE AUTHORITY */
+CREATE TABLE IF NOT EXISTS metadata_update_authority_state_latest (
+    metadata          String,
+    update_authority  String,                 -- '' means removed
+    version           UInt64,
+    block_num         UInt32,
+    timestamp         DateTime('UTC'),
 
-ALTER TABLE metadata MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
-ALTER TABLE metadata
-    ADD PROJECTION IF NOT EXISTS prj_mint (SELECT * ORDER BY mint),
-    ADD PROJECTION IF NOT EXISTS prj_mint_authority (SELECT * ORDER BY mint_authority),
-    ADD PROJECTION IF NOT EXISTS prj_update_authority (SELECT * ORDER BY update_authority),
-    ADD PROJECTION IF NOT EXISTS prj_name (SELECT * ORDER BY name),
-    ADD PROJECTION IF NOT EXISTS prj_symbol (SELECT * ORDER BY symbol),
-    ADD PROJECTION IF NOT EXISTS prj_uri (SELECT * ORDER BY uri);
+    INDEX idx_update_authority (update_authority) TYPE bloom_filter(0.005) GRANULARITY 1
+)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (metadata);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata
-TO metadata AS
-SELECT
-    block_num,
-    timestamp,
-    version,
-    metadata,
-    update_authority,
-    mint,
-    mint_authority,
-    name,
-    symbol,
-    uri
+/* ===========================
+   MATERIALIZED VIEWS (ROUTING)
+   =========================== */
+
+/* INITIALIZE fan-out */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_update_authority
+TO metadata_update_authority_state_latest AS
+SELECT metadata, update_authority, version, block_num, timestamp
 FROM initialize_token_metadata;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_update_token_metadata_authority
-TO metadata AS
-SELECT
-    block_num,
-    timestamp,
-    version,
-    metadata,
-    update_authority,
-    Null::Nullable(String) AS mint,
-    Null::Nullable(String) AS mint_authority,
-    Null::Nullable(String) AS name,
-    Null::Nullable(String) AS symbol,
-    Null::Nullable(String) AS uri
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_mint
+TO metadata_mint_state_latest AS
+SELECT metadata, mint, version, block_num, timestamp
+FROM initialize_token_metadata;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_mint_authority
+TO metadata_mint_authority_state_latest AS
+SELECT metadata, mint_authority, version, block_num, timestamp
+FROM initialize_token_metadata;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_name
+TO metadata_name_state_latest AS
+SELECT metadata, name, version, block_num, timestamp
+FROM initialize_token_metadata;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_symbol
+TO metadata_symbol_state_latest AS
+SELECT metadata, symbol, version, block_num, timestamp
+FROM initialize_token_metadata;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_uri
+TO metadata_uri_state_latest AS
+SELECT metadata, uri, version, block_num, timestamp
+FROM initialize_token_metadata;
+
+/* UPDATE AUTHORITY */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_update_token_metadata_authority_latest
+TO metadata_update_authority_state_latest AS
+SELECT metadata, update_authority, version, block_num, timestamp
 FROM update_token_metadata_authority;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_update_token_metadata_field
-TO metadata AS
-SELECT
-    block_num,
-    timestamp,
-    version,
-    metadata,
-    Null::Nullable(String) AS update_authority,
-    Null::Nullable(String) AS mint,
-    Null::Nullable(String) AS mint_authority,
-    CASE field
-        WHEN 'name' THEN value
-        ELSE Null::Nullable(String)
-    END AS name,
-    CASE field
-        WHEN 'symbol' THEN value
-        ELSE Null::Nullable(String)
-    END AS symbol,
-    CASE field
-        WHEN 'uri' THEN value
-        ELSE Null::Nullable(String)
-    END AS uri
+/* FIELD UPDATES */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_update_token_metadata_field_name
+TO metadata_name_state_latest AS
+SELECT metadata, value AS name, version, block_num, timestamp
 FROM update_token_metadata_field
-WHERE field IN ('name', 'symbol', 'uri');
+WHERE field = 'name';
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_remove_token_metadata_field
-TO metadata AS
-SELECT
-    block_num,
-    timestamp,
-    version,
-    metadata,
-    Null::Nullable(String) AS update_authority,
-    Null::Nullable(String) AS mint,
-    Null::Nullable(String) AS mint_authority,
-    CASE `key`
-        WHEN 'name' THEN ''
-        ELSE Null::Nullable(String)
-    END AS name,
-    CASE `key`
-        WHEN 'symbol' THEN ''
-        ELSE Null::Nullable(String)
-    END AS symbol,
-    CASE `key`
-        WHEN 'uri' THEN ''
-        ELSE Null::Nullable(String)
-    END AS uri
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_update_token_metadata_field_symbol
+TO metadata_symbol_state_latest AS
+SELECT metadata, value AS symbol, version, block_num, timestamp
+FROM update_token_metadata_field
+WHERE field = 'symbol';
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_update_token_metadata_field_uri
+TO metadata_uri_state_latest AS
+SELECT metadata, value AS uri, version, block_num, timestamp
+FROM update_token_metadata_field
+WHERE field = 'uri';
+
+/* FIELD REMOVALS -> emit '' */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_remove_token_metadata_field_name
+TO metadata_name_state_latest AS
+SELECT metadata, '' AS name, version, block_num, timestamp
 FROM remove_token_metadata_field
-WHERE `key` IN ('name', 'symbol', 'uri');
+WHERE `key` = 'name';
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_remove_token_metadata_field_symbol
+TO metadata_symbol_state_latest AS
+SELECT metadata, '' AS symbol, version, block_num, timestamp
+FROM remove_token_metadata_field
+WHERE `key` = 'symbol';
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_remove_token_metadata_field_uri
+TO metadata_uri_state_latest AS
+SELECT metadata, '' AS uri, version, block_num, timestamp
+FROM remove_token_metadata_field
+WHERE `key` = 'uri';
+
