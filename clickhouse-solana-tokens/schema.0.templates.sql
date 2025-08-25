@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS base_events (
 
     -- transaction --
     signature                   String,
-    signature_hash              UInt64  MATERIALIZED cityHash64(signature),
     fee_payer                   String,
     signers_raw                 String,
     signers                     Array(String) MATERIALIZED string_to_array(signers_raw),
@@ -32,7 +31,7 @@ CREATE TABLE IF NOT EXISTS base_events (
     INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
-PARTITION BY toYYYYMMDD(timestamp)
+PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
