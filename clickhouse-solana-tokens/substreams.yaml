@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: solana_tokens
-  version: v0.2.3
+  version: v0.2.4
   url: https://github.com/pinax-network/substreams-solana
   description: SPL, SPL-20222 & Native transfers and balances for Solana blockchains.
   image: ../image.png
@@ -14,6 +14,7 @@ imports:
   # Substreams
   spl_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.3/spl-token-v0.2.3.spkg
   native_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.2/native-token-v0.2.2.spkg
+  metaplex: https://github.com/pinax-network/substreams-solana/releases/download/metaplex-v0.1.0/metaplex-v0.1.0.spkg
 
   # spl_token: ../spl-token/substreams.yaml
   # native_token: ../native-token/substreams.yaml
@@ -32,6 +33,7 @@ modules:
       # SPL Token
       - map: spl_token:map_events
       - map: native_token:map_events
+      - map: metaplex:map_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges

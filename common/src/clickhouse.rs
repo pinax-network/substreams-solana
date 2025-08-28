@@ -2,6 +2,7 @@ use proto::pb::jupiter::v1 as jupiter;
 use proto::pb::pumpfun::amm::v1 as pumpfun_amm;
 use proto::pb::pumpfun::v1 as pumpfun;
 use proto::pb::raydium::amm::v1 as raydium;
+use proto::pb::solana::metaplex::v1 as metaplex;
 use proto::pb::solana::native::token::v1 as native;
 use proto::pb::solana::spl::token::v1 as spl;
 use substreams::pb::substreams::Clock;
@@ -90,6 +91,19 @@ pub fn set_spl_token_transaction_v2(transaction: &spl::Transaction, row: &mut Ro
 }
 
 pub fn set_spl_token_instruction_v2(instruction: &spl::Instruction, row: &mut Row) {
+    row.set("program_id", base58::encode(&instruction.program_id))
+        .set("stack_height", instruction.stack_height);
+}
+
+pub fn set_metaplex_transaction_v2(transaction: &metaplex::Transaction, row: &mut Row) {
+    row.set("signature", base58::encode(&transaction.signature))
+        .set("fee_payer", base58::encode(&transaction.fee_payer))
+        .set("signers_raw", transaction.signers.iter().map(base58::encode).collect::<Vec<_>>().join(","))
+        .set("fee", transaction.fee)
+        .set("compute_units_consumed", transaction.compute_units_consumed);
+}
+
+pub fn set_metaplex_instruction_v2(instruction: &metaplex::Instruction, row: &mut Row) {
     row.set("program_id", base58::encode(&instruction.program_id))
         .set("stack_height", instruction.stack_height);
 }
