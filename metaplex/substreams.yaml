@@ -1,0 +1,36 @@
+specVersion: v0.1.0
+package:
+  name: metaplex
+  version: v0.0.1
+  url: https://github.com/pinax-network/substreams-solana
+  description: Metaplex Token Metadata
+  image: ../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../target/wasm32-unknown-unknown/release/metaplex.wasm
+
+protobuf:
+  files:
+    - v1/metaplex.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    doc: Metaplex Token Metadata
+    inputs:
+      - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+    output:
+      type: proto:solana.metaplex.v1.Events
+
+network: solana

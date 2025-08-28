@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package solana.metaplex.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2; // Fee payer account address.
+  repeated bytes signers = 3; // Signers of the transaction.
+  uint64 fee = 4; // Lamports paid for this instruction.
+  uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+  repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  bool is_root = 3; // Indicates if this instruction is a root instruction.
+  oneof instruction {
+    CreateMetadataAccount create_metadata_account = 10;
+    UpdateMetadataAccount update_metadata_account = 11;
+  }
+}
+
+message CreateMetadataAccount {
+  // accounts
+  bytes metadata = 1; // Metadata account address
+  bytes mint = 2; // Mint account address
+  bytes mint_authority = 3; // Mint authority account address
+  bytes payer = 4; // Payer account address
+  bytes update_authority = 5; // Update authority account address
+
+  // instruction data
+  string name = 6; // Name of the token metadata
+  string symbol = 7; // Symbol of the token metadata
+  string uri = 8; // URI of the token metadata
+}
+
+message UpdateMetadataAccount {
+  // accounts
+  bytes metadata = 1; // Metadata account address
+  bytes update_authority = 2; // Update authority account address
+
+  // instruction data
+  optional string name = 3; // Name of the token metadata
+  optional string symbol = 4; // Symbol of the token metadata
+  optional string uri = 5; // URI of the token metadata
+}
