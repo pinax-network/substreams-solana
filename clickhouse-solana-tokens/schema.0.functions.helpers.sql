@@ -16,8 +16,7 @@ CREATE FUNCTION IF NOT EXISTS string_to_uint8 AS (raw) ->
 -- Accurate cast or NULL
 -- Returns NULL if the input is empty or NULL
 CREATE FUNCTION IF NOT EXISTS string_or_null AS (raw) ->
-    accurateCastOrNull(nullIf(raw, ''), 'String');
-
+    accurateCastOrNull(nullIf(trimBoth(raw), ''), 'String');
 
 CREATE FUNCTION IF NOT EXISTS to_version AS (block_num, transaction_index, instruction_index) ->
     block_num * 1e6 + transaction_index * 1e3 + instruction_index;
