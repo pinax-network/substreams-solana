@@ -47,7 +47,7 @@ ENGINE = ReplacingMergeTree(version)
 ORDER BY (account);
 
 -- INITIALIZE
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_owner
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_initialize_owner
 TO owner_state_latest AS
 SELECT
   account,
@@ -58,7 +58,7 @@ SELECT
 FROM initialize_account
 WHERE owner IS NOT NULL;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_mint
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_mint_state_initialize_mint
 TO mint_state_latest AS
 SELECT
   account,
@@ -69,7 +69,7 @@ SELECT
 FROM initialize_account
 WHERE mint IS NOT NULL;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_closed0
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_initialize_closed0
 TO closed_state_latest AS
 SELECT
   account,
@@ -79,7 +79,7 @@ SELECT
   timestamp
 FROM initialize_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_frozen0
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_frozen_state_initialize_frozen0
 TO frozen_state_latest AS
 SELECT
   account,
@@ -90,7 +90,7 @@ SELECT
 FROM initialize_account;
 
 -- CLOSE -> closed = 1 (do not touch others)
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_close_account
 TO closed_state_latest AS
 SELECT
   account,
@@ -100,7 +100,7 @@ SELECT
   timestamp
 FROM close_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_owner
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_close_account_owner
 TO owner_state_latest AS
 SELECT
   account,
@@ -110,7 +110,7 @@ SELECT
   timestamp
 FROM close_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_mint
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_close_account_mint
 TO mint_state_latest AS
 SELECT
   account,
@@ -121,7 +121,7 @@ SELECT
 FROM close_account;
 
 -- SET AUTHORITY (owner)
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_owner
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_set_authority_owner
 TO owner_state_latest AS
 SELECT
   account,
@@ -133,7 +133,7 @@ FROM set_authority
 WHERE authority_type = 'AccountOwner' AND new_authority IS NOT NULL;
 
 -- FREEZE / THAW
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_frozen_state_freeze_account
 TO frozen_state_latest AS
 SELECT
   account,
@@ -143,7 +143,7 @@ SELECT
   timestamp
 FROM freeze_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_thaw_account
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_frozen_state_thaw_account
 TO frozen_state_latest AS
 SELECT
   account,

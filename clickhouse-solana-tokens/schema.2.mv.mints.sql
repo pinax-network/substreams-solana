@@ -24,7 +24,7 @@ ALTER TABLE mints
     ADD PROJECTION IF NOT EXISTS prj_mint_authority (SELECT * ORDER BY mint_authority),
     ADD PROJECTION IF NOT EXISTS prj_freeze_authority (SELECT * ORDER BY freeze_authority);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_mint
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_mints_initialize_mint
 TO mints AS
 SELECT
     block_num,
