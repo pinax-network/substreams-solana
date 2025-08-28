@@ -66,17 +66,17 @@ WITH
     if(dir, toInt128(input_amount), -toInt128(output_amount))  AS nf0,
     -- net flow of mint1: +in, -out (signs flipped vs. your original)
     if(dir, -toInt128(output_amount), toInt128(input_amount))  AS nf1,
-    timestamp AS ts_event,
-    toUInt64(timestamp) AS ts64
+    -- version is used to determine min/max states --
+    toUInt64(to_version(block_num, transaction_index, instruction_index)) AS version
 
 SELECT
-    toStartOfHour(ts_event)    AS timestamp,
+    toStartOfHour(swaps.timestamp)    AS timestamp,
     program_id, amm, amm_pool, mint0, mint1,
 
     /* OHLC */
-    argMinState(price, ts64)                 AS open0,
-    quantileDeterministicState(price, ts64)  AS quantile0,
-    argMaxState(price, ts64)                 AS close0,
+    argMinState(price, version)                 AS open0,
+    quantileDeterministicState(price, version)  AS quantile0,
+    argMaxState(price, version)                 AS close0,
 
     /* volumes & flows (all in canonical orientation) */
     sum(gv0)                AS gross_volume0,

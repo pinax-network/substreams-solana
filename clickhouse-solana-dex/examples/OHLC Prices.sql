@@ -43,8 +43,8 @@ LIMIT 10;
 -- Minimal OHLC Prices --
 SELECT
       timestamp,
-      argMinMerge(open0) * 1000) AS open * 1000,
-      argMaxMerge(close0) AS close * 1000
+      argMinMerge(open0) * 1000 AS open,
+      argMaxMerge(close0) * 1000 AS close
 FROM ohlc_prices
 WHERE amm_pool = '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2' -- Raydium V4 WSOL/USDC
 GROUP BY amm_pool, timestamp
