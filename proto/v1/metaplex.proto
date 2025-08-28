@@ -20,12 +20,12 @@ message Instruction {
   uint32 stack_height = 2;
   bool is_root = 3; // Indicates if this instruction is a root instruction.
   oneof instruction {
-    CreateMetadataAccountV3 create_metadata_account_v3 = 10;
-    UpdateMetadataAccountV2 update_metadata_account_v2 = 11;
+    CreateMetadataAccount create_metadata_account = 10;
+    UpdateMetadataAccount update_metadata_account = 11;
   }
 }
 
-message CreateMetadataAccountV3 {
+message CreateMetadataAccount {
   // accounts
   bytes metadata = 1; // Metadata account address
   bytes mint = 2; // Mint account address
@@ -39,14 +39,13 @@ message CreateMetadataAccountV3 {
   string uri = 8; // URI of the token metadata
 }
 
-message UpdateMetadataAccountV2 {
+message UpdateMetadataAccount {
   // accounts
   bytes metadata = 1; // Metadata account address
   bytes update_authority = 2; // Update authority account address
 
   // instruction data
-  string name = 3; // Name of the token metadata
-  string symbol = 4; // Symbol of the token metadata
-  string uri = 5; // URI of the token metadata
+  optional string name = 3; // Name of the token metadata
+  optional string symbol = 4; // Symbol of the token metadata
+  optional string uri = 5; // URI of the token metadata
 }
-

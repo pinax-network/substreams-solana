@@ -6,5 +6,5 @@
 >
 ## Includes
 
-- [x] `CreateMetadataAccountV3`
-- [x] `UpdateMetadataAccountV2`
+- [x] `CreateMetadataAccount` (V1,V2,V3)
+- [x] `UpdateMetadataAccount` (V1,V2)

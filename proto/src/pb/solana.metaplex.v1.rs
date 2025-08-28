@@ -46,14 +46,14 @@ pub mod instruction {
 #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
         #[prost(message, tag="10")]
-        CreateMetadataAccountV3(super::CreateMetadataAccountV3),
+        CreateMetadataAccount(super::CreateMetadataAccount),
         #[prost(message, tag="11")]
-        UpdateMetadataAccountV2(super::UpdateMetadataAccountV2),
+        UpdateMetadataAccount(super::UpdateMetadataAccount),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateMetadataAccountV3 {
+pub struct CreateMetadataAccount {
     /// accounts
     ///
     /// Metadata account address
@@ -85,7 +85,7 @@ pub struct CreateMetadataAccountV3 {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateMetadataAccountV2 {
+pub struct UpdateMetadataAccount {
     /// accounts
     ///
     /// Metadata account address
@@ -97,13 +97,13 @@ pub struct UpdateMetadataAccountV2 {
     /// instruction data
     ///
     /// Name of the token metadata
-    #[prost(string, tag="3")]
-    pub name: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="3")]
+    pub name: ::core::option::Option<::prost::alloc::string::String>,
     /// Symbol of the token metadata
-    #[prost(string, tag="4")]
-    pub symbol: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="4")]
+    pub symbol: ::core::option::Option<::prost::alloc::string::String>,
     /// URI of the token metadata
-    #[prost(string, tag="5")]
-    pub uri: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="5")]
+    pub uri: ::core::option::Option<::prost::alloc::string::String>,
 }
 // @@protoc_insertion_point(module)
