@@ -58,9 +58,9 @@ fn handle_update_metadata_account(
         .create_row("metaplex_update_metadata_account", key)
         .set("metadata", base58::encode(&data.metadata))
         .set("update_authority", base58::encode(&data.update_authority))
-        .set("name_raw", data.name())
-        .set("symbol_raw", data.symbol())
-        .set("uri_raw", data.uri());
+        .set("name", data.name())
+        .set("symbol", data.symbol())
+        .set("uri", data.uri());
 
     set_metaplex_instruction_v2(instruction, row);
     set_metaplex_transaction_v2(transaction, row);
