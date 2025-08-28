@@ -1,7 +1,7 @@
 mod metadata;
 
 use common::solana::{get_fee_payer, get_signers};
-use proto::pb::solana::metaplex::token_metadata::v1 as pb;
+use proto::pb::solana::metaplex::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::block_view::InstructionView;
 use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction};

@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/metaplex-token-metadata.proto
+    - v1/metaplex.proto
   importPaths:
     - ../proto
 
@@ -31,6 +31,6 @@ modules:
       query:
         string: "program:metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
     output:
-      type: proto:solana.metaplex.token_metadata.v1.Events
+      type: proto:solana.metaplex.v1.Events
 
 network: solana

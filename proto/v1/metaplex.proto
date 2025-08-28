@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package solana.metaplex.token_metadata.v1;
+package solana.metaplex.v1;
 
 message Events {
   repeated Transaction transactions = 1;

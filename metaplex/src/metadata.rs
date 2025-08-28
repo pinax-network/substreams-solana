@@ -1,6 +1,6 @@
 use borsh::BorshDeserialize;
 use mpl_token_metadata::instructions::{CreateMetadataAccountV3InstructionArgs, UpdateMetadataAccountV2InstructionArgs};
-use proto::pb::solana::metaplex::token_metadata::v1 as pb;
+use proto::pb::solana::metaplex::v1 as pb;
 use substreams_solana::block_view::InstructionView;
 
 use crate::is_metaplex_program;

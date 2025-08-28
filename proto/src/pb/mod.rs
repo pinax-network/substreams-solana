@@ -31,12 +31,10 @@ pub mod raydium {
 }
 pub mod solana {
     pub mod metaplex {
-        pub mod token_metadata {
-            // @@protoc_insertion_point(attribute:solana.metaplex.token_metadata.v1)
-            pub mod v1 {
-                include!("solana.metaplex.token_metadata.v1.rs");
-                // @@protoc_insertion_point(solana.metaplex.token_metadata.v1)
-            }
+        // @@protoc_insertion_point(attribute:solana.metaplex.v1)
+        pub mod v1 {
+            include!("solana.metaplex.v1.rs");
+            // @@protoc_insertion_point(solana.metaplex.v1)
         }
     }
     pub mod native {
