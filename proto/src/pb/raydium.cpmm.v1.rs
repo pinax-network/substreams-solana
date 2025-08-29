@@ -34,9 +34,10 @@ pub struct Instruction {
     #[prost(oneof="instruction::Instruction", tags="3, 4")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
+/// Nested message and enum types in `Instruction`.
 pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
         #[prost(message, tag="3")]
         SwapBaseInput(super::SwapBaseInputInstruction),
@@ -104,9 +105,10 @@ pub struct Log {
     #[prost(oneof="log::Log", tags="3, 4")]
     pub log: ::core::option::Option<log::Log>,
 }
+/// Nested message and enum types in `Log`.
 pub mod log {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Log {
         #[prost(message, tag="3")]
         Swap(super::SwapEvent),
@@ -166,3 +168,4 @@ pub struct LpChangeEvent {
     #[prost(uint32, tag="9")]
     pub change_type: u32,
 }
+// @@protoc_insertion_point(module)

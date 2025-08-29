@@ -1,11 +1,4 @@
 // @generated
-pub mod jupiter {
-    // @@protoc_insertion_point(attribute:jupiter.v1)
-    pub mod v1 {
-        include!("jupiter.v1.rs");
-        // @@protoc_insertion_point(jupiter.v1)
-    }
-}
 pub mod bonk {
     pub mod swap {
         // @@protoc_insertion_point(attribute:bonk.swap.v1)
@@ -13,6 +6,13 @@ pub mod bonk {
             include!("bonk.swap.v1.rs");
             // @@protoc_insertion_point(bonk.swap.v1)
         }
+    }
+}
+pub mod jupiter {
+    // @@protoc_insertion_point(attribute:jupiter.v1)
+    pub mod v1 {
+        include!("jupiter.v1.rs");
+        // @@protoc_insertion_point(jupiter.v1)
     }
 }
 pub mod pumpfun {
@@ -42,10 +42,15 @@ pub mod raydium {
         pub mod v1 {
             include!("raydium.clmm.v1.rs");
             // @@protoc_insertion_point(raydium.clmm.v1)
+        }
+    }
     pub mod cpmm {
+        // @@protoc_insertion_point(attribute:raydium.cpmm.v1)
         pub mod v1 {
             include!("raydium.cpmm.v1.rs");
-      }
+            // @@protoc_insertion_point(raydium.cpmm.v1)
+        }
+    }
     pub mod launchpad {
         // @@protoc_insertion_point(attribute:raydium.launchpad.v1)
         pub mod v1 {

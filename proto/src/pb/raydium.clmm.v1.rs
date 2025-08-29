@@ -32,9 +32,10 @@ pub struct Log {
     #[prost(oneof="log::Log", tags="3")]
     pub log: ::core::option::Option<log::Log>,
 }
+/// Nested message and enum types in `Log`.
 pub mod log {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Log {
         #[prost(message, tag="3")]
         Swap(super::SwapLog),
@@ -68,3 +69,4 @@ pub struct SwapLog {
     #[prost(sint32, tag="12")]
     pub tick: i32,
 }
+// @@protoc_insertion_point(module)

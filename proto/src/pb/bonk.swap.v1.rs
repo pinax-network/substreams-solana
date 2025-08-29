@@ -40,7 +40,7 @@ pub struct Instruction {
 /// Nested message and enum types in `Instruction`.
 pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
         #[prost(message, tag="10")]
         SwapInstruction(super::SwapInstruction),
