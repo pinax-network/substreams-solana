@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package raydium.launchpad.v1;
+
+// -----------------------------------------------------------------------------
+// Top-level containers
+// -----------------------------------------------------------------------------
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature                   = 1;
+  bytes fee_payer                   = 2;
+  repeated bytes signers            = 3;
+  uint64 fee                        = 4;
+  uint64 compute_units_consumed     = 5;
+  repeated Instruction instructions = 6;
+}
+
+// -----------------------------------------------------------------------------
+// Instruction + typed payloads
+// -----------------------------------------------------------------------------
+message Instruction {
+  bytes  program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    BuyExactInInstruction buy_exact_in     = 3;
+    BuyExactOutInstruction buy_exact_out   = 4;
+    SellExactInInstruction sell_exact_in   = 5;
+    SellExactOutInstruction sell_exact_out = 6;
+    TradeEvent trade_event                 = 7;
+  }
+}
+
+// Accounts shared by trade instructions
+message TradeAccounts {
+  bytes payer               = 1;
+  bytes authority           = 2;
+  bytes global_config       = 3;
+  bytes platform_config     = 4;
+  bytes pool_state          = 5;
+  bytes user_base_token     = 6;
+  bytes user_quote_token    = 7;
+  bytes base_vault          = 8;
+  bytes quote_vault         = 9;
+  bytes base_token_mint     = 10;
+  bytes quote_token_mint    = 11;
+  bytes base_token_program  = 12;
+  bytes quote_token_program = 13;
+  bytes event_authority     = 14;
+  bytes program             = 15;
+}
+
+message BuyExactInInstruction {
+  TradeAccounts accounts = 1;
+  uint64 amount_in = 2;
+  uint64 minimum_amount_out = 3;
+  uint64 share_fee_rate = 4;
+}
+
+message BuyExactOutInstruction {
+  TradeAccounts accounts = 1;
+  uint64 amount_out = 2;
+  uint64 maximum_amount_in = 3;
+  uint64 share_fee_rate = 4;
+}
+
+message SellExactInInstruction {
+  TradeAccounts accounts = 1;
+  uint64 amount_in = 2;
+  uint64 minimum_amount_out = 3;
+  uint64 share_fee_rate = 4;
+}
+
+message SellExactOutInstruction {
+  TradeAccounts accounts = 1;
+  uint64 amount_out = 2;
+  uint64 maximum_amount_in = 3;
+  uint64 share_fee_rate = 4;
+}
+
+// -----------------------------------------------------------------------------
+// Trade Event
+// -----------------------------------------------------------------------------
+message TradeEvent {
+  bytes pool_state       = 1;
+  uint64 total_base_sell = 2;
+  uint64 virtual_base    = 3;
+  uint64 virtual_quote   = 4;
+  uint64 real_base_before  = 5;
+  uint64 real_quote_before = 6;
+  uint64 real_base_after   = 7;
+  uint64 real_quote_after  = 8;
+  uint64 amount_in       = 9;
+  uint64 amount_out      = 10;
+  uint64 protocol_fee    = 11;
+  uint64 platform_fee    = 12;
+  uint64 creator_fee     = 13;
+  uint64 share_fee       = 14;
+  TradeDirection trade_direction = 15;
+  PoolStatus pool_status        = 16;
+  bool exact_in           = 17;
+}
+
+enum TradeDirection {
+  BUY = 0;
+  SELL = 1;
+}
+
+enum PoolStatus {
+  FUND    = 0;
+  MIGRATE = 1;
+  TRADE   = 2;
+}
+
