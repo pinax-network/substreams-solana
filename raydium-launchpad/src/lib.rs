@@ -8,7 +8,7 @@ use substreams_solana::{
 
 // LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj
 const RAYDIUM_LAUNCHPAD_PROGRAM_ID: [u8; 32] = [
-    107, 233, 173, 173, 146, 192, 112, 22, 32, 77, 88, 38, 82, 147, 208, 242, 43, 93, 75, 182, 27, 53, 92, 193, 117, 14, 82, 174, 77, 19, 51, 217,
+    5, 4, 59, 149, 77, 202, 38, 225, 239, 145, 181, 44, 79, 143, 137, 175, 138, 111, 90, 200, 198, 33, 86, 241, 113, 207, 15, 33, 172, 81, 201, 34,
 ];
 
 const BUY_EXACT_IN_DISCRIMINATOR: [u8; 8] = [250, 234, 13, 123, 213, 156, 19, 236];
@@ -54,7 +54,7 @@ fn process_instruction(iv: &InstructionView) -> Option<pb::Instruction> {
         .or_else(|| decode_trade_event(data))?;
 
     Some(pb::Instruction {
-        program_id: RAYDIUM_LAUNCHPAD_PROGRAM_ID.to_vec(),
+        program_id: iv.program_id().0.to_vec(),
         stack_height,
         instruction: Some(instruction),
     })
