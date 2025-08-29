@@ -28,6 +28,13 @@ pub mod raydium {
             // @@protoc_insertion_point(raydium.amm.v1)
         }
     }
+    pub mod launchpad {
+        // @@protoc_insertion_point(attribute:raydium.launchpad.v1)
+        pub mod v1 {
+            include!("raydium.launchpad.v1.rs");
+            // @@protoc_insertion_point(raydium.launchpad.v1)
+        }
+    }
 }
 pub mod solana {
     pub mod metaplex {

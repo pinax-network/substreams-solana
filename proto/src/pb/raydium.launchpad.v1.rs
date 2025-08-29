@@ -1,0 +1,204 @@
+#[allow(clippy::all)]
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+#[allow(dead_code)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Events {
+    #[prost(message, repeated, tag="1")]
+    pub transactions: ::prost::alloc::vec::Vec<Transaction>,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Transaction {
+    #[prost(bytes="vec", tag="1")]
+    pub signature: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="2")]
+    pub fee_payer: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", repeated, tag="3")]
+    pub signers: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(uint64, tag="4")]
+    pub fee: u64,
+    #[prost(uint64, tag="5")]
+    pub compute_units_consumed: u64,
+    #[prost(message, repeated, tag="6")]
+    pub instructions: ::prost::alloc::vec::Vec<Instruction>,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Instruction {
+    #[prost(bytes="vec", tag="1")]
+    pub program_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag="2")]
+    pub stack_height: u32,
+    #[prost(oneof="instruction::Instruction", tags="3, 4, 5, 6, 7")]
+    pub instruction: ::core::option::Option<instruction::Instruction>,
+}
+/// Nested message and enum types in `Instruction`.
+pub mod instruction {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Instruction {
+        #[prost(message, tag="3")]
+        BuyExactIn(super::BuyExactInInstruction),
+        #[prost(message, tag="4")]
+        BuyExactOut(super::BuyExactOutInstruction),
+        #[prost(message, tag="5")]
+        SellExactIn(super::SellExactInInstruction),
+        #[prost(message, tag="6")]
+        SellExactOut(super::SellExactOutInstruction),
+        #[prost(message, tag="7")]
+        TradeEvent(super::TradeEvent),
+    }
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TradeAccounts {
+    #[prost(bytes="vec", tag="1")]
+    pub payer: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="2")]
+    pub authority: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="3")]
+    pub global_config: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="4")]
+    pub platform_config: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="5")]
+    pub pool_state: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="6")]
+    pub user_base_token: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="7")]
+    pub user_quote_token: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="8")]
+    pub base_vault: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="9")]
+    pub quote_vault: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="10")]
+    pub base_token_mint: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="11")]
+    pub quote_token_mint: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="12")]
+    pub base_token_program: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="13")]
+    pub quote_token_program: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="14")]
+    pub event_authority: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="15")]
+    pub program: ::prost::alloc::vec::Vec<u8>,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BuyExactInInstruction {
+    #[prost(message, optional, tag="1")]
+    pub accounts: ::core::option::Option<TradeAccounts>,
+    #[prost(uint64, tag="2")]
+    pub amount_in: u64,
+    #[prost(uint64, tag="3")]
+    pub minimum_amount_out: u64,
+    #[prost(uint64, tag="4")]
+    pub share_fee_rate: u64,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BuyExactOutInstruction {
+    #[prost(message, optional, tag="1")]
+    pub accounts: ::core::option::Option<TradeAccounts>,
+    #[prost(uint64, tag="2")]
+    pub amount_out: u64,
+    #[prost(uint64, tag="3")]
+    pub maximum_amount_in: u64,
+    #[prost(uint64, tag="4")]
+    pub share_fee_rate: u64,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SellExactInInstruction {
+    #[prost(message, optional, tag="1")]
+    pub accounts: ::core::option::Option<TradeAccounts>,
+    #[prost(uint64, tag="2")]
+    pub amount_in: u64,
+    #[prost(uint64, tag="3")]
+    pub minimum_amount_out: u64,
+    #[prost(uint64, tag="4")]
+    pub share_fee_rate: u64,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SellExactOutInstruction {
+    #[prost(message, optional, tag="1")]
+    pub accounts: ::core::option::Option<TradeAccounts>,
+    #[prost(uint64, tag="2")]
+    pub amount_out: u64,
+    #[prost(uint64, tag="3")]
+    pub maximum_amount_in: u64,
+    #[prost(uint64, tag="4")]
+    pub share_fee_rate: u64,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TradeEvent {
+    #[prost(bytes="vec", tag="1")]
+    pub pool_state: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint64, tag="2")]
+    pub total_base_sell: u64,
+    #[prost(uint64, tag="3")]
+    pub virtual_base: u64,
+    #[prost(uint64, tag="4")]
+    pub virtual_quote: u64,
+    #[prost(uint64, tag="5")]
+    pub real_base_before: u64,
+    #[prost(uint64, tag="6")]
+    pub real_quote_before: u64,
+    #[prost(uint64, tag="7")]
+    pub real_base_after: u64,
+    #[prost(uint64, tag="8")]
+    pub real_quote_after: u64,
+    #[prost(uint64, tag="9")]
+    pub amount_in: u64,
+    #[prost(uint64, tag="10")]
+    pub amount_out: u64,
+    #[prost(uint64, tag="11")]
+    pub protocol_fee: u64,
+    #[prost(uint64, tag="12")]
+    pub platform_fee: u64,
+    #[prost(uint64, tag="13")]
+    pub creator_fee: u64,
+    #[prost(uint64, tag="14")]
+    pub share_fee: u64,
+    #[prost(enumeration="TradeDirection", tag="15")]
+    pub trade_direction: i32,
+    #[prost(enumeration="PoolStatus", tag="16")]
+    pub pool_status: i32,
+    #[prost(bool, tag="17")]
+    pub exact_in: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum TradeDirection {
+    Buy = 0,
+    Sell = 1,
+}
+impl TradeDirection {
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            TradeDirection::Buy => "BUY",
+            TradeDirection::Sell => "SELL",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum PoolStatus {
+    Fund = 0,
+    Migrate = 1,
+    Trade = 2,
+}
+impl PoolStatus {
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            PoolStatus::Fund => "FUND",
+            PoolStatus::Migrate => "MIGRATE",
+            PoolStatus::Trade => "TRADE",
+        }
+    }
+}
+
