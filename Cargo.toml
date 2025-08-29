@@ -16,6 +16,7 @@ members = [
   "raydium-cpmm",
   "raydium-launchpad",
   "metaplex",
+  "bonk-swap",
 
   # # General
   # "clickhouse-transactions",

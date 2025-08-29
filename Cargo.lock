@@ -373,6 +373,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bonk_swap"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
 name = "borsh"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"

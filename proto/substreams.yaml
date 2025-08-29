@@ -10,6 +10,7 @@ protobuf:
     - v1/pumpfun.proto
     - v1/pumpfun-amm.proto
     - v1/jupiter.proto
+    - v1/bonk-swap.proto
     - v1/raydium-amm.proto
     - v1/raydium-clmm.proto
     - v1/raydium-cpmm.proto

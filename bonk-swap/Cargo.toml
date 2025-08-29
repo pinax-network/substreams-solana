@@ -1,0 +1,15 @@
+[package]
+name = "bonk_swap"
+description = "Bonk Swap"
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+proto = { path = "../proto" }
+common = { path = "../common" }

@@ -6,6 +6,15 @@ pub mod jupiter {
         // @@protoc_insertion_point(jupiter.v1)
     }
 }
+pub mod bonk {
+    pub mod swap {
+        // @@protoc_insertion_point(attribute:bonk.swap.v1)
+        pub mod v1 {
+            include!("bonk.swap.v1.rs");
+            // @@protoc_insertion_point(bonk.swap.v1)
+        }
+    }
+}
 pub mod pumpfun {
     pub mod amm {
         // @@protoc_insertion_point(attribute:pumpfun.amm.v1)
