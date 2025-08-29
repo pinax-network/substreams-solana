@@ -13,6 +13,7 @@ members = [
   "jupiter-v6",
   "raydium-amm-v4",
   "raydium-cpmm",
+  "raydium-launchpad",
   "metaplex",
 
   # # General

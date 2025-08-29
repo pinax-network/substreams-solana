@@ -31,6 +31,12 @@ pub mod raydium {
     pub mod cpmm {
         pub mod v1 {
             include!("raydium.cpmm.v1.rs");
+      }
+    pub mod launchpad {
+        // @@protoc_insertion_point(attribute:raydium.launchpad.v1)
+        pub mod v1 {
+            include!("raydium.launchpad.v1.rs");
+            // @@protoc_insertion_point(raydium.launchpad.v1)
         }
     }
 }

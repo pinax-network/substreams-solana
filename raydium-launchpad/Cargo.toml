@@ -1,0 +1,19 @@
+[package]
+name = "raydium_launchpad"
+description = "Raydium Launchpad"
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+proto = { path = "../proto" }
+common = { path = "../common" }
+carbon-raydium-launchpad-decoder = "0.9.1"
+solana-instruction-v2 = { package = "solana-instruction", version = "=2.2.1" }
+solana-pubkey-v2 = { package = "solana-pubkey", version = "=2.2.1", features = ["serde", "borsh", "curve25519"] }
+
