@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package raydium.cpmm.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapBaseInputInstruction swap_base_input = 3;
+    SwapBaseOutputInstruction swap_base_output = 4;
+  }
+}
+
+message SwapAccounts {
+  bytes payer = 1;
+  bytes authority = 2;
+  bytes amm_config = 3;
+  bytes pool_state = 4;
+  bytes input_token_account = 5;
+  bytes output_token_account = 6;
+  bytes input_vault = 7;
+  bytes output_vault = 8;
+  bytes input_token_program = 9;
+  bytes output_token_program = 10;
+  bytes input_token_mint = 11;
+  bytes output_token_mint = 12;
+  bytes observation_state = 13;
+}
+
+message SwapBaseInputInstruction {
+  SwapAccounts accounts = 1;
+  uint64 amount_in = 2;
+  uint64 minimum_amount_out = 3;
+}
+
+message SwapBaseOutputInstruction {
+  SwapAccounts accounts = 1;
+  uint64 max_amount_in = 2;
+  uint64 amount_out = 3;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    SwapEvent swap = 3;
+    LpChangeEvent lp_change = 4;
+  }
+}
+
+message SwapEvent {
+  bytes pool_id = 1;
+  uint64 input_vault_before = 2;
+  uint64 output_vault_before = 3;
+  uint64 input_amount = 4;
+  uint64 output_amount = 5;
+  uint64 input_transfer_fee = 6;
+  uint64 output_transfer_fee = 7;
+  bool base_input = 8;
+  bytes input_mint = 9;
+  bytes output_mint = 10;
+  uint64 trade_fee = 11;
+  uint64 creator_fee = 12;
+  bool creator_fee_on_input = 13;
+}
+
+message LpChangeEvent {
+  bytes pool_id = 1;
+  uint64 lp_amount_before = 2;
+  uint64 token_0_vault_before = 3;
+  uint64 token_1_vault_before = 4;
+  uint64 token_0_amount = 5;
+  uint64 token_1_amount = 6;
+  uint64 token_0_transfer_fee = 7;
+  uint64 token_1_transfer_fee = 8;
+  uint32 change_type = 9;
+}

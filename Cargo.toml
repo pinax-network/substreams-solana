@@ -12,6 +12,7 @@ members = [
   "jupiter-v4",
   "jupiter-v6",
   "raydium-amm-v4",
+  "raydium-cpmm",
   "metaplex",
 
   # # General

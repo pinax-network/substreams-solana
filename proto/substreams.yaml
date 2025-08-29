@@ -11,6 +11,7 @@ protobuf:
     - v1/pumpfun-amm.proto
     - v1/jupiter.proto
     - v1/raydium-amm.proto
+    - v1/raydium-cpmm.proto
     - v1/metaplex.proto
   excludePaths:
     - sf/substreams
