@@ -1328,6 +1328,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "raydium_clmm"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
+name = "raydium_cpmm"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
+name = "raydium_launchpad"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.5.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"

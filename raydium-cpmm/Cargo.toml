@@ -13,5 +13,3 @@ substreams = { workspace = true }
 substreams-solana = { workspace = true }
 proto = { path = "../proto" }
 common = { path = "../common" }
-anchor-lang = "0.31.1"
-raydium-cp-swap = { git = "https://github.com/raydium-io/raydium-cp-swap", package = "raydium-cp-swap", default-features = false, features = ["no-entrypoint"] }
