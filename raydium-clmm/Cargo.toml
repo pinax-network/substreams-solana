@@ -13,6 +13,6 @@ substreams = { workspace = true }
 substreams-solana = { workspace = true }
 substreams-solana-idls = { workspace = true }
 raydium-amm-v3 = "0.1.0"
-anchor-lang = "0.29"
+anchor-lang = "0.31.1"
 proto = { path = "../proto" }
 common = { path = "../common" }

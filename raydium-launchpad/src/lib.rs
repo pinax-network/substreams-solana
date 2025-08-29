@@ -1,8 +1,5 @@
 use carbon_raydium_launchpad_decoder::{
-    instructions::{
-        self, buy_exact_in, buy_exact_out, sell_exact_in, sell_exact_out,
-        RaydiumLaunchpadInstruction,
-    },
+    instructions::{self, buy_exact_in, buy_exact_out, sell_exact_in, sell_exact_out, RaydiumLaunchpadInstruction},
     types::{pool_status::PoolStatus, trade_direction::TradeDirection},
     RaydiumLaunchpadDecoder,
 };
@@ -16,6 +13,11 @@ use substreams_solana::{
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
 };
 
+// LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj
+const RAYDIUM_LAUNCHPAD_PROGRAM_ID: [u8; 32] = Pubkey::new_from_array([
+    107, 233, 173, 173, 146, 192, 112, 22, 32, 77, 88, 38, 82, 147, 208, 242, 43, 93, 75, 182, 27, 53, 92, 193, 117, 14, 82, 174, 77, 19, 51, 217,
+]);
+
 #[substreams::handlers::map]
 fn map_events(block: Block) -> Result<pb::Events, Error> {
     Ok(pb::Events {
@@ -24,8 +26,7 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
 }
 
 fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
-    let instructions: Vec<pb::Instruction> =
-        tx.walk_instructions().filter_map(|iv| process_instruction(&iv)).collect();
+    let instructions: Vec<pb::Instruction> = tx.walk_instructions().filter_map(|iv| process_instruction(&iv)).collect();
     if instructions.is_empty() {
         return None;
     }
@@ -164,34 +165,32 @@ fn process_instruction(iv: &InstructionView) -> Option<pb::Instruction> {
                 share_fee_rate: data.share_fee_rate,
             })
         }
-        RI::TradeEvent(ev) => {
-            pb::instruction::Instruction::TradeEvent(pb::TradeEvent {
-                pool_state: ev.pool_state.to_bytes().to_vec(),
-                total_base_sell: ev.total_base_sell,
-                virtual_base: ev.virtual_base,
-                virtual_quote: ev.virtual_quote,
-                real_base_before: ev.real_base_before,
-                real_quote_before: ev.real_quote_before,
-                real_base_after: ev.real_base_after,
-                real_quote_after: ev.real_quote_after,
-                amount_in: ev.amount_in,
-                amount_out: ev.amount_out,
-                protocol_fee: ev.protocol_fee,
-                platform_fee: ev.platform_fee,
-                creator_fee: ev.creator_fee,
-                share_fee: ev.share_fee,
-                trade_direction: match ev.trade_direction {
-                    TradeDirection::Buy => pb::TradeDirection::Buy as i32,
-                    TradeDirection::Sell => pb::TradeDirection::Sell as i32,
-                },
-                pool_status: match ev.pool_status {
-                    PoolStatus::Fund => pb::PoolStatus::Fund as i32,
-                    PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
-                    PoolStatus::Trade => pb::PoolStatus::Trade as i32,
-                },
-                exact_in: ev.exact_in,
-            })
-        }
+        RI::TradeEvent(ev) => pb::instruction::Instruction::TradeEvent(pb::TradeEvent {
+            pool_state: ev.pool_state.to_bytes().to_vec(),
+            total_base_sell: ev.total_base_sell,
+            virtual_base: ev.virtual_base,
+            virtual_quote: ev.virtual_quote,
+            real_base_before: ev.real_base_before,
+            real_quote_before: ev.real_quote_before,
+            real_base_after: ev.real_base_after,
+            real_quote_after: ev.real_quote_after,
+            amount_in: ev.amount_in,
+            amount_out: ev.amount_out,
+            protocol_fee: ev.protocol_fee,
+            platform_fee: ev.platform_fee,
+            creator_fee: ev.creator_fee,
+            share_fee: ev.share_fee,
+            trade_direction: match ev.trade_direction {
+                TradeDirection::Buy => pb::TradeDirection::Buy as i32,
+                TradeDirection::Sell => pb::TradeDirection::Sell as i32,
+            },
+            pool_status: match ev.pool_status {
+                PoolStatus::Fund => pb::PoolStatus::Fund as i32,
+                PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
+                PoolStatus::Trade => pb::PoolStatus::Trade as i32,
+            },
+            exact_in: ev.exact_in,
+        }),
         _ => return None,
     };
 
@@ -201,4 +200,3 @@ fn process_instruction(iv: &InstructionView) -> Option<pb::Instruction> {
         instruction: Some(instruction),
     })
 }
-

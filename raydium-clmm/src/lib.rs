@@ -15,6 +15,7 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
 fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
     let tx_meta = tx.meta.as_ref()?;
 
+    // CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK
     let logs = process_logs(tx_meta, &raydium_amm_v3::ID.to_bytes());
 
     if logs.is_empty() {

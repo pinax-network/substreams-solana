@@ -6,11 +6,9 @@ use substreams_solana::{
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
 };
 
+// BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p
 const BONKSWAP_PROGRAM_ID: [u8; 32] = [
-    155, 58, 93, 153, 133, 205, 99, 220,
-    200, 98, 145, 180, 142, 67, 70, 214,
-    157, 171, 54, 99, 242, 49, 240, 199,
-    95, 111, 196, 132, 118, 236, 111, 125,
+    155, 58, 93, 153, 133, 205, 99, 220, 200, 98, 145, 180, 142, 67, 70, 214, 157, 171, 54, 99, 242, 49, 240, 199, 95, 111, 196, 132, 118, 236, 111, 125,
 ];
 
 const SWAP_DISCRIMINATOR: [u8; 8] = [248, 198, 158, 145, 225, 117, 135, 200];
@@ -23,10 +21,7 @@ fn map_events(block: Block) -> Result<pb::Events, Error> {
 }
 
 fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
-    let instructions: Vec<pb::Instruction> = tx
-        .walk_instructions()
-        .filter_map(|iv| process_instruction(&iv))
-        .collect();
+    let instructions: Vec<pb::Instruction> = tx.walk_instructions().filter_map(|iv| process_instruction(&iv)).collect();
     if instructions.is_empty() {
         return None;
     }
@@ -70,11 +65,7 @@ fn decode_swap_instruction(data: &[u8]) -> Option<SwapData> {
     let delta_in = u64::from_le_bytes(data[8..16].try_into().ok()?);
     let price_limit = u128::from_le_bytes(data[16..32].try_into().ok()?);
     let x_to_y = data.get(32).copied()? != 0;
-    Some(SwapData {
-        delta_in,
-        price_limit,
-        x_to_y,
-    })
+    Some(SwapData { delta_in, price_limit, x_to_y })
 }
 
 fn get_swap_accounts(instruction: &InstructionView) -> pb::SwapAccounts {
