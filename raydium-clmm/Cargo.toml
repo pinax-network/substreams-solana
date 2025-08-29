@@ -1,0 +1,18 @@
+[package]
+name = "raydium_clmm"
+description = "Raydium CLMM"
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+substreams-solana-idls = { workspace = true }
+raydium-amm-v3 = "0.1.0"
+anchor-lang = "0.29"
+proto = { path = "../proto" }
+common = { path = "../common" }
