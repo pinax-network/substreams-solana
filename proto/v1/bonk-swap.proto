@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package bonk.swap.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    oneof instruction {
+        SwapInstruction swap_instruction = 10;
+    }
+}
+
+message SwapInstruction {
+    SwapAccounts accounts = 1; // Accounts involved in the swap.
+    uint64 delta_in = 2; // Amount of tokens provided.
+    string price_limit = 3; // Price limit as decimal string.
+    bool x_to_y = 4; // Direction of the swap.
+}
+
+message SwapAccounts {
+    bytes pool = 1; // Pool account address.
+    bytes token_x = 2; // Token X mint address.
+    bytes token_y = 3; // Token Y mint address.
+    bytes pool_x_account = 4; // Pool token X account.
+    bytes pool_y_account = 5; // Pool token Y account.
+    bytes swapper_x_account = 6; // Swapper token X account.
+    bytes swapper_y_account = 7; // Swapper token Y account.
+    bytes swapper = 8; // Swapper account address.
+    optional bytes referrer_x_account = 9; // Referrer token X account.
+    optional bytes referrer_y_account = 10; // Referrer token Y account.
+    optional bytes referrer = 11; // Referrer account address.
+}
