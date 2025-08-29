@@ -28,6 +28,13 @@ pub mod raydium {
             // @@protoc_insertion_point(raydium.amm.v1)
         }
     }
+    pub mod clmm {
+        // @@protoc_insertion_point(attribute:raydium.clmm.v1)
+        pub mod v1 {
+            include!("raydium.clmm.v1.rs");
+            // @@protoc_insertion_point(raydium.clmm.v1)
+        }
+    }
 }
 pub mod solana {
     pub mod metaplex {

@@ -1,0 +1,35 @@
+specVersion: v0.1.0
+package:
+  name: raydium_clmm
+  version: v0.0.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: Raydium CLMM
+  image: ../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../target/wasm32-unknown-unknown/release/raydium_clmm.wasm
+
+protobuf:
+  files:
+    - v1/raydium-clmm.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:6weQP6SNcqqk8KnQGcM2rzU1Xk9o9atJD8kvASVCrN55"
+    output:
+      type: proto:raydium.clmm.v1.Events
+
+network: solana
