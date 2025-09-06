@@ -1335,6 +1335,7 @@ dependencies = [
  "proto",
  "substreams",
  "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]
@@ -1345,6 +1346,7 @@ dependencies = [
  "proto",
  "substreams",
  "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]
@@ -1355,6 +1357,7 @@ dependencies = [
  "proto",
  "substreams",
  "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]
@@ -1448,6 +1451,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f0e2c6ed6606019b4e29e69dbaba95b11854410e5347d525002456dbbb786b6"
 dependencies = [
  "serde_derive",
+]
+
+[[package]]
+name = "serde-big-array"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11fc7cc2c76d73e0f27ee52abbd64eec84d46f370c88371120433196934e4b7f"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
@@ -2518,9 +2530,9 @@ dependencies = [
 
 [[package]]
 name = "substreams"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdd15565feda31101521b96860e1bd4e6b549348e8d34a385cc46de7a04f61bb"
+checksum = "571864dde50a7879ab53d75253a9660768749b3e10fe610ab732d2e5b3a5c078"
 dependencies = [
  "anyhow",
  "bigdecimal",
@@ -2552,9 +2564,9 @@ dependencies = [
 
 [[package]]
 name = "substreams-macro"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3cf9954628fa6dee8458dade7088ce032e7f52267ef4777ad5bc2d1cfb4618a"
+checksum = "9d11da9c47f7ebcf4b218eca649a5f5b9b3c2f25a66ffb80858ef785ca5ca5e7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2589,12 +2601,13 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-idls"
-version = "0.4.5"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c919c6c8fae88bacc63e0f5b6ffa28a5c6af33db95a324b228dc8e1fcd8ebb7e"
+checksum = "22af9648fc0460d01e886c0f3682a82c568c83d37c2c49bca40e731f9eb252b3"
 dependencies = [
  "borsh 1.5.7",
  "serde",
+ "serde-big-array",
  "serde_json",
  "solana-program",
  "substreams",

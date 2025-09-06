@@ -20,7 +20,66 @@ pub struct Transaction {
     #[prost(uint64, tag="5")]
     pub compute_units_consumed: u64,
     #[prost(message, repeated, tag="6")]
+    pub instructions: ::prost::alloc::vec::Vec<Instruction>,
+    #[prost(message, repeated, tag="7")]
     pub logs: ::prost::alloc::vec::Vec<Log>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Instruction {
+    #[prost(bytes="vec", tag="1")]
+    pub program_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag="2")]
+    pub stack_height: u32,
+    #[prost(oneof="instruction::Instruction", tags="3")]
+    pub instruction: ::core::option::Option<instruction::Instruction>,
+}
+/// Nested message and enum types in `Instruction`.
+pub mod instruction {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Instruction {
+        #[prost(message, tag="3")]
+        Swap(super::SwapInstruction),
+    }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SwapAccounts {
+    #[prost(bytes="vec", tag="1")]
+    pub payer: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="2")]
+    pub amm_config: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="3")]
+    pub pool_state: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="4")]
+    pub input_token_account: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="5")]
+    pub output_token_account: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="6")]
+    pub input_vault: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="7")]
+    pub output_vault: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="8")]
+    pub observation_state: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="9")]
+    pub token_program: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="10")]
+    pub tick_array: ::prost::alloc::vec::Vec<u8>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SwapInstruction {
+    #[prost(message, optional, tag="1")]
+    pub accounts: ::core::option::Option<SwapAccounts>,
+    #[prost(uint64, tag="2")]
+    pub amount: u64,
+    #[prost(uint64, tag="3")]
+    pub other_amount_threshold: u64,
+    #[prost(string, tag="4")]
+    pub sqrt_price_limit_x64: ::prost::alloc::string::String,
+    #[prost(bool, tag="5")]
+    pub is_base_input: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
