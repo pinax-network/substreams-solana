@@ -28,7 +28,7 @@ modules:
     blockFilter:
       module: solana_common:program_ids_without_votes
       query:
-        string: "program:6weQP6SNcqqk8KnQGcM2rzU1Xk9o9atJD8kvASVCrN55"
+        string: "program:CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
     output:
       type: proto:raydium.clmm.v1.Events
 

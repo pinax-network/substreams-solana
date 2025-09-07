@@ -3,170 +3,170 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
-    #[prost(message, repeated, tag = "1")]
+    #[prost(message, repeated, tag="1")]
     pub transactions: ::prost::alloc::vec::Vec<Transaction>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub signature: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub fee_payer: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", repeated, tag = "3")]
+    #[prost(bytes="vec", repeated, tag="3")]
     pub signers: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub fee: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub compute_units_consumed: u64,
-    #[prost(message, repeated, tag = "6")]
+    #[prost(message, repeated, tag="6")]
     pub instructions: ::prost::alloc::vec::Vec<Instruction>,
-    #[prost(message, repeated, tag = "7")]
+    #[prost(message, repeated, tag="7")]
     pub logs: ::prost::alloc::vec::Vec<Log>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Instruction {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint32, tag = "2")]
+    #[prost(uint32, tag="2")]
     pub stack_height: u32,
-    #[prost(oneof = "instruction::Instruction", tags = "3")]
+    #[prost(oneof="instruction::Instruction", tags="3")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
 pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
-        #[prost(message, tag = "3")]
+        #[prost(message, tag="3")]
         Swap(super::SwapInstruction),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SwapAccounts {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub payer: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub amm_config: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "3")]
+    #[prost(bytes="vec", tag="3")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "4")]
+    #[prost(bytes="vec", tag="4")]
     pub input_token_account: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "5")]
+    #[prost(bytes="vec", tag="5")]
     pub output_token_account: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "6")]
+    #[prost(bytes="vec", tag="6")]
     pub input_vault: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "7")]
+    #[prost(bytes="vec", tag="7")]
     pub output_vault: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "8")]
+    #[prost(bytes="vec", tag="8")]
     pub observation_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "9")]
+    #[prost(bytes="vec", tag="9")]
     pub token_program: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "10")]
+    #[prost(bytes="vec", tag="10")]
     pub tick_array: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SwapV2Accounts {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub payer: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub amm_config: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "3")]
+    #[prost(bytes="vec", tag="3")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "4")]
+    #[prost(bytes="vec", tag="4")]
     pub input_token_account: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "5")]
+    #[prost(bytes="vec", tag="5")]
     pub output_token_account: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "6")]
+    #[prost(bytes="vec", tag="6")]
     pub input_vault: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "7")]
+    #[prost(bytes="vec", tag="7")]
     pub output_vault: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "8")]
+    #[prost(bytes="vec", tag="8")]
     pub observation_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "9")]
+    #[prost(bytes="vec", tag="9")]
     pub token_program: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "10")]
+    #[prost(bytes="vec", tag="10")]
     pub token_program_2022: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "11")]
+    #[prost(bytes="vec", tag="11")]
     pub memo_program: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "12")]
+    #[prost(bytes="vec", tag="12")]
     pub input_vault_mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "13")]
+    #[prost(bytes="vec", tag="13")]
     pub output_vault_mint: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SwapInstruction {
-    #[prost(oneof = "swap_instruction::Accounts", tags = "1, 6")]
-    pub accounts: ::core::option::Option<swap_instruction::Accounts>,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub amount: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub other_amount_threshold: u64,
-    #[prost(string, tag = "4")]
+    #[prost(string, tag="4")]
     pub sqrt_price_limit_x64: ::prost::alloc::string::String,
-    #[prost(bool, tag = "5")]
+    #[prost(bool, tag="5")]
     pub is_base_input: bool,
+    #[prost(oneof="swap_instruction::Accounts", tags="1, 6")]
+    pub accounts: ::core::option::Option<swap_instruction::Accounts>,
 }
 /// Nested message and enum types in `SwapInstruction`.
 pub mod swap_instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Accounts {
-        #[prost(message, tag = "1")]
-        Accounts(super::SwapAccounts),
-        #[prost(message, tag = "6")]
+        #[prost(message, tag="1")]
+        V1Accounts(super::SwapAccounts),
+        #[prost(message, tag="6")]
         V2Accounts(super::SwapV2Accounts),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Log {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint32, tag = "2")]
+    #[prost(uint32, tag="2")]
     pub invoke_depth: u32,
-    #[prost(oneof = "log::Log", tags = "3")]
+    #[prost(oneof="log::Log", tags="3")]
     pub log: ::core::option::Option<log::Log>,
 }
 /// Nested message and enum types in `Log`.
 pub mod log {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Log {
-        #[prost(message, tag = "3")]
+        #[prost(message, tag="3")]
         Swap(super::SwapLog),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SwapLog {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub sender: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "3")]
+    #[prost(bytes="vec", tag="3")]
     pub token_account_0: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "4")]
+    #[prost(bytes="vec", tag="4")]
     pub token_account_1: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub amount_0: u64,
-    #[prost(uint64, tag = "6")]
+    #[prost(uint64, tag="6")]
     pub transfer_fee_0: u64,
-    #[prost(uint64, tag = "7")]
+    #[prost(uint64, tag="7")]
     pub amount_1: u64,
-    #[prost(uint64, tag = "8")]
+    #[prost(uint64, tag="8")]
     pub transfer_fee_1: u64,
-    #[prost(bool, tag = "9")]
+    #[prost(bool, tag="9")]
     pub zero_for_one: bool,
-    #[prost(string, tag = "10")]
+    #[prost(string, tag="10")]
     pub sqrt_price_x64: ::prost::alloc::string::String,
-    #[prost(string, tag = "11")]
+    #[prost(string, tag="11")]
     pub liquidity: ::prost::alloc::string::String,
-    #[prost(sint32, tag = "12")]
+    #[prost(sint32, tag="12")]
     pub tick: i32,
 }
 // @@protoc_insertion_point(module)

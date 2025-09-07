@@ -55,7 +55,7 @@ message SwapV2Accounts {
 
 message SwapInstruction {
   oneof accounts {
-    SwapAccounts accounts = 1;
+    SwapAccounts v1_accounts = 1;
     SwapV2Accounts v2_accounts = 6;
   }
   uint64 amount = 2;

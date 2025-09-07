@@ -49,7 +49,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::Swap(pb::SwapInstruction {
-                    accounts: Some(pb::swap_instruction::Accounts::Accounts(pb::SwapAccounts {
+                    accounts: Some(pb::swap_instruction::Accounts::V1Accounts(pb::SwapAccounts {
                         payer: accounts.payer.to_bytes().to_vec(),
                         amm_config: accounts.amm_config.to_bytes().to_vec(),
                         pool_state: accounts.pool_state.to_bytes().to_vec(),
