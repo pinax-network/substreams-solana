@@ -11,5 +11,6 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 substreams = { workspace = true }
 substreams-solana = { workspace = true }
+substreams-solana-idls = { workspace = true }
 proto = { path = "../proto" }
 common = { path = "../common" }
