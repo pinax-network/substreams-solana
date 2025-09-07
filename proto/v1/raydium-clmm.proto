@@ -37,8 +37,27 @@ message SwapAccounts {
   bytes tick_array = 10;
 }
 
+message SwapV2Accounts {
+  bytes payer = 1;
+  bytes amm_config = 2;
+  bytes pool_state = 3;
+  bytes input_token_account = 4;
+  bytes output_token_account = 5;
+  bytes input_vault = 6;
+  bytes output_vault = 7;
+  bytes observation_state = 8;
+  bytes token_program = 9;
+  bytes token_program_2022 = 10;
+  bytes memo_program = 11;
+  bytes input_vault_mint = 12;
+  bytes output_vault_mint = 13;
+}
+
 message SwapInstruction {
-  SwapAccounts accounts = 1;
+  oneof accounts {
+    SwapAccounts accounts = 1;
+    SwapV2Accounts v2_accounts = 6;
+  }
   uint64 amount = 2;
   uint64 other_amount_threshold = 3;
   string sqrt_price_limit_x64 = 4;
