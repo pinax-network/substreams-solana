@@ -43,14 +43,13 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
     }
 
     match raydium::clmm::v3::instructions::unpack(ix.data()) {
-        Ok(raydium::clmm::v3::instructions::RaydiumClmmInstruction::Swap(event))
-        | Ok(raydium::clmm::v3::instructions::RaydiumClmmInstruction::SwapV2(event)) => {
+        Ok(raydium::clmm::v3::instructions::RaydiumClmmInstruction::Swap(event)) => {
             let accounts = raydium::clmm::v3::accounts::get_swap_accounts(ix).ok()?;
             Some(pb::Instruction {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::Swap(pb::SwapInstruction {
-                    accounts: Some(pb::SwapAccounts {
+                    accounts: Some(pb::swap_instruction::Accounts::Accounts(pb::SwapAccounts {
                         payer: accounts.payer.to_bytes().to_vec(),
                         amm_config: accounts.amm_config.to_bytes().to_vec(),
                         pool_state: accounts.pool_state.to_bytes().to_vec(),
@@ -61,7 +60,35 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                         observation_state: accounts.observation_state.to_bytes().to_vec(),
                         token_program: accounts.token_program.to_bytes().to_vec(),
                         tick_array: accounts.tick_array.to_bytes().to_vec(),
-                    }),
+                    })),
+                    amount: event.amount,
+                    other_amount_threshold: event.other_amount_threshold,
+                    sqrt_price_limit_x64: event.sqrt_price_limit_x64.to_string(),
+                    is_base_input: event.is_base_input,
+                })),
+            })
+        }
+        Ok(raydium::clmm::v3::instructions::RaydiumClmmInstruction::SwapV2(event)) => {
+            let accounts = raydium::clmm::v3::accounts::get_swap_v2_accounts(ix).ok()?;
+            Some(pb::Instruction {
+                program_id: program_id.to_vec(),
+                stack_height: ix.stack_height(),
+                instruction: Some(pb::instruction::Instruction::Swap(pb::SwapInstruction {
+                    accounts: Some(pb::swap_instruction::Accounts::V2Accounts(pb::SwapV2Accounts {
+                        payer: accounts.payer.to_bytes().to_vec(),
+                        amm_config: accounts.amm_config.to_bytes().to_vec(),
+                        pool_state: accounts.pool_state.to_bytes().to_vec(),
+                        input_token_account: accounts.input_token_account.to_bytes().to_vec(),
+                        output_token_account: accounts.output_token_account.to_bytes().to_vec(),
+                        input_vault: accounts.input_vault.to_bytes().to_vec(),
+                        output_vault: accounts.output_vault.to_bytes().to_vec(),
+                        observation_state: accounts.observation_state.to_bytes().to_vec(),
+                        token_program: accounts.token_program.to_bytes().to_vec(),
+                        token_program_2022: accounts.token_program_2022.to_bytes().to_vec(),
+                        memo_program: accounts.memo_program.to_bytes().to_vec(),
+                        input_vault_mint: accounts.input_vault_mint.to_bytes().to_vec(),
+                        output_vault_mint: accounts.output_vault_mint.to_bytes().to_vec(),
+                    })),
                     amount: event.amount,
                     other_amount_threshold: event.other_amount_threshold,
                     sqrt_price_limit_x64: event.sqrt_price_limit_x64.to_string(),
