@@ -35,7 +35,8 @@ SELECT
     version,
     block_num,
     timestamp
-FROM metaplex_create_metadata_account;
+FROM metaplex_create_metadata_account
+WHERE name != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_symbol
 TO metadata_symbol_state_latest AS
@@ -45,7 +46,8 @@ SELECT
     version,
     block_num,
     timestamp
-FROM metaplex_create_metadata_account;
+FROM metaplex_create_metadata_account
+WHERE symbol != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_uri
 TO metadata_uri_state_latest AS
@@ -55,8 +57,8 @@ SELECT
     version,
     block_num,
     timestamp
-FROM metaplex_create_metadata_account;
-
+FROM metaplex_create_metadata_account
+WHERE uri != '';
 
 /* ---------- UPDATE AUTHORITY ---------- */
 

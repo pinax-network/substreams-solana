@@ -99,17 +99,20 @@ FROM initialize_token_metadata;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_name
 TO metadata_name_state_latest AS
 SELECT metadata, name, version, block_num, timestamp
-FROM initialize_token_metadata;
+FROM initialize_token_metadata
+WHERE name != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_symbol
 TO metadata_symbol_state_latest AS
 SELECT metadata, symbol, version, block_num, timestamp
-FROM initialize_token_metadata;
+FROM initialize_token_metadata
+WHERE symbol != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_initialize_token_metadata_uri
 TO metadata_uri_state_latest AS
 SELECT metadata, uri, version, block_num, timestamp
-FROM initialize_token_metadata;
+FROM initialize_token_metadata
+WHERE uri != '';
 
 /* UPDATE AUTHORITY */
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_update_token_metadata_authority_latest

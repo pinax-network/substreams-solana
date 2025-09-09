@@ -44,14 +44,14 @@ FROM (SELECT DISTINCT metadata FROM metadata_uri_state_latest) AS changed
 INNER JOIN metadata_view AS v ON v.metadata = changed.metadata;
 
 -- 4) MV: refresh on update authority changes
-CREATE MATERIALIZED VIEW mv_metadata_by_mint_from_update_authority
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metadata_by_mint_from_update_authority
 TO metadata AS
 SELECT v.mint, v.metadata as metadata, v.update_authority, v.mint_authority, v.name, v.symbol, v.uri
 FROM (SELECT DISTINCT metadata FROM metadata_update_authority_state_latest) AS changed
 INNER JOIN metadata_view AS v ON v.metadata = changed.metadata;
 
 -- 5) MV: refresh on mint authority changes
-CREATE MATERIALIZED VIEW mv_metadata_by_mint_from_mint_authority
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metadata_by_mint_from_mint_authority
 TO metadata AS
 SELECT v.mint, v.metadata as metadata, v.update_authority, v.mint_authority, v.name, v.symbol, v.uri
 FROM (SELECT DISTINCT metadata FROM metadata_mint_authority_state_latest) AS changed
