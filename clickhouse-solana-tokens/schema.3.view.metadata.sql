@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW metadata AS
+CREATE OR REPLACE VIEW metadata_view AS
 WITH
   ua AS (SELECT metadata, argMax(update_authority, version) AS update_authority FROM metadata_update_authority_state_latest GROUP BY metadata),
   mt AS (SELECT metadata, argMax(mint, version) AS mint FROM metadata_mint_state_latest GROUP BY metadata),
