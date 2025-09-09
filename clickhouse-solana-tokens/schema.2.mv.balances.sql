@@ -20,9 +20,14 @@ ENGINE = ReplacingMergeTree(block_num)
 ORDER BY (mint, account)
 COMMENT 'SPL Token balances (single balance per-block per-account/mint)';
 
+-- Balances by account (for fast lookups, in case Projection isn't performant) --
+CREATE TABLE IF NOT EXISTS balances_by_account AS balances
+ENGINE = ReplacingMergeTree(block_num)
+ORDER BY (account, mint);
+
 ALTER TABLE balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 ALTER TABLE balances
-    ADD PROJECTION IF NOT EXISTS prj_account (SELECT * ORDER BY (account));
+    ADD PROJECTION IF NOT EXISTS prj_account (SELECT * ORDER BY (account, mint));
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_post_token_balances
 TO balances AS
@@ -35,3 +40,7 @@ SELECT
     mint,
     decimals
 FROM post_token_balances;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_balances_by_account
+TO balances_by_account AS
+SELECT * FROM balances;
