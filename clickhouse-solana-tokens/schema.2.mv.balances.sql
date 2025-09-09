@@ -12,13 +12,13 @@ CREATE TABLE IF NOT EXISTS balances (
     decimals        UInt8,
 
     -- indexes --
-    INDEX idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    INDEX idx_program_id (program_id) TYPE set(2) GRANULARITY 1,
     INDEX idx_amount (amount) TYPE minmax GRANULARITY 1,
     INDEX idx_decimals (decimals) TYPE minmax GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(block_num)
-ORDER BY (program_id, mint, account)
-COMMENT 'SPL Token & Native SOL balances (single balance per-block per-account/mint)';
+ORDER BY (mint, account)
+COMMENT 'SPL Token balances (single balance per-block per-account/mint)';
 
 ALTER TABLE balances MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 ALTER TABLE balances
@@ -35,15 +35,3 @@ SELECT
     mint,
     decimals
 FROM post_token_balances;
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_system_post_balances
-TO balances AS
-SELECT
-    block_num,
-    timestamp,
-    '11111111111111111111111111111111' AS program_id,
-    account,
-    amount,
-    'So11111111111111111111111111111111111111111' AS mint,
-    9 AS decimals
-FROM system_post_balances;
