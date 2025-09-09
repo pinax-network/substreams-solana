@@ -15,7 +15,9 @@ imports:
   spl_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.3/spl-token-v0.2.3.spkg
   native_token: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.2/native-token-v0.2.2.spkg
   metaplex: https://github.com/pinax-network/substreams-solana/releases/download/metaplex-v0.1.0/metaplex-v0.1.0.spkg
-  v024: https://github.com/pinax-network/substreams-solana/releases/download/solana-tokens-v0.2.4/solana-tokens-v0.2.4.spkg
+
+  # spl_token: ../spl-token/substreams.yaml
+  # native_token: ../native-token/substreams.yaml
 
 binaries:
   default:
@@ -24,7 +26,17 @@ binaries:
 
 modules:
   - name: db_out
-    use: v024:db_out # unchaged from v0.2.4
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+
+      # SPL Token
+      - map: spl_token:map_events
+      - map: native_token:map_events
+      - map: metaplex:map_events
+
+    output:
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 
 sink:
   module: db_out
