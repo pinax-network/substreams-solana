@@ -120,6 +120,11 @@ pub fn is_success(log: &str) -> bool {
     log.trim_end().ends_with(" success")
 }
 
+/// Returns true for:  Program <PK> failed: ...
+pub fn is_failed(log: &str) -> bool {
+    log.contains(" failed:")
+}
+
 /// Returns true for:  Program <PK> invoke [...]
 pub fn is_invoke(log: &str) -> bool {
     log.contains(" invoke [")
@@ -147,6 +152,20 @@ mod tests {
         let log = "Program ABCD success";
         assert!(is_success(log));
         assert!(!is_invoke(log));
+    }
+
+    #[test]
+    fn failed_detection() {
+        let log = "Program ABCD failed: custom program error: 0x0";
+        assert!(is_failed(log));
+        assert!(!is_invoke(log));
+        assert!(!is_success(log));
+    }
+
+    #[test]
+    fn failed_non_match() {
+        let log = "Program log: something failed";
+        assert!(!is_failed(log));
     }
 
     #[test]

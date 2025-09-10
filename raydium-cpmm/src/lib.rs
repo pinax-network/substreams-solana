@@ -1,4 +1,4 @@
-use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_data, parse_program_id};
+use common::solana::{get_fee_payer, get_signers, is_failed, is_invoke, is_success, parse_invoke_depth, parse_program_data, parse_program_id};
 use proto::pb::raydium::cpmm::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
@@ -113,6 +113,8 @@ fn process_logs(tx_meta: &TransactionStatusMeta, program_id_bytes: &[u8]) -> Vec
                     logs.push(log_data);
                 }
             }
+        } else if match_program_id && (is_success(log_message) || is_failed(log_message)) {
+            is_invoked = false;
         } else if is_invoked {
             if let Some(log_data) = parse_log_data(log_message, program_id_bytes, 0) {
                 logs.push(log_data);
