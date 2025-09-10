@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package meteora.dllm.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+  }
+}
+
+message SwapInstruction {
+  SwapAccounts accounts = 1;
+  uint64 amount_in = 2;
+  uint64 min_amount_out = 3;
+}
+
+message SwapAccounts {
+  bytes lb_pair = 1;
+  bytes bin_array_bitmap_extension = 2;
+  bytes reserve_x = 3;
+  bytes reserve_y = 4;
+  bytes user_token_in = 5;
+  bytes user_token_out = 6;
+  bytes token_x_mint = 7;
+  bytes token_y_mint = 8;
+  bytes oracle = 9;
+  bytes host_fee_in = 10;
+  bytes user = 11;
+  bytes token_x_program = 12;
+  bytes token_y_program = 13;
+  bytes event_authority = 14;
+  bytes program = 15;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  Event event = 3;
+}
+
+enum Event {
+  EVENT_UNKNOWN = 0;
+  EVENT_ADD_LIQUIDITY = 1;
+  EVENT_CLAIM_FEE = 2;
+  EVENT_CLAIM_FEE2 = 3;
+  EVENT_CLAIM_REWARD = 4;
+  EVENT_CLAIM_REWARD2 = 5;
+  EVENT_COMPOSITION_FEE = 6;
+  EVENT_DECREASE_POSITION_LENGTH = 7;
+  EVENT_DYNAMIC_FEE_PARAMETER_UPDATE = 8;
+  EVENT_FEE_PARAMETER_UPDATE = 9;
+  EVENT_FUND_REWARD = 10;
+  EVENT_GO_TO_ABIN = 11;
+  EVENT_INCREASE_OBSERVATION = 12;
+  EVENT_INCREASE_POSITION_LENGTH = 13;
+  EVENT_INITIALIZE_REWARD = 14;
+  EVENT_LB_PAIR_CREATE = 15;
+  EVENT_POSITION_CLOSE = 16;
+  EVENT_POSITION_CREATE = 17;
+  EVENT_REBALANCING = 18;
+  EVENT_REMOVE_LIQUIDITY = 19;
+  EVENT_SWAP = 20;
+  EVENT_UPDATE_POSITION_LOCK_RELEASE_POINT = 21;
+  EVENT_UPDATE_POSITION_OPERATOR = 22;
+  EVENT_UPDATE_REWARD_DURATION = 23;
+  EVENT_UPDATE_REWARD_FUNDER = 24;
+  EVENT_WITHDRAW_INELIGIBLE_REWARD = 25;
+}
+
