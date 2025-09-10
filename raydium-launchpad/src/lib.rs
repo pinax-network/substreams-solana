@@ -1,4 +1,4 @@
-use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_data, parse_program_id, parse_raydium_log};
+use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_data, parse_program_id};
 use proto::pb::raydium::launchpad::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
