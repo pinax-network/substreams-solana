@@ -15,6 +15,15 @@ pub mod jupiter {
         // @@protoc_insertion_point(jupiter.v1)
     }
 }
+pub mod meteora {
+    pub mod amm {
+        // @@protoc_insertion_point(attribute:meteora.amm.v1)
+        pub mod v1 {
+            include!("meteora.amm.v1.rs");
+            // @@protoc_insertion_point(meteora.amm.v1)
+        }
+    }
+}
 pub mod pumpfun {
     pub mod amm {
         // @@protoc_insertion_point(attribute:pumpfun.amm.v1)
