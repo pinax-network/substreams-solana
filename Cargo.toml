@@ -17,6 +17,7 @@ members = [
   "raydium-launchpad",
   "metaplex",
   "bonk-swap",
+  "meteora/amm",
 
   # # General
   # "clickhouse-transactions",

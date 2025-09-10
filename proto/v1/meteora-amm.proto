@@ -1,0 +1,202 @@
+syntax = "proto3";
+
+package meteora.amm.v1;
+
+// -----------------------------------------------------------------------------
+// Top-level containers
+// -----------------------------------------------------------------------------
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+// -----------------------------------------------------------------------------
+// Instructions
+// -----------------------------------------------------------------------------
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+  }
+}
+
+message SwapInstruction {
+  SwapAccounts accounts = 1;
+  uint64 in_amount = 2;
+  uint64 minimum_out_amount = 3;
+}
+
+message SwapAccounts {
+  bytes pool = 1;
+  bytes user_source_token = 2;
+  bytes user_destination_token = 3;
+  bytes a_vault = 4;
+  bytes b_vault = 5;
+  bytes a_token_vault = 6;
+  bytes b_token_vault = 7;
+  bytes a_vault_lp_mint = 8;
+  bytes b_vault_lp_mint = 9;
+  bytes a_vault_lp = 10;
+  bytes b_vault_lp = 11;
+  bytes protocol_token_fee = 12;
+  bytes user = 13;
+  bytes vault_program = 14;
+  bytes token_program = 15;
+}
+
+// -----------------------------------------------------------------------------
+// Logs
+// -----------------------------------------------------------------------------
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    AddLiquidityLog add_liquidity = 3;
+    RemoveLiquidityLog remove_liquidity = 4;
+    BootstrapLiquidityLog bootstrap_liquidity = 5;
+    SwapLog swap = 6;
+    SetPoolFeesLog set_pool_fees = 7;
+    PoolInfoLog pool_info = 8;
+    TransferAdminLog transfer_admin = 9;
+    OverrideCurveParamLog override_curve_param = 10;
+    PoolCreatedLog pool_created = 11;
+    PoolEnabledLog pool_enabled = 12;
+    MigrateFeeAccountLog migrate_fee_account = 13;
+    CreateLockEscrowLog create_lock_escrow = 14;
+    LockLog lock = 15;
+    ClaimFeeLog claim_fee = 16;
+    CreateConfigLog create_config = 17;
+    CloseConfigLog close_config = 18;
+    WithdrawProtocolFeesLog withdraw_protocol_fees = 19;
+    PartnerClaimFeesLog partner_claim_fees = 20;
+  }
+}
+
+message AddLiquidityLog {
+  uint64 lp_mint_amount = 1;
+  uint64 token_a_amount = 2;
+  uint64 token_b_amount = 3;
+}
+
+message RemoveLiquidityLog {
+  uint64 lp_unmint_amount = 1;
+  uint64 token_a_out_amount = 2;
+  uint64 token_b_out_amount = 3;
+}
+
+message BootstrapLiquidityLog {
+  uint64 lp_mint_amount = 1;
+  uint64 token_a_amount = 2;
+  uint64 token_b_amount = 3;
+  bytes pool = 4;
+}
+
+message SwapLog {
+  uint64 in_amount = 1;
+  uint64 out_amount = 2;
+  uint64 trade_fee = 3;
+  uint64 protocol_fee = 4;
+  uint64 host_fee = 5;
+}
+
+message SetPoolFeesLog {
+  uint64 trade_fee_numerator = 1;
+  uint64 trade_fee_denominator = 2;
+  uint64 protocol_trade_fee_numerator = 3;
+  uint64 protocol_trade_fee_denominator = 4;
+  bytes pool = 5;
+}
+
+message PoolInfoLog {
+  uint64 token_a_amount = 1;
+  uint64 token_b_amount = 2;
+  double virtual_price = 3;
+  uint64 current_timestamp = 4;
+}
+
+message TransferAdminLog {
+  bytes admin = 1;
+  bytes new_admin = 2;
+  bytes pool = 3;
+}
+
+message OverrideCurveParamLog {
+  uint64 new_amp = 1;
+  uint64 updated_timestamp = 2;
+  bytes pool = 3;
+}
+
+message PoolCreatedLog {
+  bytes lp_mint = 1;
+  bytes token_a_mint = 2;
+  bytes token_b_mint = 3;
+  uint32 pool_type = 4;
+  bytes pool = 5;
+}
+
+message PoolEnabledLog {
+  bytes pool = 1;
+  bool enabled = 2;
+}
+
+message MigrateFeeAccountLog {
+  bytes pool = 1;
+  bytes new_admin_token_a_fee = 2;
+  bytes new_admin_token_b_fee = 3;
+  uint64 token_a_amount = 4;
+  uint64 token_b_amount = 5;
+}
+
+message CreateLockEscrowLog {
+  bytes pool = 1;
+  bytes owner = 2;
+}
+
+message LockLog {
+  bytes pool = 1;
+  bytes owner = 2;
+  uint64 amount = 3;
+}
+
+message ClaimFeeLog {
+  bytes pool = 1;
+  bytes owner = 2;
+  uint64 amount = 3;
+  uint64 a_fee = 4;
+  uint64 b_fee = 5;
+}
+
+message CreateConfigLog {
+  uint64 trade_fee_numerator = 1;
+  uint64 protocol_trade_fee_numerator = 2;
+  bytes config = 3;
+}
+
+message CloseConfigLog {
+  bytes config = 1;
+}
+
+message WithdrawProtocolFeesLog {
+  bytes pool = 1;
+  uint64 protocol_a_fee = 2;
+  uint64 protocol_b_fee = 3;
+  bytes protocol_a_fee_owner = 4;
+  bytes protocol_b_fee_owner = 5;
+}
+
+message PartnerClaimFeesLog {
+  bytes pool = 1;
+  uint64 fee_a = 2;
+  uint64 fee_b = 3;
+  bytes partner = 4;
+}
