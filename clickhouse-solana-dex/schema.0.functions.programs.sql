@@ -1,4 +1,4 @@
-CREATE FUNCTION IF NOT EXISTS program_names AS ( program_id ) -> CASE program_id
+CREATE OR REPLACE FUNCTION program_names AS ( program_id ) -> CASE program_id
     WHEN CAST ('675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8' AS FixedString(44)) THEN 'Raydium Liquidity Pool V4'
     WHEN CAST ('6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P' AS FixedString(44)) THEN 'Pump.fun'
     WHEN CAST ('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA' AS FixedString(44)) THEN 'Pump.fun AMM'
