@@ -16,8 +16,10 @@ members = [
   "raydium-cpmm",
   "raydium-launchpad",
   "meteora_dllm",
+  "meteora_daam",
   "metaplex",
   "bonk-swap",
+  "meteora/amm",
 
   # # General
   # "clickhouse-transactions",

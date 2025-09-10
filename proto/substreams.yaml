@@ -17,6 +17,9 @@ protobuf:
     - v1/metaplex.proto
     - v1/raydium-launchpad.proto
     - v1/meteora-dllm.proto
+    - v1/meteora-daam.proto
+    - v1/meteora-amm.proto
+
   excludePaths:
     - sf/substreams
     - sf/solana
