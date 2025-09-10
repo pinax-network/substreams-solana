@@ -1,4 +1,4 @@
-use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_id, parse_raydium_log};
+use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_data, parse_program_id, parse_raydium_log};
 use proto::pb::raydium::launchpad::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
@@ -187,7 +187,7 @@ fn process_logs(tx_meta: &TransactionStatusMeta, program_id_bytes: &[u8]) -> Vec
 }
 
 fn parse_log_data(log_message: &str, program_id_bytes: &[u8], invoke_depth: u32) -> Option<pb::Log> {
-    let data = parse_raydium_log(log_message)?;
+    let data = parse_program_data(log_message)?;
     match raydium::launchpad::events::unpack(data.as_slice()) {
         Ok(raydium::launchpad::events::RaydiumLaunchpadEvent::TradeEvent(event)) => Some(pb::Log {
             program_id: program_id_bytes.to_vec(),

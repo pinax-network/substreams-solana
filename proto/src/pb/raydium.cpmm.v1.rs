@@ -135,16 +135,16 @@ pub struct SwapEvent {
     pub output_transfer_fee: u64,
     #[prost(bool, tag="8")]
     pub base_input: bool,
-    #[prost(bytes="vec", tag="9")]
-    pub input_mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="10")]
-    pub output_mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag="11")]
-    pub trade_fee: u64,
-    #[prost(uint64, tag="12")]
-    pub creator_fee: u64,
-    #[prost(bool, tag="13")]
-    pub creator_fee_on_input: bool,
+    #[prost(bytes="vec", optional, tag="9")]
+    pub input_mint: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    #[prost(bytes="vec", optional, tag="10")]
+    pub output_mint: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    #[prost(uint64, optional, tag="11")]
+    pub trade_fee: ::core::option::Option<u64>,
+    #[prost(uint64, optional, tag="12")]
+    pub creator_fee: ::core::option::Option<u64>,
+    #[prost(bool, optional, tag="13")]
+    pub creator_fee_on_input: ::core::option::Option<bool>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

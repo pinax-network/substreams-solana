@@ -1,4 +1,4 @@
-use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_id, parse_raydium_log};
+use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_data, parse_program_id};
 use proto::pb::raydium::cpmm::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
@@ -124,10 +124,9 @@ fn process_logs(tx_meta: &TransactionStatusMeta, program_id_bytes: &[u8]) -> Vec
 }
 
 fn parse_log_data(log_message: &str, program_id_bytes: &[u8], invoke_depth: u32) -> Option<pb::Log> {
-    let data = parse_raydium_log(log_message)?;
-
+    let data = parse_program_data(log_message)?;
     match raydium::cpmm::events::unpack_event(data.as_slice()) {
-        Ok(raydium::cpmm::events::RaydiumCpmmEvent::SwapEvent(event)) => Some(pb::Log {
+        Ok(raydium::cpmm::events::RaydiumCpmmEvent::SwapEventV1(event)) => Some(pb::Log {
             program_id: program_id_bytes.to_vec(),
             invoke_depth,
             log: Some(pb::log::Log::Swap(pb::SwapEvent {
@@ -139,11 +138,30 @@ fn parse_log_data(log_message: &str, program_id_bytes: &[u8], invoke_depth: u32)
                 input_transfer_fee: event.input_transfer_fee,
                 output_transfer_fee: event.output_transfer_fee,
                 base_input: event.base_input,
-                input_mint: event.input_mint.to_bytes().to_vec(),
-                output_mint: event.output_mint.to_bytes().to_vec(),
-                trade_fee: event.trade_fee,
-                creator_fee: event.creator_fee,
-                creator_fee_on_input: event.creator_fee_on_input,
+                input_mint: None,
+                output_mint: None,
+                trade_fee: None,
+                creator_fee: None,
+                creator_fee_on_input: None,
+            })),
+        }),
+        Ok(raydium::cpmm::events::RaydiumCpmmEvent::SwapEventV2(event)) => Some(pb::Log {
+            program_id: program_id_bytes.to_vec(),
+            invoke_depth,
+            log: Some(pb::log::Log::Swap(pb::SwapEvent {
+                pool_id: event.pool_id.to_bytes().to_vec(),
+                input_vault_before: event.input_vault_before,
+                output_vault_before: event.output_vault_before,
+                input_amount: event.input_amount,
+                output_amount: event.output_amount,
+                input_transfer_fee: event.input_transfer_fee,
+                output_transfer_fee: event.output_transfer_fee,
+                base_input: event.base_input,
+                input_mint: Some(event.input_mint.to_bytes().to_vec()),
+                output_mint: Some(event.output_mint.to_bytes().to_vec()),
+                trade_fee: Some(event.trade_fee),
+                creator_fee: Some(event.creator_fee),
+                creator_fee_on_input: Some(event.creator_fee_on_input),
             })),
         }),
         Ok(raydium::cpmm::events::RaydiumCpmmEvent::LpChangeEvent(event)) => Some(pb::Log {
