@@ -15,6 +15,7 @@ members = [
   "raydium-clmm",
   "raydium-cpmm",
   "raydium-launchpad",
+  "meteora_daam",
   "metaplex",
   "bonk-swap",
   "meteora/amm",
