@@ -18,6 +18,8 @@ members = [
   "metaplex",
   "bonk-swap",
   "meteora/amm",
+  "meteora/daam",
+  "meteora/dllm",
 
   # # General
   # "clickhouse-transactions",

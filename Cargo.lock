@@ -865,6 +865,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "meteora_amm"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "meteora_daam"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "meteora_dllm"
 version = "0.0.0"
 dependencies = [

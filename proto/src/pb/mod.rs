@@ -23,6 +23,20 @@ pub mod meteora {
             // @@protoc_insertion_point(meteora.amm.v1)
         }
     }
+    pub mod daam {
+        // @@protoc_insertion_point(attribute:meteora.daam.v1)
+        pub mod v1 {
+            include!("meteora.daam.v1.rs");
+            // @@protoc_insertion_point(meteora.daam.v1)
+        }
+    }
+    pub mod dllm {
+        // @@protoc_insertion_point(attribute:meteora.dllm.v1)
+        pub mod v1 {
+            include!("meteora.dllm.v1.rs");
+            // @@protoc_insertion_point(meteora.dllm.v1)
+        }
+    }
 }
 pub mod pumpfun {
     pub mod amm {
@@ -68,15 +82,6 @@ pub mod raydium {
         }
     }
 }
-pub mod meteora {
-    pub mod dllm {
-        // @@protoc_insertion_point(attribute:meteora.dllm.v1)
-        pub mod v1 {
-            include!("meteora.dllm.v1.rs");
-            // @@protoc_insertion_point(meteora.dllm.v1)
-        }
-    }
-}
 pub mod solana {
     pub mod metaplex {
         // @@protoc_insertion_point(attribute:solana.metaplex.v1)
@@ -101,16 +106,6 @@ pub mod solana {
                 include!("solana.spl.token.v1.rs");
                 // @@protoc_insertion_point(solana.spl.token.v1)
             }
-        }
-    }
-}
-
-pub mod meteora {
-    pub mod daam {
-        // @@protoc_insertion_point(attribute:meteora.daam.v1)
-        pub mod v1 {
-            include!("meteora.daam.v1.rs");
-            // @@protoc_insertion_point(meteora.daam.v1)
         }
     }
 }
