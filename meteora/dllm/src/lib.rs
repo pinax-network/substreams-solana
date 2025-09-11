@@ -1,6 +1,6 @@
 use common::solana::{get_fee_payer, get_signers};
 use proto::pb::meteora::dllm::v1 as pb;
-use substreams::errors::Error;
+use substreams::{errors::Error, Hex};
 use substreams_solana::{
     block_view::InstructionView,
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
@@ -41,7 +41,6 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
 
     // 1) Try to decode Anchor "event CPI" first and EARLY-RETURN if it matches.
     if let Ok(dllm::events::MeteoraDllmEvent::Swap(event)) = dllm::events::unpack(ix.data()) {
-        substreams::log::info!("Decoded DLLM Swap event via Anchor event CPI");
         return Some(pb::Instruction {
             program_id: program_id.to_vec(),
             stack_height: ix.stack_height(),
@@ -95,11 +94,3 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
         _ => None,
     }
 }
-
-// fn process_anchor_cpi_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
-//     let program_id = ix.program_id().0;
-//     if program_id != &dllm::PROGRAM_ID {
-//         return None;
-//     }
-
-// }
