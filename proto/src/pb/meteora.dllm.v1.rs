@@ -21,8 +21,6 @@ pub struct Transaction {
     pub compute_units_consumed: u64,
     #[prost(message, repeated, tag="6")]
     pub instructions: ::prost::alloc::vec::Vec<Instruction>,
-    #[prost(message, repeated, tag="7")]
-    pub logs: ::prost::alloc::vec::Vec<Log>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -31,7 +29,7 @@ pub struct Instruction {
     pub program_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint32, tag="2")]
     pub stack_height: u32,
-    #[prost(oneof="instruction::Instruction", tags="3")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -39,9 +37,38 @@ pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
-        #[prost(message, tag="3")]
-        Swap(super::SwapInstruction),
+        #[prost(message, tag="10")]
+        SwapInstruction(super::SwapInstruction),
+        #[prost(message, tag="11")]
+        SwapEvent(super::SwapEvent),
     }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SwapEvent {
+    #[prost(bytes="vec", tag="1")]
+    pub lb_pair: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="2")]
+    pub from: ::prost::alloc::vec::Vec<u8>,
+    #[prost(int32, tag="3")]
+    pub start_bin_id: i32,
+    #[prost(int32, tag="4")]
+    pub end_bin_id: i32,
+    #[prost(uint64, tag="5")]
+    pub amount_in: u64,
+    #[prost(uint64, tag="6")]
+    pub amount_out: u64,
+    #[prost(bool, tag="7")]
+    pub swap_for_y: bool,
+    #[prost(uint64, tag="8")]
+    pub fee: u64,
+    #[prost(uint64, tag="9")]
+    pub protocol_fee: u64,
+    /// u128 representing fee in basis points
+    #[prost(string, tag="10")]
+    pub fee_bps: ::prost::alloc::string::String,
+    #[prost(uint64, tag="11")]
+    pub host_fee: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -86,113 +113,5 @@ pub struct SwapAccounts {
     pub event_authority: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="15")]
     pub program: ::prost::alloc::vec::Vec<u8>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Log {
-    #[prost(bytes="vec", tag="1")]
-    pub program_id: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint32, tag="2")]
-    pub invoke_depth: u32,
-    #[prost(enumeration="Event", tag="3")]
-    pub event: i32,
-}
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum Event {
-    Unknown = 0,
-    AddLiquidity = 1,
-    ClaimFee = 2,
-    ClaimFee2 = 3,
-    ClaimReward = 4,
-    ClaimReward2 = 5,
-    CompositionFee = 6,
-    DecreasePositionLength = 7,
-    DynamicFeeParameterUpdate = 8,
-    FeeParameterUpdate = 9,
-    FundReward = 10,
-    GoToAbin = 11,
-    IncreaseObservation = 12,
-    IncreasePositionLength = 13,
-    InitializeReward = 14,
-    LbPairCreate = 15,
-    PositionClose = 16,
-    PositionCreate = 17,
-    Rebalancing = 18,
-    RemoveLiquidity = 19,
-    Swap = 20,
-    UpdatePositionLockReleasePoint = 21,
-    UpdatePositionOperator = 22,
-    UpdateRewardDuration = 23,
-    UpdateRewardFunder = 24,
-    WithdrawIneligibleReward = 25,
-}
-impl Event {
-    /// String value of the enum field names used in the ProtoBuf definition.
-    ///
-    /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
-    pub fn as_str_name(&self) -> &'static str {
-        match self {
-            Event::Unknown => "EVENT_UNKNOWN",
-            Event::AddLiquidity => "EVENT_ADD_LIQUIDITY",
-            Event::ClaimFee => "EVENT_CLAIM_FEE",
-            Event::ClaimFee2 => "EVENT_CLAIM_FEE2",
-            Event::ClaimReward => "EVENT_CLAIM_REWARD",
-            Event::ClaimReward2 => "EVENT_CLAIM_REWARD2",
-            Event::CompositionFee => "EVENT_COMPOSITION_FEE",
-            Event::DecreasePositionLength => "EVENT_DECREASE_POSITION_LENGTH",
-            Event::DynamicFeeParameterUpdate => "EVENT_DYNAMIC_FEE_PARAMETER_UPDATE",
-            Event::FeeParameterUpdate => "EVENT_FEE_PARAMETER_UPDATE",
-            Event::FundReward => "EVENT_FUND_REWARD",
-            Event::GoToAbin => "EVENT_GO_TO_ABIN",
-            Event::IncreaseObservation => "EVENT_INCREASE_OBSERVATION",
-            Event::IncreasePositionLength => "EVENT_INCREASE_POSITION_LENGTH",
-            Event::InitializeReward => "EVENT_INITIALIZE_REWARD",
-            Event::LbPairCreate => "EVENT_LB_PAIR_CREATE",
-            Event::PositionClose => "EVENT_POSITION_CLOSE",
-            Event::PositionCreate => "EVENT_POSITION_CREATE",
-            Event::Rebalancing => "EVENT_REBALANCING",
-            Event::RemoveLiquidity => "EVENT_REMOVE_LIQUIDITY",
-            Event::Swap => "EVENT_SWAP",
-            Event::UpdatePositionLockReleasePoint => "EVENT_UPDATE_POSITION_LOCK_RELEASE_POINT",
-            Event::UpdatePositionOperator => "EVENT_UPDATE_POSITION_OPERATOR",
-            Event::UpdateRewardDuration => "EVENT_UPDATE_REWARD_DURATION",
-            Event::UpdateRewardFunder => "EVENT_UPDATE_REWARD_FUNDER",
-            Event::WithdrawIneligibleReward => "EVENT_WITHDRAW_INELIGIBLE_REWARD",
-        }
-    }
-    /// Creates an enum from field names used in the ProtoBuf definition.
-    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
-        match value {
-            "EVENT_UNKNOWN" => Some(Self::Unknown),
-            "EVENT_ADD_LIQUIDITY" => Some(Self::AddLiquidity),
-            "EVENT_CLAIM_FEE" => Some(Self::ClaimFee),
-            "EVENT_CLAIM_FEE2" => Some(Self::ClaimFee2),
-            "EVENT_CLAIM_REWARD" => Some(Self::ClaimReward),
-            "EVENT_CLAIM_REWARD2" => Some(Self::ClaimReward2),
-            "EVENT_COMPOSITION_FEE" => Some(Self::CompositionFee),
-            "EVENT_DECREASE_POSITION_LENGTH" => Some(Self::DecreasePositionLength),
-            "EVENT_DYNAMIC_FEE_PARAMETER_UPDATE" => Some(Self::DynamicFeeParameterUpdate),
-            "EVENT_FEE_PARAMETER_UPDATE" => Some(Self::FeeParameterUpdate),
-            "EVENT_FUND_REWARD" => Some(Self::FundReward),
-            "EVENT_GO_TO_ABIN" => Some(Self::GoToAbin),
-            "EVENT_INCREASE_OBSERVATION" => Some(Self::IncreaseObservation),
-            "EVENT_INCREASE_POSITION_LENGTH" => Some(Self::IncreasePositionLength),
-            "EVENT_INITIALIZE_REWARD" => Some(Self::InitializeReward),
-            "EVENT_LB_PAIR_CREATE" => Some(Self::LbPairCreate),
-            "EVENT_POSITION_CLOSE" => Some(Self::PositionClose),
-            "EVENT_POSITION_CREATE" => Some(Self::PositionCreate),
-            "EVENT_REBALANCING" => Some(Self::Rebalancing),
-            "EVENT_REMOVE_LIQUIDITY" => Some(Self::RemoveLiquidity),
-            "EVENT_SWAP" => Some(Self::Swap),
-            "EVENT_UPDATE_POSITION_LOCK_RELEASE_POINT" => Some(Self::UpdatePositionLockReleasePoint),
-            "EVENT_UPDATE_POSITION_OPERATOR" => Some(Self::UpdatePositionOperator),
-            "EVENT_UPDATE_REWARD_DURATION" => Some(Self::UpdateRewardDuration),
-            "EVENT_UPDATE_REWARD_FUNDER" => Some(Self::UpdateRewardFunder),
-            "EVENT_WITHDRAW_INELIGIBLE_REWARD" => Some(Self::WithdrawIneligibleReward),
-            _ => None,
-        }
-    }
 }
 // @@protoc_insertion_point(module)
