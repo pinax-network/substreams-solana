@@ -1,6 +1,6 @@
 use common::solana::{get_fee_payer, get_signers};
 use proto::pb::meteora::dllm::v1 as pb;
-use substreams::{errors::Error, Hex};
+use substreams::errors::Error;
 use substreams_solana::{
     block_view::InstructionView,
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
@@ -54,8 +54,6 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                 swap_for_y: event.swap_for_y,
                 fee: event.fee,
                 protocol_fee: event.protocol_fee,
-                // If fee_bps is a decimal/fixed type, you may want a numeric in proto;
-                // otherwise string is fine if that's your schema.
                 fee_bps: event.fee_bps.to_string(),
                 host_fee: event.host_fee,
             })),
