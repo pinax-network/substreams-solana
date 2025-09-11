@@ -81,9 +81,9 @@ fn process_instruction1(instruction: &InstructionView) -> Option<pb::instruction
     }
 }
 fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction::Instruction> {
-    match pumpfun::anchor_self_cpi::unpack(instruction.data()) {
+    match pumpfun::events::unpack(instruction.data()) {
         // -- Buy V1 --
-        Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::BuyEventV1(event)) => Some(pb::instruction::Instruction::BuyEvent(pb::BuyEvent {
+        Ok(pumpfun::events::PumpFunAmmEvent::BuyEventV1(event)) => Some(pb::instruction::Instruction::BuyEvent(pb::BuyEvent {
             base_amount_out: event.base_amount_out,
             max_quote_amount_in: event.max_quote_amount_in,
             quote_amount_in: event.quote_amount_in,
@@ -112,7 +112,7 @@ fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction
             }),
         })),
         // -- Sell V1 --
-        Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::SellEventV1(event)) => Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
+        Ok(pumpfun::events::PumpFunAmmEvent::SellEventV1(event)) => Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
             base_amount_in: event.base_amount_in,
             min_quote_amount_out: event.min_quote_amount_out,
             quote_amount_out: event.quote_amount_out,
@@ -141,7 +141,7 @@ fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction
             }),
         })),
         // -- Buy V2 --
-        Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::BuyEventV2(event)) => Some(pb::instruction::Instruction::BuyEvent(pb::BuyEvent {
+        Ok(pumpfun::events::PumpFunAmmEvent::BuyEventV2(event)) => Some(pb::instruction::Instruction::BuyEvent(pb::BuyEvent {
             base_amount_out: event.base_amount_out,
             max_quote_amount_in: event.max_quote_amount_in,
             quote_amount_in: event.quote_amount_in,
@@ -170,7 +170,7 @@ fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction
             }),
         })),
         // -- Sell V2 --
-        Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::SellEventV2(event)) => Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
+        Ok(pumpfun::events::PumpFunAmmEvent::SellEventV2(event)) => Some(pb::instruction::Instruction::SellEvent(pb::SellEvent {
             base_amount_in: event.base_amount_in,
             min_quote_amount_out: event.min_quote_amount_out,
             quote_amount_out: event.quote_amount_out,
@@ -199,7 +199,7 @@ fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction
             }),
         })),
         // -- CreatePool V1 --
-        Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::CreatePoolEventV1(event)) => Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
+        Ok(pumpfun::events::PumpFunAmmEvent::CreatePoolEventV1(event)) => Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
             index: event.index as u32,
             creator: event.creator.to_bytes().to_vec(),
             base_mint: event.base_mint.to_bytes().to_vec(),
@@ -221,7 +221,7 @@ fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction
             coin_creator: None,
         })),
         // -- CreatePool V2 --
-        Ok(pumpfun::anchor_self_cpi::PumpFunAmmEvent::CreatePoolEventV2(event)) => Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
+        Ok(pumpfun::events::PumpFunAmmEvent::CreatePoolEventV2(event)) => Some(pb::instruction::Instruction::CreatePoolEvent(pb::CreatePoolEvent {
             index: event.index as u32,
             creator: event.creator.to_bytes().to_vec(),
             base_mint: event.base_mint.to_bytes().to_vec(),

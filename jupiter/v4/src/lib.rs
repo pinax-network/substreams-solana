@@ -67,8 +67,8 @@ fn process_logs(tx_meta: &TransactionStatusMeta) -> Vec<pb::Instruction> {
 fn parse_log_instruction(log_message: &str, stack_height: u32) -> Option<pb::Instruction> {
     let data = parse_program_data(log_message)?;
 
-    match jupiter::v4::anchor_self_cpi::unpack(data.as_slice()) {
-        Ok(jupiter::v4::anchor_self_cpi::JupiterV4Event::Swap(event)) => Some(pb::Instruction {
+    match jupiter::v4::events::unpack(data.as_slice()) {
+        Ok(jupiter::v4::events::JupiterV4Event::Swap(event)) => Some(pb::Instruction {
             program_id: jupiter::v4::PROGRAM_ID.to_vec(),
             stack_height,
             instruction: Some(pb::instruction::Instruction::SwapEvent(pb::SwapEvent {

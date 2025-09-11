@@ -78,8 +78,8 @@ fn process_instruction1(instruction: &InstructionView) -> Option<pb::instruction
 }
 
 fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction::Instruction> {
-    match pumpfun::anchor_self_cpi::unpack(instruction.data()) {
-        Ok(pumpfun::anchor_self_cpi::PumpFunEvent::TradeV0(event)) => Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
+    match pumpfun::events::unpack(instruction.data()) {
+        Ok(pumpfun::events::PumpFunEvent::TradeV0(event)) => Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
             mint: event.mint.to_bytes().to_vec(),
             sol_amount: event.sol_amount,
             token_amount: event.token_amount,
@@ -97,7 +97,7 @@ fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction
             creator_fee_basis_points: None,
             creator_fee: None,
         })),
-        Ok(pumpfun::anchor_self_cpi::PumpFunEvent::TradeV1(event)) => Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
+        Ok(pumpfun::events::PumpFunEvent::TradeV1(event)) => Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
             mint: event.mint.to_bytes().to_vec(),
             sol_amount: event.sol_amount,
             token_amount: event.token_amount,
@@ -115,7 +115,7 @@ fn process_instruction2(instruction: &InstructionView) -> Option<pb::instruction
             creator_fee_basis_points: None,
             creator_fee: None,
         })),
-        Ok(pumpfun::anchor_self_cpi::PumpFunEvent::TradeV2(event)) => Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
+        Ok(pumpfun::events::PumpFunEvent::TradeV2(event)) => Some(pb::instruction::Instruction::Trade(pb::TradeEvent {
             mint: event.mint.to_bytes().to_vec(),
             sol_amount: event.sol_amount,
             token_amount: event.token_amount,

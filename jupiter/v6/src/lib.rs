@@ -37,8 +37,8 @@ fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction>
         return None;
     }
 
-    match jupiter::v6::anchor_self_cpi::unpack(instruction.data()) {
-        Ok(jupiter::v6::anchor_self_cpi::JupiterV6Event::Swap(event)) => Some(pb::Instruction {
+    match jupiter::v6::events::unpack(instruction.data()) {
+        Ok(jupiter::v6::events::JupiterV6Event::Swap(event)) => Some(pb::Instruction {
             program_id: program_id.to_vec(),
             stack_height: instruction.stack_height(),
             instruction: Some(pb::instruction::Instruction::SwapEvent(pb::SwapEvent {
@@ -49,7 +49,7 @@ fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction>
                 output_amount: event.output_amount,
             })),
         }),
-        Ok(jupiter::v6::anchor_self_cpi::JupiterV6Event::Fee(event)) => Some(pb::Instruction {
+        Ok(jupiter::v6::events::JupiterV6Event::Fee(event)) => Some(pb::Instruction {
             program_id: program_id.to_vec(),
             stack_height: instruction.stack_height(),
             instruction: Some(pb::instruction::Instruction::FeeEvent(pb::FeeEvent {

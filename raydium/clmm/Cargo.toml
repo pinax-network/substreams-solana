@@ -1,6 +1,6 @@
 [package]
-name = "jupiter_v4"
-description = "Jupiter Aggregator V4"
+name = "raydium_clmm"
+description = "Raydium CLMM"
 edition = { workspace = true }
 version = { workspace = true }
 authors = ["Denis <denis@pinax.network>"]
@@ -12,5 +12,5 @@ crate-type = ["cdylib", "rlib"]
 substreams = { workspace = true }
 substreams-solana = { workspace = true }
 substreams-solana-idls = { workspace = true }
-proto = { path = "../proto" }
-common = { path = "../common" }
+proto = { path = "../../proto" }
+common = { path = "../../common" }
