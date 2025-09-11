@@ -1,4 +1,4 @@
-CREATE FUNCTION IF NOT EXISTS token_types AS ( program_id ) -> CASE program_id
+CREATE OR REPLACE FUNCTION token_types AS ( program_id ) -> CASE program_id
     WHEN 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB' THEN 'USD'
     WHEN 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' THEN 'USD'
     WHEN '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk' THEN 'ETH'
@@ -11,7 +11,7 @@ CREATE FUNCTION IF NOT EXISTS token_types AS ( program_id ) -> CASE program_id
     ELSE 'Unknown'
 END;
 
-CREATE FUNCTION IF NOT EXISTS token_names AS ( program_id ) -> CASE program_id
+CREATE OR REPLACE FUNCTION token_names AS ( program_id ) -> CASE program_id
     WHEN 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB' THEN 'Tether USD'
     WHEN 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' THEN 'Circle: USDC Token'
     WHEN '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk' THEN 'Wrapped ETH "Sollet"'

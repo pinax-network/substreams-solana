@@ -1,4 +1,4 @@
-use common::solana::{get_fee_payer, get_signers, is_invoke, parse_invoke_depth, parse_program_data, parse_program_id};
+use common::solana::{get_fee_payer, get_signers, is_failed, is_invoke, is_success, parse_invoke_depth, parse_program_data, parse_program_id};
 use proto::pb::jupiter::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, TransactionStatusMeta};
@@ -47,6 +47,9 @@ fn process_logs(tx_meta: &TransactionStatusMeta) -> Vec<pb::Instruction> {
                 // Continue to next log message as invoke logs don't contain program data
                 continue;
             }
+        } else if is_jupiter_program && (is_success(log_message) || is_failed(log_message)) {
+            is_invoked = false;
+            continue;
         }
 
         // Skip processing if not in Jupiter V4 context
