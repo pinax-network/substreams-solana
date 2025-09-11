@@ -4,7 +4,7 @@ package:
   version: v0.2.0
   url: https://github.com/pinax-network/substreams-solana
   description: Jupiter Aggregator V4
-  image: ../image.png
+  image: ../../image.png
 
 imports:
   solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
@@ -12,13 +12,13 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1+wasm-bindgen-shims
-    file: ../target/wasm32-unknown-unknown/release/jupiter_v4.wasm
+    file: ../../target/wasm32-unknown-unknown/release/jupiter_v4.wasm
 
 protobuf:
   files:
     - v1/jupiter.proto
   importPaths:
-    - ../proto
+    - ../../proto
 
 modules:
   - name: map_events
