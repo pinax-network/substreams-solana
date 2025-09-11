@@ -1,9 +1,9 @@
-use common::solana::{get_fee_payer, get_signers, is_failed, is_invoke, is_success, parse_invoke_depth, parse_program_data, parse_program_id};
+use common::solana::{get_fee_payer, get_signers};
 use proto::pb::meteora::dllm::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
     block_view::InstructionView,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, TransactionStatusMeta},
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
 };
 use substreams_solana_idls::meteora::dllm;
 
@@ -18,7 +18,7 @@ fn process_transaction(tx: ConfirmedTransaction) -> Option<pb::Transaction> {
     let tx_meta = tx.meta.as_ref()?;
 
     let instructions: Vec<pb::Instruction> = tx.walk_instructions().filter_map(|iv| process_instruction(&iv)).collect();
-    let logs = process_logs(tx_meta, &dllm::PROGRAM_ID.to_vec());
+    let logs: Vec<pb::Log> = tx.walk_instructions().filter_map(|iv| process_event_instruction(&iv)).collect();
 
     if instructions.is_empty() && logs.is_empty() {
         return None;
@@ -74,38 +74,16 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
     }
 }
 
-fn process_logs(tx_meta: &TransactionStatusMeta, program_id_bytes: &[u8]) -> Vec<pb::Log> {
-    let mut logs = Vec::new();
-    let mut is_invoked = false;
-
-    for log_message in tx_meta.log_messages.iter() {
-        let match_program_id = parse_program_id(log_message).map_or(false, |id| id == program_id_bytes.to_vec());
-
-        if is_invoke(log_message) && match_program_id {
-            if let Some(invoke_depth) = parse_invoke_depth(log_message) {
-                is_invoked = true;
-                if let Some(log_data) = parse_log_data(log_message, program_id_bytes, invoke_depth) {
-                    logs.push(log_data);
-                }
-            }
-        } else if match_program_id && (is_success(log_message) || is_failed(log_message)) {
-            is_invoked = false;
-        } else if is_invoked {
-            if let Some(log_data) = parse_log_data(log_message, program_id_bytes, 0) {
-                logs.push(log_data);
-            }
-        }
+fn process_event_instruction(ix: &InstructionView) -> Option<pb::Log> {
+    let program_id = ix.program_id().0;
+    if program_id != &dllm::PROGRAM_ID {
+        return None;
     }
 
-    logs
-}
-
-fn parse_log_data(log_message: &str, program_id_bytes: &[u8], invoke_depth: u32) -> Option<pb::Log> {
-    let data = parse_program_data(log_message)?;
-    match dllm::events::unpack(data.as_slice()) {
+    match dllm::events::unpack(ix.data()) {
         Ok(event) => Some(pb::Log {
-            program_id: program_id_bytes.to_vec(),
-            invoke_depth,
+            program_id: program_id.to_vec(),
+            invoke_depth: ix.stack_height(),
             event: match event {
                 dllm::events::MeteoraDllmEvent::AddLiquidity => pb::Event::AddLiquidity as i32,
                 dllm::events::MeteoraDllmEvent::ClaimFee => pb::Event::ClaimFee as i32,
