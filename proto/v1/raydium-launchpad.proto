@@ -16,7 +16,6 @@ message Transaction {
   uint64 fee                        = 4;
   uint64 compute_units_consumed     = 5;
   repeated Instruction instructions = 6;
-  repeated Log logs                 = 7;
 }
 
 // -----------------------------------------------------------------------------
@@ -30,6 +29,10 @@ message Instruction {
     BuyExactOutInstruction buy_exact_out   = 4;
     SellExactInInstruction sell_exact_in   = 5;
     SellExactOutInstruction sell_exact_out = 6;
+    TradeEvent trade_event                 = 7;
+    ClaimVestedEvent claim_vested_event    = 8;
+    CreateVestingEvent create_vesting_event = 9;
+    PoolCreateEvent pool_create_event      = 10;
   }
 }
 
@@ -81,32 +84,21 @@ message SellExactOutInstruction {
 }
 
 // -----------------------------------------------------------------------------
-// Logs
+// Events
 // -----------------------------------------------------------------------------
-message Log {
-  bytes program_id = 1;
-  uint32 invoke_depth = 2;
-  oneof log {
-    ClaimVestedLog claim_vested = 3;
-    CreateVestingLog create_vesting = 4;
-    PoolCreateLog pool_create = 5;
-    TradeLog trade = 6;
-  }
-}
-
-message ClaimVestedLog {
+message ClaimVestedEvent {
   bytes pool_state = 1;
   bytes beneficiary = 2;
   uint64 claim_amount = 3;
 }
 
-message CreateVestingLog {
+message CreateVestingEvent {
   bytes pool_state = 1;
   bytes beneficiary = 2;
   uint64 share_amount = 3;
 }
 
-message PoolCreateLog {
+message PoolCreateEvent {
   bytes pool_state = 1;
   bytes creator = 2;
   bytes config = 3;
@@ -161,7 +153,7 @@ enum AmmCreatorFeeOn {
   BOTH_TOKEN = 1;
 }
 
-message TradeLog {
+message TradeEvent {
   bytes pool_state       = 1;
   uint64 total_base_sell = 2;
   uint64 virtual_base    = 3;
