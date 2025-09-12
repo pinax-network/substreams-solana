@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: raydium_clmm
-  version: v0.0.0
+  version: v0.1.0
   url: https://github.com/pinax-network/substreams-solana
   description: Raydium CLMM
   image: ../../image.png

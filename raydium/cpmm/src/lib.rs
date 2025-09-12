@@ -127,7 +127,7 @@ fn process_logs(tx_meta: &TransactionStatusMeta, program_id_bytes: &[u8]) -> Vec
 
 fn parse_log_data(log_message: &str, program_id_bytes: &[u8], invoke_depth: u32) -> Option<pb::Log> {
     let data = parse_program_data(log_message)?;
-    match raydium::cpmm::events::unpack_event(data.as_slice()) {
+    match raydium::cpmm::events::unpack(data.as_slice()) {
         Ok(raydium::cpmm::events::RaydiumCpmmEvent::SwapEventV1(event)) => Some(pb::Log {
             program_id: program_id_bytes.to_vec(),
             invoke_depth,
