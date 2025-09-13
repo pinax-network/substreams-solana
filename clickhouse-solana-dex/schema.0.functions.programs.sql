@@ -65,5 +65,12 @@ CREATE OR REPLACE FUNCTION program_names AS ( program_id ) -> CASE program_id
     WHEN CAST ('C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr' AS FixedString(44)) THEN 'Clone'
     WHEN CAST ('1MooN32fuBBgApc8ujknKJw5sef3BVwPGgz3pto1BAh' AS FixedString(44)) THEN '1Sol'
     WHEN CAST ('9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin' AS FixedString(44)) THEN 'Serum DEX V3'
+    WHEN CAST ('HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq' AS FixedString(44)) THEN 'PancakeSwap'
+    WHEN CAST ('9H6tua7jkLhdm3w8BvgpTn5LZNU7g4ZynDmCiNN3q6Rp' AS FixedString(44)) THEN 'HumidiFi'
+    WHEN CAST ('TessVdML9pBGgG9yGks7o4HewRaXVAMuoVj4x83GLQH' AS FixedString(44)) THEN 'Tessera V'
+    WHEN CAST ('REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2' AS FixedString(44)) THEN 'Byreal CLMM'
+    WHEN CAST ('SV2EYYJyRz2YhfXwXnhNAevDEui5Q6yrfyo13WtupPF' AS FixedString(44)) THEN 'SolFi V2'
+    WHEN CAST ('HEAVENoP2qxoeuF8Dj2oT1GHEnu49U5mJYkdeC8BAX2o' AS FixedString(44)) THEN 'Heaven DEX'
+
     ELSE 'Unknown'
 END;
