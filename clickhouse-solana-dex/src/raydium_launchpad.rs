@@ -107,7 +107,7 @@ fn handle_trade(
         .set("quote_token_mint", base58::encode(&accounts.quote_token_mint))
         .set("amount_in", event.amount_in)
         .set("amount_out", event.amount_out)
-        .set("exact_in", event.exact_in);
+        .set("exact_in", event.exact_in.unwrap_or(false));
     set_instruction(ix, row);
     set_transaction(tx, row);
     set_clock(clock, row);
