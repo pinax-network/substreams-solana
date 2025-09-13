@@ -166,11 +166,11 @@ message TradeEvent {
   uint64 amount_out      = 10;
   uint64 protocol_fee    = 11;
   uint64 platform_fee    = 12;
-  uint64 creator_fee     = 13;
+  optional uint64 creator_fee     = 13;
   uint64 share_fee       = 14;
   TradeDirection trade_direction = 15;
   PoolStatus pool_status        = 16;
-  bool exact_in           = 17;
+  optional bool exact_in           = 17;
 }
 
 enum TradeDirection {

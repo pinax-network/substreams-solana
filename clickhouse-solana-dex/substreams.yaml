@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: solana_dex
-  version: v0.2.8
+  version: v0.3.0
   url: https://github.com/pinax-network/substreams-solana
   description: DEXs for Solana.
   image: ../image.png
@@ -15,12 +15,12 @@ imports:
   pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/pumpfun-v0.2.1/pumpfun-v0.2.1.spkg
   pumpfun_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/pumpfun-amm-v0.2.0.spkg
   raydium_amm_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-amm-v4-v0.2.0.spkg
-  raydium_cpmm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-cpmm-v0.2.0.spkg
-  raydium_clmm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-clmm-v0.2.0.spkg
-  raydium_launchpad: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-launchpad-v0.2.0.spkg
-  meteora_dllm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/meteora-dllm-v0.2.0.spkg
-  meteora_daam: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/meteora-daam-v0.2.0.spkg
-  meteora_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/meteora-amm-v0.2.0.spkg
+  raydium_cpmm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/raydium-cpmm-v0.1.0.spkg
+  raydium_clmm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/raydium-clmm-v0.1.0.spkg
+  raydium_launchpad: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/raydium-launchpad-v0.1.0.spkg
+  meteora_dllm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/meteora-dllm-v0.1.0.spkg
+  meteora_daam: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/meteora-daam-v0.1.0.spkg
+  meteora_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/meteora-amm-v0.1.0.spkg
   jupiter_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v4-v0.2.0.spkg
   jupiter_v6: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v6-v0.2.0.spkg
 

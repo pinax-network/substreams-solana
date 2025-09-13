@@ -285,16 +285,16 @@ pub struct TradeEvent {
     pub protocol_fee: u64,
     #[prost(uint64, tag="12")]
     pub platform_fee: u64,
-    #[prost(uint64, tag="13")]
-    pub creator_fee: u64,
+    #[prost(uint64, optional, tag="13")]
+    pub creator_fee: ::core::option::Option<u64>,
     #[prost(uint64, tag="14")]
     pub share_fee: u64,
     #[prost(enumeration="TradeDirection", tag="15")]
     pub trade_direction: i32,
     #[prost(enumeration="PoolStatus", tag="16")]
     pub pool_status: i32,
-    #[prost(bool, tag="17")]
-    pub exact_in: bool,
+    #[prost(bool, optional, tag="17")]
+    pub exact_in: ::core::option::Option<bool>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

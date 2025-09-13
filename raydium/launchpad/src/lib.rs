@@ -40,7 +40,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
     }
     if let Ok(event) = raydium::launchpad::events::unpack(ix.data()) {
         return match event {
-            raydium::launchpad::events::RaydiumLaunchpadEvent::TradeEvent(event) => Some(pb::Instruction {
+            raydium::launchpad::events::RaydiumLaunchpadEvent::TradeEventV1(event) => Some(pb::Instruction {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::TradeEvent(pb::TradeEvent {
@@ -56,7 +56,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                     amount_out: event.amount_out,
                     protocol_fee: event.protocol_fee,
                     platform_fee: event.platform_fee,
-                    creator_fee: event.creator_fee,
+                    creator_fee: Some(event.creator_fee),
                     share_fee: event.share_fee,
                     trade_direction: match event.trade_direction {
                         raydium::launchpad::events::TradeDirection::Buy => pb::TradeDirection::Buy as i32,
@@ -67,7 +67,37 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                         raydium::launchpad::events::PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
                         raydium::launchpad::events::PoolStatus::Trade => pb::PoolStatus::Trade as i32,
                     },
-                    exact_in: event.exact_in,
+                    exact_in: Some(event.exact_in),
+                })),
+            }),
+            raydium::launchpad::events::RaydiumLaunchpadEvent::TradeEventV2(event) => Some(pb::Instruction {
+                program_id: program_id.to_vec(),
+                stack_height: ix.stack_height(),
+                instruction: Some(pb::instruction::Instruction::TradeEvent(pb::TradeEvent {
+                    pool_state: event.pool_state.to_bytes().to_vec(),
+                    total_base_sell: event.total_base_sell,
+                    virtual_base: event.virtual_base,
+                    virtual_quote: event.virtual_quote,
+                    real_base_before: event.real_base_before,
+                    real_quote_before: event.real_quote_before,
+                    real_base_after: event.real_base_after,
+                    real_quote_after: event.real_quote_after,
+                    amount_in: event.amount_in,
+                    amount_out: event.amount_out,
+                    protocol_fee: event.protocol_fee,
+                    platform_fee: event.platform_fee,
+                    creator_fee: None,
+                    share_fee: event.share_fee,
+                    trade_direction: match event.trade_direction {
+                        raydium::launchpad::events::TradeDirection::Buy => pb::TradeDirection::Buy as i32,
+                        raydium::launchpad::events::TradeDirection::Sell => pb::TradeDirection::Sell as i32,
+                    },
+                    pool_status: match event.pool_status {
+                        raydium::launchpad::events::PoolStatus::Fund => pb::PoolStatus::Fund as i32,
+                        raydium::launchpad::events::PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
+                        raydium::launchpad::events::PoolStatus::Trade => pb::PoolStatus::Trade as i32,
+                    },
+                    exact_in: None,
                 })),
             }),
             raydium::launchpad::events::RaydiumLaunchpadEvent::ClaimVestedEvent(event) => Some(pb::Instruction {
