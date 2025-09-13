@@ -6,23 +6,23 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
-    #[prost(message, repeated, tag = "1")]
+    #[prost(message, repeated, tag="1")]
     pub transactions: ::prost::alloc::vec::Vec<Transaction>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub signature: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub fee_payer: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", repeated, tag = "3")]
+    #[prost(bytes="vec", repeated, tag="3")]
     pub signers: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub fee: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub compute_units_consumed: u64,
-    #[prost(message, repeated, tag = "6")]
+    #[prost(message, repeated, tag="6")]
     pub instructions: ::prost::alloc::vec::Vec<Instruction>,
 }
 /// -----------------------------------------------------------------------------
@@ -31,33 +31,33 @@ pub struct Transaction {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Instruction {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub program_id: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint32, tag = "2")]
+    #[prost(uint32, tag="2")]
     pub stack_height: u32,
-    #[prost(oneof = "instruction::Instruction", tags = "3, 4, 5, 6, 7, 8, 9, 10")]
+    #[prost(oneof="instruction::Instruction", tags="3, 4, 5, 6, 7, 8, 9, 10")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
 pub mod instruction {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
+#[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Instruction {
-        #[prost(message, tag = "3")]
+        #[prost(message, tag="3")]
         BuyExactIn(super::BuyExactInInstruction),
-        #[prost(message, tag = "4")]
+        #[prost(message, tag="4")]
         BuyExactOut(super::BuyExactOutInstruction),
-        #[prost(message, tag = "5")]
+        #[prost(message, tag="5")]
         SellExactIn(super::SellExactInInstruction),
-        #[prost(message, tag = "6")]
+        #[prost(message, tag="6")]
         SellExactOut(super::SellExactOutInstruction),
-        #[prost(message, tag = "7")]
+        #[prost(message, tag="7")]
         TradeEvent(super::TradeEvent),
-        #[prost(message, tag = "8")]
+        #[prost(message, tag="8")]
         ClaimVestedEvent(super::ClaimVestedEvent),
-        #[prost(message, tag = "9")]
+        #[prost(message, tag="9")]
         CreateVestingEvent(super::CreateVestingEvent),
-        #[prost(message, tag = "10")]
+        #[prost(message, tag="10")]
         PoolCreateEvent(super::PoolCreateEvent),
     }
 }
@@ -65,83 +65,83 @@ pub mod instruction {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TradeAccounts {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub payer: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub authority: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "3")]
+    #[prost(bytes="vec", tag="3")]
     pub global_config: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "4")]
+    #[prost(bytes="vec", tag="4")]
     pub platform_config: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "5")]
+    #[prost(bytes="vec", tag="5")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "6")]
+    #[prost(bytes="vec", tag="6")]
     pub user_base_token: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "7")]
+    #[prost(bytes="vec", tag="7")]
     pub user_quote_token: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "8")]
+    #[prost(bytes="vec", tag="8")]
     pub base_vault: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "9")]
+    #[prost(bytes="vec", tag="9")]
     pub quote_vault: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "10")]
+    #[prost(bytes="vec", tag="10")]
     pub base_token_mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "11")]
+    #[prost(bytes="vec", tag="11")]
     pub quote_token_mint: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "12")]
+    #[prost(bytes="vec", tag="12")]
     pub base_token_program: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "13")]
+    #[prost(bytes="vec", tag="13")]
     pub quote_token_program: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "14")]
+    #[prost(bytes="vec", tag="14")]
     pub event_authority: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "15")]
+    #[prost(bytes="vec", tag="15")]
     pub program: ::prost::alloc::vec::Vec<u8>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BuyExactInInstruction {
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub accounts: ::core::option::Option<TradeAccounts>,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub amount_in: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub minimum_amount_out: u64,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub share_fee_rate: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BuyExactOutInstruction {
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub accounts: ::core::option::Option<TradeAccounts>,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub amount_out: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub maximum_amount_in: u64,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub share_fee_rate: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SellExactInInstruction {
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub accounts: ::core::option::Option<TradeAccounts>,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub amount_in: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub minimum_amount_out: u64,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub share_fee_rate: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SellExactOutInstruction {
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub accounts: ::core::option::Option<TradeAccounts>,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub amount_out: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub maximum_amount_in: u64,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub share_fee_rate: u64,
 }
 /// -----------------------------------------------------------------------------
@@ -150,150 +150,150 @@ pub struct SellExactOutInstruction {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ClaimVestedEvent {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub beneficiary: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub claim_amount: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateVestingEvent {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub beneficiary: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub share_amount: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PoolCreateEvent {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes="vec", tag="2")]
     pub creator: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "3")]
+    #[prost(bytes="vec", tag="3")]
     pub config: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "4")]
+    #[prost(message, optional, tag="4")]
     pub base_mint_param: ::core::option::Option<MintParams>,
-    #[prost(message, optional, tag = "5")]
+    #[prost(message, optional, tag="5")]
     pub curve_param: ::core::option::Option<CurveParams>,
-    #[prost(message, optional, tag = "6")]
+    #[prost(message, optional, tag="6")]
     pub vesting_param: ::core::option::Option<VestingParams>,
-    #[prost(enumeration = "AmmCreatorFeeOn", tag = "7")]
+    #[prost(enumeration="AmmCreatorFeeOn", tag="7")]
     pub amm_fee_on: i32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MintParams {
-    #[prost(uint32, tag = "1")]
+    #[prost(uint32, tag="1")]
     pub decimals: u32,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub name: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
+    #[prost(string, tag="3")]
     pub symbol: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
+    #[prost(string, tag="4")]
     pub uri: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct CurveParams {
-    #[prost(oneof = "curve_params::Curve", tags = "1, 2, 3")]
+    #[prost(oneof="curve_params::Curve", tags="1, 2, 3")]
     pub curve: ::core::option::Option<curve_params::Curve>,
 }
 /// Nested message and enum types in `CurveParams`.
 pub mod curve_params {
     #[allow(clippy::derive_partial_eq_without_eq)]
-    #[derive(Clone, Copy, PartialEq, ::prost::Oneof)]
+#[derive(Clone, Copy, PartialEq, ::prost::Oneof)]
     pub enum Curve {
-        #[prost(message, tag = "1")]
+        #[prost(message, tag="1")]
         Constant(super::ConstantCurve),
-        #[prost(message, tag = "2")]
+        #[prost(message, tag="2")]
         Fixed(super::FixedCurve),
-        #[prost(message, tag = "3")]
+        #[prost(message, tag="3")]
         Linear(super::LinearCurve),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct ConstantCurve {
-    #[prost(uint64, tag = "1")]
+    #[prost(uint64, tag="1")]
     pub supply: u64,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub total_base_sell: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub total_quote_fund_raising: u64,
-    #[prost(uint32, tag = "4")]
+    #[prost(uint32, tag="4")]
     pub migrate_type: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct FixedCurve {
-    #[prost(uint64, tag = "1")]
+    #[prost(uint64, tag="1")]
     pub supply: u64,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub total_quote_fund_raising: u64,
-    #[prost(uint32, tag = "3")]
+    #[prost(uint32, tag="3")]
     pub migrate_type: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct LinearCurve {
-    #[prost(uint64, tag = "1")]
+    #[prost(uint64, tag="1")]
     pub supply: u64,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub total_quote_fund_raising: u64,
-    #[prost(uint32, tag = "3")]
+    #[prost(uint32, tag="3")]
     pub migrate_type: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct VestingParams {
-    #[prost(uint64, tag = "1")]
+    #[prost(uint64, tag="1")]
     pub total_locked_amount: u64,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub cliff_period: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub unlock_period: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TradeEvent {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub pool_state: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag = "2")]
+    #[prost(uint64, tag="2")]
     pub total_base_sell: u64,
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag="3")]
     pub virtual_base: u64,
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub virtual_quote: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub real_base_before: u64,
-    #[prost(uint64, tag = "6")]
+    #[prost(uint64, tag="6")]
     pub real_quote_before: u64,
-    #[prost(uint64, tag = "7")]
+    #[prost(uint64, tag="7")]
     pub real_base_after: u64,
-    #[prost(uint64, tag = "8")]
+    #[prost(uint64, tag="8")]
     pub real_quote_after: u64,
-    #[prost(uint64, tag = "9")]
+    #[prost(uint64, tag="9")]
     pub amount_in: u64,
-    #[prost(uint64, tag = "10")]
+    #[prost(uint64, tag="10")]
     pub amount_out: u64,
-    #[prost(uint64, tag = "11")]
+    #[prost(uint64, tag="11")]
     pub protocol_fee: u64,
-    #[prost(uint64, tag = "12")]
+    #[prost(uint64, tag="12")]
     pub platform_fee: u64,
-    #[prost(uint64, tag = "13")]
+    #[prost(uint64, tag="13")]
     pub creator_fee: u64,
-    #[prost(uint64, tag = "14")]
+    #[prost(uint64, tag="14")]
     pub share_fee: u64,
-    #[prost(enumeration = "TradeDirection", tag = "15")]
+    #[prost(enumeration="TradeDirection", tag="15")]
     pub trade_direction: i32,
-    #[prost(enumeration = "PoolStatus", tag = "16")]
+    #[prost(enumeration="PoolStatus", tag="16")]
     pub pool_status: i32,
-    #[prost(bool, tag = "17")]
+    #[prost(bool, tag="17")]
     pub exact_in: bool,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
