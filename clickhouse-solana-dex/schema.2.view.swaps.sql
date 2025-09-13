@@ -305,3 +305,253 @@ SELECT
 FROM pumpfun_amm_sell AS s
 -- ignore dust swaps (typically trying to disort the price)
 WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Raydium CPMM → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_cpmm_swap_base_in
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    payer AS user,
+    program_id AS amm,
+    pool_state AS amm_pool,
+    input_token_mint AS input_mint,
+    amount_in AS input_amount,
+    output_token_mint AS output_mint,
+    amount_out AS output_amount
+FROM raydium_cpmm_swap_base_in AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_cpmm_swap_base_out
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    payer AS user,
+    program_id AS amm,
+    pool_state AS amm_pool,
+    input_token_mint AS input_mint,
+    amount_in AS input_amount,
+    output_token_mint AS output_mint,
+    amount_out AS output_amount
+FROM raydium_cpmm_swap_base_out AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Raydium CLMM → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_clmm_swap
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    payer AS user,
+    program_id AS amm,
+    pool_state AS amm_pool,
+    input_mint,
+    amount_in AS input_amount,
+    output_mint,
+    amount_out AS output_amount
+FROM raydium_clmm_swap AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Raydium Launchpad → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_launchpad_buy
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    payer AS user,
+    program_id AS amm,
+    pool_state AS amm_pool,
+    quote_token_mint AS input_mint,
+    amount_in AS input_amount,
+    base_token_mint AS output_mint,
+    amount_out AS output_amount
+FROM raydium_launchpad_buy AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_raydium_launchpad_sell
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    payer AS user,
+    program_id AS amm,
+    pool_state AS amm_pool,
+    base_token_mint AS input_mint,
+    amount_in AS input_amount,
+    quote_token_mint AS output_mint,
+    amount_out AS output_amount
+FROM raydium_launchpad_sell AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Meteora DLLM → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_meteora_dllm_swap
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    user,
+    program_id AS amm,
+    lb_pair AS amm_pool,
+    input_mint,
+    amount_in AS input_amount,
+    output_mint,
+    amount_out AS output_amount
+FROM meteora_dllm_swap AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Meteora DAAM → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_meteora_daam_swap
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    payer AS user,
+    program_id AS amm,
+    pool AS amm_pool,
+    input_mint,
+    amount_in AS input_amount,
+    output_mint,
+    amount_out AS output_amount
+FROM meteora_daam_swap AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Meteora AMM → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_meteora_amm_swap
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    user,
+    program_id AS amm,
+    pool AS amm_pool,
+    input_mint,
+    amount_in AS input_amount,
+    output_mint,
+    amount_out AS output_amount
+FROM meteora_amm_swap AS s
+WHERE input_amount > 1 AND output_amount > 1;
