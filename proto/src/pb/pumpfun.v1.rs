@@ -34,7 +34,7 @@ pub struct Instruction {
     pub program_id: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint32, tag="2")]
     pub stack_height: u32,
-    #[prost(oneof="instruction::Instruction", tags="10, 11, 12, 13, 14, 15, 16")]
+    #[prost(oneof="instruction::Instruction", tags="10, 11, 13, 14, 15, 16, 17")]
     pub instruction: ::core::option::Option<instruction::Instruction>,
 }
 /// Nested message and enum types in `Instruction`.
@@ -46,15 +46,15 @@ pub mod instruction {
         Buy(super::BuyInstruction),
         #[prost(message, tag="11")]
         Sell(super::SellInstruction),
-        #[prost(message, tag="12")]
-        Create(super::CreateInstruction),
         #[prost(message, tag="13")]
-        SetParams(super::SetParamsInstruction),
+        Create(super::CreateInstruction),
         #[prost(message, tag="14")]
-        Initialize(super::InitializeInstruction),
+        SetParams(super::SetParamsInstruction),
         #[prost(message, tag="15")]
-        Withdraw(super::WithdrawInstruction),
+        Initialize(super::InitializeInstruction),
         #[prost(message, tag="16")]
+        Withdraw(super::WithdrawInstruction),
+        #[prost(message, tag="17")]
         Trade(super::TradeEvent),
     }
 }

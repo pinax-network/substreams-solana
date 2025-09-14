@@ -21,11 +21,11 @@ message Instruction {
     oneof instruction {
         BuyInstruction buy = 10;
         SellInstruction sell = 11;
-        CreateInstruction create = 12;
-        SetParamsInstruction set_params = 13;
-        InitializeInstruction initialize = 14;
-        WithdrawInstruction withdraw = 15;
-        TradeEvent trade = 16;
+        CreateInstruction create = 13;
+        SetParamsInstruction set_params = 14;
+        InitializeInstruction initialize = 15;
+        WithdrawInstruction withdraw = 16;
+        TradeEvent trade = 17;
     }
 }
 
