@@ -4,17 +4,12 @@ COMMENT 'Solana Swaps';
 ALTER TABLE swaps
     -- log --
     ADD COLUMN IF NOT EXISTS amm                         FixedString(44) COMMENT 'AMM protocol (Raydium Liquidity Pool V4)',
-    ADD COLUMN IF NOT EXISTS amm_name                    String MATERIALIZED program_names(amm),
     ADD COLUMN IF NOT EXISTS amm_pool                    FixedString(44) COMMENT 'AMM market (Raydium "WSOL-USDT" Market)',
     ADD COLUMN IF NOT EXISTS user                        FixedString(44) COMMENT 'User wallet address',
     ADD COLUMN IF NOT EXISTS input_mint                  FixedString(44) COMMENT 'Input token mint address',
     ADD COLUMN IF NOT EXISTS input_amount                UInt64 COMMENT 'Amount of input tokens swapped',
-    ADD COLUMN IF NOT EXISTS input_type                  String MATERIALIZED token_types(input_mint),
-    ADD COLUMN IF NOT EXISTS input_name                  String MATERIALIZED token_names(input_mint),
     ADD COLUMN IF NOT EXISTS output_mint                 FixedString(44) COMMENT 'Output token mint address',
     ADD COLUMN IF NOT EXISTS output_amount               UInt64 COMMENT 'Amount of output tokens received',
-    ADD COLUMN IF NOT EXISTS output_type                 String MATERIALIZED token_types(output_mint),
-    ADD COLUMN IF NOT EXISTS output_name                 String MATERIALIZED token_names(output_mint),
 
     -- INDEX for common fields --
     ADD INDEX IF NOT EXISTS idx_amm               (amm)               TYPE set(256)               GRANULARITY 1, -- 50 unique AMMs per 2x granules when using Jupiter V6

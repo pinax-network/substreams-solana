@@ -2,16 +2,10 @@
 CREATE TABLE IF NOT EXISTS pool_activity_summary (
     -- Order By --
     program_id                  LowCardinality(FixedString(44)),
-    program_name                LowCardinality(String) MATERIALIZED program_names(program_id),
     amm                         LowCardinality(FixedString(44)),
-    amm_name                    LowCardinality(String) MATERIALIZED program_names(amm),
     amm_pool                    LowCardinality(FixedString(44)),
     mint0                       LowCardinality(FixedString(44)),
-    mint0_type                  LowCardinality(String) MATERIALIZED token_types(mint0),
-    mint0_name                  LowCardinality(String) MATERIALIZED token_names(mint0),
     mint1                       LowCardinality(FixedString(44)),
-    mint1_type                  LowCardinality(String) MATERIALIZED token_types(mint1),
-    mint1_name                  LowCardinality(String) MATERIALIZED token_names(mint1),
 
     -- summing --
     transactions                UInt64,
