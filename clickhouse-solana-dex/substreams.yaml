@@ -12,7 +12,7 @@ imports:
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # DEXs
-  pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/pumpfun-v0.2.1/pumpfun-v0.2.1.spkg
+  pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/pumpfun-bonding-curve-v0.2.2.spkg
   pumpfun_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/pumpfun-amm-v0.2.0.spkg
   raydium_amm_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-amm-v4-v0.2.0.spkg
   raydium_cpmm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/raydium-cpmm-v0.1.0.spkg
