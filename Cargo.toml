@@ -42,7 +42,7 @@ bs58 = "0.5.1"
 substreams = "0.6.1"
 substreams-abis = "0.4.5"
 substreams-solana = "0.14.1"
-substreams-solana-idls = { git = "https://github.com/pinax-network/substreams-solana-idls", branch = "main" }
+substreams-solana-idls = { git = "https://github.com/pinax-network/substreams-solana-idls", tag = "v0.6.0" }
 spl-token = "8.0.0"
 substreams-solana-program-instructions = "0.2"
 substreams-database-change = "2.1.2"

@@ -186,7 +186,7 @@ dependencies = [
 [[package]]
 name = "bonkswap"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -295,6 +295,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "byreal"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
 name = "bytemuck"
 version = "1.23.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -397,7 +409,7 @@ dependencies = [
 [[package]]
 name = "common"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "solana-program",
@@ -501,6 +513,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e5c37193a1db1d8ed868c03ec7b152175f26160a5b740e5e484143877e0adf0"
 
 [[package]]
+name = "dflow"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
 name = "digest"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -518,6 +542,18 @@ dependencies = [
  "block-buffer 0.10.4",
  "crypto-common",
  "subtle",
+]
+
+[[package]]
+name = "drift"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
 ]
 
 [[package]]
@@ -664,6 +700,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
 
 [[package]]
+name = "heaven"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "base64 0.22.1",
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -688,6 +737,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c49c37c09c17a53d937dfbb742eb3a961d65a994e6bcdcf37e7399d0cc8ab5e"
 dependencies = [
  "digest 0.10.7",
+]
+
+[[package]]
+name = "humidifi"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
 ]
 
 [[package]]
@@ -746,7 +807,7 @@ dependencies = [
 [[package]]
 name = "jupiter"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -908,7 +969,7 @@ dependencies = [
 [[package]]
 name = "meteora"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -1055,6 +1116,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "okx"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1069,7 +1142,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "orca"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -1085,6 +1158,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2ad9b889f1b12e0b9ee24db044b5129150d5eada288edc800f789928dc8c0e3"
 dependencies = [
  "unicode-width",
+]
+
+[[package]]
+name = "pancakeswap"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
 ]
 
 [[package]]
@@ -1182,7 +1267,7 @@ dependencies = [
 [[package]]
 name = "phoenix"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -1312,7 +1397,7 @@ dependencies = [
 [[package]]
 name = "pumpfun"
 version = "0.1.2"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -1441,7 +1526,7 @@ dependencies = [
 [[package]]
 name = "raydium"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -1565,6 +1650,18 @@ name = "ryu"
 version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
+
+[[package]]
+name = "saros"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
+]
 
 [[package]]
 name = "scopeguard"
@@ -2557,6 +2654,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "solfi"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
 name = "spl-discriminator"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2666,7 +2775,7 @@ dependencies = [
 [[package]]
 name = "stabble"
 version = "0.1.0"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "borsh 1.5.7",
  "common 0.1.0",
@@ -2748,18 +2857,28 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-idls"
-version = "0.5.5"
-source = "git+https://github.com/pinax-network/substreams-solana-idls?branch=main#fbfb79cb9982499f51fca0d11254da59c8e6bc73"
+version = "0.6.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
 dependencies = [
  "bonkswap",
+ "byreal",
  "common 0.1.0",
+ "dflow",
+ "drift",
+ "heaven",
+ "humidifi",
  "jupiter",
  "meteora",
+ "okx",
  "orca",
+ "pancakeswap",
  "phoenix",
  "pumpfun",
  "raydium",
+ "saros",
+ "solfi",
  "stabble",
+ "tesserav",
 ]
 
 [[package]]
@@ -2821,6 +2940,18 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys",
+]
+
+[[package]]
+name = "tesserav"
+version = "0.1.0"
+source = "git+https://github.com/pinax-network/substreams-solana-idls?tag=v0.6.0#c07c1ab22e8fd63301d509604decabb17c99e44c"
+dependencies = [
+ "borsh 1.5.7",
+ "common 0.1.0",
+ "solana-program",
+ "substreams",
+ "substreams-solana",
 ]
 
 [[package]]

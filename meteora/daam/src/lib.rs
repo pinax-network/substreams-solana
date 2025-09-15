@@ -142,8 +142,8 @@ fn process_event_instruction(ix: &InstructionView) -> Option<pb::Log> {
         return None;
     }
 
-    match meteora::daam::events::unpack(ix.data()) {
-        Ok(meteora::daam::events::MeteoraDammEvent::EvtAddLiquidity(event)) => Some(pb::Log {
+    match meteora::daam::anchor_cpi_event::unpack(ix.data()) {
+        Ok(meteora::daam::anchor_cpi_event::MeteoraDammAnchorCpiEvent::EvtAddLiquidity(event)) => Some(pb::Log {
             program_id: program_id.to_vec(),
             invoke_depth: ix.stack_height(),
             log: Some(pb::log::Log::AddLiquidity(pb::AddLiquidityLog {
@@ -161,7 +161,7 @@ fn process_event_instruction(ix: &InstructionView) -> Option<pb::Log> {
                 total_amount_b: event.total_amount_b,
             })),
         }),
-        Ok(meteora::daam::events::MeteoraDammEvent::EvtRemoveLiquidity(event)) => Some(pb::Log {
+        Ok(meteora::daam::anchor_cpi_event::MeteoraDammAnchorCpiEvent::EvtRemoveLiquidity(event)) => Some(pb::Log {
             program_id: program_id.to_vec(),
             invoke_depth: ix.stack_height(),
             log: Some(pb::log::Log::RemoveLiquidity(pb::RemoveLiquidityLog {
@@ -177,7 +177,7 @@ fn process_event_instruction(ix: &InstructionView) -> Option<pb::Log> {
                 token_b_amount: event.token_b_amount,
             })),
         }),
-        Ok(meteora::daam::events::MeteoraDammEvent::EvtSwap(event)) => Some(pb::Log {
+        Ok(meteora::daam::anchor_cpi_event::MeteoraDammAnchorCpiEvent::EvtSwap(event)) => Some(pb::Log {
             program_id: program_id.to_vec(),
             invoke_depth: ix.stack_height(),
             log: Some(pb::log::Log::Swap(pb::SwapLog {

@@ -1,5 +1,5 @@
 ENDPOINT ?= solana.substreams.pinax.network:443
-START_BLOCK ?= 363000000
+START_BLOCK ?= 0
 STOP_BLOCK ?= 363010000
 PARALLEL_JOBS ?= 500
 
@@ -17,7 +17,7 @@ noop: build
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s $(START_BLOCK) --network solana
+	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s $(START_BLOCK) -t 0 --network solana --limit-processed-blocks 0 --production-mode
 
 .PHONY: prod
 prod: build

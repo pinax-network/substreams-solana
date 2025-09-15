@@ -40,7 +40,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
     }
 
     // 1) Try to decode Anchor "event CPI" first and EARLY-RETURN if it matches.
-    if let Ok(dllm::events::MeteoraDllmEvent::Swap(event)) = dllm::events::unpack(ix.data()) {
+    if let Ok(dllm::anchor_cpi_event::MeteoraDllmAnchorCpiEvent::Swap(event)) = dllm::anchor_cpi_event::unpack(ix.data()) {
         return Some(pb::Instruction {
             program_id: program_id.to_vec(),
             stack_height: ix.stack_height(),

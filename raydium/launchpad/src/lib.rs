@@ -38,9 +38,9 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
     if program_id != &raydium::launchpad::PROGRAM_ID {
         return None;
     }
-    if let Ok(event) = raydium::launchpad::events::unpack(ix.data()) {
+    if let Ok(event) = raydium::launchpad::anchor_cpi_event::unpack(ix.data()) {
         return match event {
-            raydium::launchpad::events::RaydiumLaunchpadEvent::TradeEventV1(event) => Some(pb::Instruction {
+            raydium::launchpad::anchor_cpi_event::RaydiumLaunchpadAnchorCpiEvent::TradeEventV1(event) => Some(pb::Instruction {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::TradeEvent(pb::TradeEvent {
@@ -59,18 +59,18 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                     creator_fee: Some(event.creator_fee),
                     share_fee: event.share_fee,
                     trade_direction: match event.trade_direction {
-                        raydium::launchpad::events::TradeDirection::Buy => pb::TradeDirection::Buy as i32,
-                        raydium::launchpad::events::TradeDirection::Sell => pb::TradeDirection::Sell as i32,
+                        raydium::launchpad::anchor_cpi_event::TradeDirection::Buy => pb::TradeDirection::Buy as i32,
+                        raydium::launchpad::anchor_cpi_event::TradeDirection::Sell => pb::TradeDirection::Sell as i32,
                     },
                     pool_status: match event.pool_status {
-                        raydium::launchpad::events::PoolStatus::Fund => pb::PoolStatus::Fund as i32,
-                        raydium::launchpad::events::PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
-                        raydium::launchpad::events::PoolStatus::Trade => pb::PoolStatus::Trade as i32,
+                        raydium::launchpad::anchor_cpi_event::PoolStatus::Fund => pb::PoolStatus::Fund as i32,
+                        raydium::launchpad::anchor_cpi_event::PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
+                        raydium::launchpad::anchor_cpi_event::PoolStatus::Trade => pb::PoolStatus::Trade as i32,
                     },
                     exact_in: Some(event.exact_in),
                 })),
             }),
-            raydium::launchpad::events::RaydiumLaunchpadEvent::TradeEventV2(event) => Some(pb::Instruction {
+            raydium::launchpad::anchor_cpi_event::RaydiumLaunchpadAnchorCpiEvent::TradeEventV2(event) => Some(pb::Instruction {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::TradeEvent(pb::TradeEvent {
@@ -89,18 +89,18 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                     creator_fee: None,
                     share_fee: event.share_fee,
                     trade_direction: match event.trade_direction {
-                        raydium::launchpad::events::TradeDirection::Buy => pb::TradeDirection::Buy as i32,
-                        raydium::launchpad::events::TradeDirection::Sell => pb::TradeDirection::Sell as i32,
+                        raydium::launchpad::anchor_cpi_event::TradeDirection::Buy => pb::TradeDirection::Buy as i32,
+                        raydium::launchpad::anchor_cpi_event::TradeDirection::Sell => pb::TradeDirection::Sell as i32,
                     },
                     pool_status: match event.pool_status {
-                        raydium::launchpad::events::PoolStatus::Fund => pb::PoolStatus::Fund as i32,
-                        raydium::launchpad::events::PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
-                        raydium::launchpad::events::PoolStatus::Trade => pb::PoolStatus::Trade as i32,
+                        raydium::launchpad::anchor_cpi_event::PoolStatus::Fund => pb::PoolStatus::Fund as i32,
+                        raydium::launchpad::anchor_cpi_event::PoolStatus::Migrate => pb::PoolStatus::Migrate as i32,
+                        raydium::launchpad::anchor_cpi_event::PoolStatus::Trade => pb::PoolStatus::Trade as i32,
                     },
                     exact_in: None,
                 })),
             }),
-            raydium::launchpad::events::RaydiumLaunchpadEvent::ClaimVestedEvent(event) => Some(pb::Instruction {
+            raydium::launchpad::anchor_cpi_event::RaydiumLaunchpadAnchorCpiEvent::ClaimVestedEvent(event) => Some(pb::Instruction {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::ClaimVestedEvent(pb::ClaimVestedEvent {
@@ -109,7 +109,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                     claim_amount: event.claim_amount,
                 })),
             }),
-            raydium::launchpad::events::RaydiumLaunchpadEvent::CreateVestingEvent(event) => Some(pb::Instruction {
+            raydium::launchpad::anchor_cpi_event::RaydiumLaunchpadAnchorCpiEvent::CreateVestingEvent(event) => Some(pb::Instruction {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::CreateVestingEvent(pb::CreateVestingEvent {
@@ -118,7 +118,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                     share_amount: event.share_amount,
                 })),
             }),
-            raydium::launchpad::events::RaydiumLaunchpadEvent::PoolCreateEvent(event) => Some(pb::Instruction {
+            raydium::launchpad::anchor_cpi_event::RaydiumLaunchpadAnchorCpiEvent::PoolCreateEvent(event) => Some(pb::Instruction {
                 program_id: program_id.to_vec(),
                 stack_height: ix.stack_height(),
                 instruction: Some(pb::instruction::Instruction::PoolCreateEvent(pb::PoolCreateEvent {
@@ -132,7 +132,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                         uri: event.base_mint_param.uri,
                     }),
                     curve_param: Some(match event.curve_param {
-                        raydium::launchpad::events::CurveParams::Constant { data } => pb::CurveParams {
+                        raydium::launchpad::anchor_cpi_event::CurveParams::Constant { data } => pb::CurveParams {
                             curve: Some(pb::curve_params::Curve::Constant(pb::ConstantCurve {
                                 supply: data.supply,
                                 total_base_sell: data.total_base_sell,
@@ -140,14 +140,14 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                                 migrate_type: data.migrate_type as u32,
                             })),
                         },
-                        raydium::launchpad::events::CurveParams::Fixed { data } => pb::CurveParams {
+                        raydium::launchpad::anchor_cpi_event::CurveParams::Fixed { data } => pb::CurveParams {
                             curve: Some(pb::curve_params::Curve::Fixed(pb::FixedCurve {
                                 supply: data.supply,
                                 total_quote_fund_raising: data.total_quote_fund_raising,
                                 migrate_type: data.migrate_type as u32,
                             })),
                         },
-                        raydium::launchpad::events::CurveParams::Linear { data } => pb::CurveParams {
+                        raydium::launchpad::anchor_cpi_event::CurveParams::Linear { data } => pb::CurveParams {
                             curve: Some(pb::curve_params::Curve::Linear(pb::LinearCurve {
                                 supply: data.supply,
                                 total_quote_fund_raising: data.total_quote_fund_raising,
@@ -161,12 +161,12 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
                         unlock_period: event.vesting_param.unlock_period,
                     }),
                     amm_fee_on: match event.amm_fee_on {
-                        raydium::launchpad::events::AmmCreatorFeeOn::QuoteToken => pb::AmmCreatorFeeOn::QuoteToken as i32,
-                        raydium::launchpad::events::AmmCreatorFeeOn::BothToken => pb::AmmCreatorFeeOn::BothToken as i32,
+                        raydium::launchpad::anchor_cpi_event::AmmCreatorFeeOn::QuoteToken => pb::AmmCreatorFeeOn::QuoteToken as i32,
+                        raydium::launchpad::anchor_cpi_event::AmmCreatorFeeOn::BothToken => pb::AmmCreatorFeeOn::BothToken as i32,
                     },
                 })),
             }),
-            raydium::launchpad::events::RaydiumLaunchpadEvent::Unknown => None,
+            raydium::launchpad::anchor_cpi_event::RaydiumLaunchpadAnchorCpiEvent::Unknown => None,
         };
     }
 
