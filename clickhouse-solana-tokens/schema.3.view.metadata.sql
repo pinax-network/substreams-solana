@@ -1,15 +1,3 @@
-/* MINT */
--- 1:1 relationship with metadata account
--- should not have any duplicates, no need for GROUP BY
-CREATE OR REPLACE VIEW metadata_mint_view AS
-SELECT
-  metadata,
-  version,
-  block_num,
-  timestamp,
-  mint
-FROM metadata_mint_state_latest;
-
 /* NAME */
 CREATE OR REPLACE VIEW metadata_name_view AS
 SELECT
@@ -64,3 +52,20 @@ SELECT
   argMax(update_authority, m.version) AS update_authority
 FROM metadata_update_authority_state_latest as m
 GROUP BY metadata;
+
+/* COMBINED VIEW */
+CREATE OR REPLACE VIEW metadata_view AS
+SELECT
+    k.mint as mint,
+    k.metadata as metadata,
+    k.block_num as block_num,
+    k.timestamp as timestamp,
+    if(empty(n.name), NULL, n.name) AS name,
+    if(empty(s.symbol), NULL, s.symbol) AS symbol,
+    if(empty(u.uri), NULL, u.uri) AS uri
+FROM metadata_mint_state_latest AS k
+    LEFT JOIN metadata_name_view   AS n USING (metadata)
+    LEFT JOIN metadata_symbol_view AS s USING (metadata)
+    LEFT JOIN metadata_uri_view    AS u USING (metadata)
+    LEFT JOIN metadata_mint_authority_view AS ma USING (metadata)
+    LEFT JOIN metadata_update_authority_view AS ua USING (metadata);
