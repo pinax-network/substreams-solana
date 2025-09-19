@@ -1,80 +1,51 @@
-/* MINT */
-CREATE TABLE IF NOT EXISTS metadata_mint_state_latest (
+CREATE TABLE IF NOT EXISTS TEMPLATE_METADATA (
     metadata   String,
-    mint       LowCardinality(String),        -- '' means removed
     version    UInt64,
     block_num  UInt32,
-    timestamp  DateTime('UTC'),
-
-    INDEX idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1
+    timestamp  DateTime('UTC')
 )
 ENGINE = ReplacingMergeTree(version)
 ORDER BY (metadata);
+ALTER TABLE TEMPLATE_METADATA MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+
+/* MINT */
+-- 1:1 relationship with metadata account
+-- should not have any duplicates, no need for GROUP BY with custom view
+CREATE TABLE IF NOT EXISTS metadata_mint_state_latest AS TEMPLATE_METADATA;
+ALTER TABLE metadata_mint_state_latest
+    ADD COLUMN IF NOT EXISTS mint LowCardinality(String) AFTER metadata,
+    ADD PROJECTION IF NOT EXISTS prj_mint (SELECT * ORDER BY (mint));
 
 /* MINT AUTHORITY */
-CREATE TABLE IF NOT EXISTS metadata_mint_authority_state_latest (
-    metadata       String,
-    mint_authority String,                    -- '' means removed
-    version        UInt64,
-    block_num      UInt32,
-    timestamp      DateTime('UTC'),
-
-    INDEX idx_mint_authority (mint_authority) TYPE bloom_filter(0.005) GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (metadata);
+CREATE TABLE IF NOT EXISTS metadata_mint_authority_state_latest AS TEMPLATE_METADATA;
+ALTER TABLE metadata_mint_authority_state_latest
+    ADD COLUMN IF NOT EXISTS mint_authority String AFTER metadata,
+    ADD PROJECTION IF NOT EXISTS prj_mint_authority (SELECT * ORDER BY (mint_authority, metadata));
 
 /* NAME */
-CREATE TABLE IF NOT EXISTS metadata_name_state_latest (
-    metadata   String,
-    name       LowCardinality(String),        -- '' means removed
-    version    UInt64,
-    block_num  UInt32,
-    timestamp  DateTime('UTC'),
-
-    INDEX idx_name (name) TYPE bloom_filter(0.005) GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (metadata);
+CREATE TABLE IF NOT EXISTS metadata_name_state_latest AS TEMPLATE_METADATA;
+ALTER TABLE metadata_name_state_latest
+    ADD COLUMN IF NOT EXISTS name LowCardinality(String) AFTER metadata,
+    ADD PROJECTION IF NOT EXISTS prj_name (SELECT * ORDER BY (name, metadata));
 
 /* SYMBOL */
-CREATE TABLE IF NOT EXISTS metadata_symbol_state_latest (
-    metadata   String,
-    symbol     LowCardinality(String),        -- '' means removed
-    version    UInt64,
-    block_num  UInt32,
-    timestamp  DateTime('UTC'),
+CREATE TABLE IF NOT EXISTS metadata_symbol_state_latest AS TEMPLATE_METADATA;
+ALTER TABLE metadata_symbol_state_latest
+    ADD COLUMN IF NOT EXISTS symbol LowCardinality(String) AFTER metadata,
+    ADD PROJECTION IF NOT EXISTS prj_symbol (SELECT * ORDER BY (symbol, metadata));
 
-    INDEX idx_symbol (symbol) TYPE bloom_filter(0.005) GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (metadata);
 
 /* URI */
-CREATE TABLE IF NOT EXISTS metadata_uri_state_latest (
-    metadata   String,
-    uri        String,                        -- '' means removed
-    version    UInt64,
-    block_num  UInt32,
-    timestamp  DateTime('UTC'),
-
-    INDEX idx_uri (uri) TYPE bloom_filter(0.005) GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (metadata);
+CREATE TABLE IF NOT EXISTS metadata_uri_state_latest AS TEMPLATE_METADATA;
+ALTER TABLE metadata_uri_state_latest
+    ADD COLUMN IF NOT EXISTS uri LowCardinality(String) AFTER metadata,
+    ADD PROJECTION IF NOT EXISTS prj_uri (SELECT * ORDER BY (uri, metadata));
 
 /* UPDATE AUTHORITY */
-CREATE TABLE IF NOT EXISTS metadata_update_authority_state_latest (
-    metadata          String,
-    update_authority  String,                 -- '' means removed
-    version           UInt64,
-    block_num         UInt32,
-    timestamp         DateTime('UTC'),
-
-    INDEX idx_update_authority (update_authority) TYPE bloom_filter(0.005) GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (metadata);
+CREATE TABLE IF NOT EXISTS metadata_update_authority_state_latest AS TEMPLATE_METADATA;
+ALTER TABLE metadata_update_authority_state_latest
+    ADD COLUMN IF NOT EXISTS update_authority String AFTER metadata,
+    ADD PROJECTION IF NOT EXISTS prj_update_authority (SELECT * ORDER BY (update_authority, metadata));
 
 /* ===========================
    MATERIALIZED VIEWS (ROUTING)
