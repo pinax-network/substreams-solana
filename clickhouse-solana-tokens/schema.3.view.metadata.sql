@@ -62,10 +62,12 @@ SELECT
     k.timestamp as timestamp,
     if(empty(n.name), NULL, n.name) AS name,
     if(empty(s.symbol), NULL, s.symbol) AS symbol,
-    if(empty(u.uri), NULL, u.uri) AS uri
+    if(empty(u.uri), NULL, u.uri) AS uri,
+    if(empty(ma.mint_authority), NULL, ma.mint_authority) AS mint_authority,
+    if(empty(ua.update_authority), NULL, ua.update_authority) AS update_authority
 FROM metadata_mint_state_latest AS k
-    LEFT JOIN metadata_name_view   AS n USING (metadata)
-    LEFT JOIN metadata_symbol_view AS s USING (metadata)
-    LEFT JOIN metadata_uri_view    AS u USING (metadata)
-    LEFT JOIN metadata_mint_authority_view AS ma USING (metadata)
-    LEFT JOIN metadata_update_authority_view AS ua USING (metadata);
+    LEFT JOIN metadata_name_view              AS n  USING (metadata)
+    LEFT JOIN metadata_symbol_view            AS s  USING (metadata)
+    LEFT JOIN metadata_uri_view               AS u  USING (metadata)
+    LEFT JOIN metadata_mint_authority_view    AS ma USING (metadata)
+    LEFT JOIN metadata_update_authority_view  AS ua USING (metadata);
