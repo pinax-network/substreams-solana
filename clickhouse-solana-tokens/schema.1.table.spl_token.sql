@@ -29,7 +29,12 @@ COMMENT 'SPL Token InitializeAccount events';
 ALTER TABLE initialize_account
     ADD COLUMN IF NOT EXISTS account                 String,
     ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
-    ADD COLUMN IF NOT EXISTS owner                   String;
+    ADD COLUMN IF NOT EXISTS owner                   String,
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- InitializeMint --
 CREATE TABLE IF NOT EXISTS initialize_mint AS base_events
@@ -39,13 +44,21 @@ ALTER TABLE initialize_mint
     ADD COLUMN IF NOT EXISTS mint_authority          String,
     ADD COLUMN IF NOT EXISTS freeze_authority_raw    String,
     ADD COLUMN IF NOT EXISTS freeze_authority        Nullable(String) MATERIALIZED string_or_null(freeze_authority_raw),
-    ADD COLUMN IF NOT EXISTS decimals                UInt8;
+    ADD COLUMN IF NOT EXISTS decimals                UInt8,
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint_authority (mint_authority) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_freeze_authority (freeze_authority) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- InitializeImmutableOwner --
 CREATE TABLE IF NOT EXISTS initialize_immutable_owner AS base_events
 COMMENT 'SPL Token InitializeImmutableOwner events';
 ALTER TABLE initialize_immutable_owner
-    ADD COLUMN IF NOT EXISTS account                 String;
+    ADD COLUMN IF NOT EXISTS account                 String,
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- SetAuthority --
 CREATE TABLE IF NOT EXISTS set_authority AS base_events
@@ -57,7 +70,12 @@ ALTER TABLE set_authority
     ADD COLUMN IF NOT EXISTS new_authority           Nullable(String) MATERIALIZED string_or_null(new_authority_raw),
     ADD COLUMN IF NOT EXISTS authority               String,
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
-    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_new_authority (new_authority) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_authority (authority) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- CloseAccount --
 CREATE TABLE IF NOT EXISTS close_account AS base_events
@@ -67,7 +85,12 @@ ALTER TABLE close_account
     ADD COLUMN IF NOT EXISTS destination             String,
     ADD COLUMN IF NOT EXISTS authority               String,
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
-    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_destination (destination) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_authority (authority) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- FreezeAccount --
 CREATE TABLE IF NOT EXISTS freeze_account AS base_events
@@ -77,7 +100,12 @@ ALTER TABLE freeze_account
     ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
     ADD COLUMN IF NOT EXISTS authority               String,
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
-    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_authority (authority) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- ThawAccount --
 CREATE TABLE IF NOT EXISTS thaw_account AS base_events
@@ -87,7 +115,12 @@ ALTER TABLE thaw_account
     ADD COLUMN IF NOT EXISTS mint                    LowCardinality(String),
     ADD COLUMN IF NOT EXISTS authority               String,
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
-    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_authority (authority) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- Approve --
 CREATE TABLE IF NOT EXISTS approve AS base_events
@@ -103,7 +136,15 @@ ALTER TABLE approve
     ADD COLUMN IF NOT EXISTS decimals                Nullable(UInt8) MATERIALIZED string_to_uint8(decimals_raw),
     ADD COLUMN IF NOT EXISTS authority               String,
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
-    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_source (source) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_delegate (delegate) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_amount (amount) TYPE minmax GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_authority (authority) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- Revoke --
 CREATE TABLE IF NOT EXISTS revoke AS base_events
@@ -113,7 +154,12 @@ ALTER TABLE revoke
     ADD COLUMN IF NOT EXISTS owner                   String,
     ADD COLUMN IF NOT EXISTS authority               String,
     ADD COLUMN IF NOT EXISTS multisig_authority_raw  String,
-    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw);
+    ADD COLUMN IF NOT EXISTS multisig_authority      Array(String) MATERIALIZED string_to_array(multisig_authority_raw),
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_source (source) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_owner (owner) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_authority (authority) TYPE bloom_filter(0.005) GRANULARITY 1;
 
 -- SPL Token Post Balance --
 CREATE TABLE IF NOT EXISTS post_token_balances AS base_transactions
@@ -123,4 +169,9 @@ ALTER TABLE post_token_balances
     ADD COLUMN IF NOT EXISTS account            String COMMENT 'Account address.',
     ADD COLUMN IF NOT EXISTS mint               String COMMENT 'Mint address',
     ADD COLUMN IF NOT EXISTS amount             UInt64 COMMENT 'Balance amount in lamports.',
-    ADD COLUMN IF NOT EXISTS decimals           UInt8;
+    ADD COLUMN IF NOT EXISTS decimals           UInt8,
+
+    -- Indexes --
+    ADD INDEX IF NOT EXISTS idx_account (account) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    ADD INDEX IF NOT EXISTS idx_amount (amount) TYPE minmax GRANULARITY 1;
