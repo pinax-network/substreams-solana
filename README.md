@@ -30,15 +30,15 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 
 | Program Name | Program ID |
 |------------|--------------|
-| 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8 | Raydium Liquidity Pool V4 |
-| pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA | Pump.fun AMM |
-| 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P | Pump.fun |
-| CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK | Raydium Concentrated Liquidity |
-| CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C | Raydium CPMM |
-| LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo | Meteora DLMM Program |
-| Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB | Meteora Pools Program |
-| cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG | Meteora DAMM v2 |
-| LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj | Raydium Launchpad |
+| Raydium Liquidity Pool V4 | 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8 |
+| Pump.fun AMM | pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA |
+| Pump.fun | 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P |
+| Raydium Concentrated Liquidity | CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK |
+| Raydium CPMM | CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C |
+| Meteora DLMM Program | LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo |
+| Meteora Pools Program | Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB |
+| Meteora DAMM v2 | cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG |
+| Raydium Launchpad | LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj |
 
 ### Partial Support of AMM
 
