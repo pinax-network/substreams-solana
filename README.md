@@ -23,7 +23,9 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 ### Full Support of DEX protocol
 
 > Includes `amm_pool` field
+>
 > Swaps are not being reported directly from Swap programs
+>
 > Programs ordered by most transactions
 
 | Program Name | Program ID |
@@ -41,7 +43,9 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 ### Partial Support of AMM
 
 > Does **NOT** include `amm_pool` field
+>
 > Swaps are not being reported via Aggregator programs
+>
 > AMMs ordered by most transactions
 
 | AMM Name | AMM ID |
