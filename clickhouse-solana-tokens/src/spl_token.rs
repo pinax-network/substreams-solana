@@ -12,13 +12,13 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
     for (transaction_index, transaction) in events.transactions.iter().enumerate() {
         // Keep first pre balance and last post balance per account
         for (i, balance) in transaction.pre_token_balances.iter().enumerate() {
-            let key = (balance.account.as_slice(), balance.mint.as_slice());
+            let key = balance.account.as_slice();
             if !pre_token_balances_per_block.contains_key(&key) {
                 pre_token_balances_per_block.insert(key, (balance, transaction, transaction_index, i));
             }
         }
         for (i, balance) in transaction.post_token_balances.iter().enumerate() {
-            let key = (balance.account.as_slice(), balance.mint.as_slice());
+            let key = balance.account.as_slice();
             post_token_balances_per_block.insert(key, (balance, transaction, transaction_index, i));
         }
         for (i, instruction) in transaction.instructions.iter().enumerate() {
@@ -91,7 +91,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
     let mut skipped = 0;
     for (post_balance, transaction, transaction_index, i) in post_token_balances_per_block.values() {
         // if balance not changed in the block - no need to include it - skip it
-        if let Some((pre_balance, _, _, _)) = pre_token_balances_per_block.get(&(post_balance.account.as_slice(), post_balance.mint.as_slice())) {
+        if let Some((pre_balance, _, _, _)) = pre_token_balances_per_block.get(&post_balance.account.as_slice()) {
             if pre_balance.amount == post_balance.amount {
                 skipped += 1;
                 continue;
@@ -238,6 +238,20 @@ fn handle_close_account(
     set_spl_token_instruction_v2(instruction, row);
     set_spl_token_transaction_v2(transaction, row);
     set_clock(clock, row);
+
+    // Create a zero balance record for the closed account
+    // Since the account is closed, set balance to 0 and mint to empty string
+    let balance_key = common_key_v2(&clock, transaction_index, instruction_index);
+    let balance_row = tables
+        .create_row("post_token_balances", balance_key)
+        .set("program_id", base58::encode(&instruction.program_id))
+        .set("account", base58::encode(&data.account))
+        .set("mint", "") // Set mint to empty string for closed accounts
+        .set("amount", 0u64)
+        .set("decimals", 0u8);
+
+    set_spl_token_transaction_v2(transaction, balance_row);
+    set_clock(clock, balance_row);
 }
 
 fn handle_initialize_token_metadata(
