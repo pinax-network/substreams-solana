@@ -4,7 +4,11 @@ CREATE TABLE IF NOT EXISTS owner_state_latest (
     owner      String,
     version    UInt64,
     block_num  UInt32,
-    timestamp  DateTime('UTC')
+    timestamp  DateTime('UTC'),
+
+    -- indexes --
+    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
+    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(version)
 ORDER BY (account);
@@ -19,7 +23,12 @@ CREATE TABLE IF NOT EXISTS mint_state_latest (
     mint       LowCardinality(String),
     version    UInt64,
     block_num  UInt32,
-    timestamp  DateTime('UTC')
+    timestamp  DateTime('UTC'),
+
+      -- indexes --
+    INDEX idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
+    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
+    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(version)
 ORDER BY (account);
@@ -30,7 +39,12 @@ CREATE TABLE IF NOT EXISTS closed_state_latest (
     closed     UInt8,
     version    UInt64,
     block_num  UInt32,
-    timestamp  DateTime('UTC')
+    timestamp  DateTime('UTC'),
+
+    -- indexes --
+    INDEX idx_closed (closed) TYPE set(2) GRANULARITY 1,
+    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
+    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(version)
 ORDER BY (account);
@@ -41,7 +55,12 @@ CREATE TABLE IF NOT EXISTS frozen_state_latest (
     frozen     UInt8,
     version    UInt64,
     block_num  UInt32,
-    timestamp  DateTime('UTC')
+    timestamp  DateTime('UTC'),
+
+      -- indexes --
+    INDEX idx_frozen (frozen) TYPE set(2) GRANULARITY 1,
+    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
+    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(version)
 ORDER BY (account);
