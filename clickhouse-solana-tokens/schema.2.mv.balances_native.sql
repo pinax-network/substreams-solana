@@ -23,3 +23,18 @@ SELECT
     account,
     amount as lamports
 FROM system_post_balances;
+
+-- Set account to 0 balance on CloseAccount --
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account
+TO balances_native AS
+SELECT
+    block_num,
+    timestamp,
+    account,
+    0 AS lamports
+FROM close_account;
+
+-- Check account that are closed
+SELECT * FROM balances_native
+JOIN close_account USING (account)
+LIMIT 100;
