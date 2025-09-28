@@ -5,9 +5,9 @@ SELECT
   max(version)   AS version,
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
-  argMax(owner, a.version) AS owner
+  argMax(a.owner, a.version) AS owner
 FROM owner_state_latest AS a
-WHERE is_deleted = 0 AND owner != ''
+WHERE is_deleted = 0
 GROUP BY account;
 
 /* Optional fields kept as separate views (same pattern) */
@@ -17,9 +17,9 @@ SELECT
   max(version)   AS version,
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
-  argMax(mint, a.version) AS mint
+  argMax(a.mint, a.version) AS mint
 FROM mint_state_latest AS a
-WHERE is_deleted = 0 AND mint != ''
+WHERE is_deleted = 0
 GROUP BY account;
 
 CREATE OR REPLACE VIEW accounts_closed_view AS
@@ -28,9 +28,9 @@ SELECT
   max(version)   AS version,
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
-  argMax(closed, a.version) AS closed
+  argMax(a.closed, a.version) AS closed
 FROM closed_state_latest AS a
-WHERE is_deleted = 0 AND closed != 0
+WHERE is_deleted = 0
 GROUP BY account;
 
 CREATE OR REPLACE VIEW accounts_frozen_view AS
@@ -39,9 +39,9 @@ SELECT
   max(version)   AS version,
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
-  argMax(frozen, a.version) AS frozen
+  argMax(a.frozen, a.version) AS frozen
 FROM frozen_state_latest AS a
-WHERE is_deleted = 0 AND frozen != 0
+WHERE is_deleted = 0
 GROUP BY account;
 
 /* COMBINED VIEW — owner is required, others are optional */
@@ -52,8 +52,8 @@ SELECT
   o.timestamp,                 -- authoritative timestamp from owner
   o.owner AS owner,
   if(empty(m.mint),  NULL, m.mint)  AS mint,
-  if(empty(c.closed), 0, c.closed) AS closed,
-  if(empty(f.frozen), 0, f.frozen) AS frozen
+  c.closed AS closed,
+  f.frozen AS frozen
 FROM accounts_owner_view AS o
 LEFT JOIN accounts_mint_view   AS m USING (account)
 LEFT JOIN accounts_closed_view AS c USING (account)
