@@ -1,27 +1,60 @@
-CREATE OR REPLACE VIEW accounts AS
-WITH
-  ow AS (SELECT account, argMax(owner, version) AS owner FROM owner_state_latest GROUP BY account),
-  mt AS (SELECT account, argMax(mint, version) AS mint FROM mint_state_latest GROUP BY account),
-  cl AS (SELECT account, argMax(closed, version) AS closed FROM closed_state_latest GROUP BY account),
-  fr AS (SELECT account, argMax(frozen, version) AS frozen FROM frozen_state_latest GROUP BY account)
+/* OWNER (spine) */
+CREATE OR REPLACE VIEW accounts_owner_view AS
 SELECT
-  acc.account as account,
+  account,
+  max(version)   AS version,
+  max(block_num) AS block_num,
+  max(timestamp) AS timestamp,
+  argMax(owner, a.version) AS owner
+FROM owner_state_latest AS a
+WHERE is_deleted = 0 AND owner != ''
+GROUP BY account;
 
-  /* final states */
-  owner,
-  mint,
-  closed,
-  frozen
+/* Optional fields kept as separate views (same pattern) */
+CREATE OR REPLACE VIEW accounts_mint_view AS
+SELECT
+  account,
+  max(version)   AS version,
+  max(block_num) AS block_num,
+  max(timestamp) AS timestamp,
+  argMax(mint, a.version) AS mint
+FROM mint_state_latest AS a
+WHERE is_deleted = 0 AND mint != ''
+GROUP BY account;
 
-FROM
-  /* union of all accounts seen in any table */
-  (
-    SELECT account FROM owner_state_latest
-    UNION DISTINCT SELECT account FROM mint_state_latest
-    UNION DISTINCT SELECT account FROM closed_state_latest
-    UNION DISTINCT SELECT account FROM frozen_state_latest
-  ) AS acc
-LEFT JOIN ow ON ow.account = acc.account
-LEFT JOIN mt ON mt.account = acc.account
-LEFT JOIN cl ON cl.account = acc.account
-LEFT JOIN fr ON fr.account = acc.account;
+CREATE OR REPLACE VIEW accounts_closed_view AS
+SELECT
+  account,
+  max(version)   AS version,
+  max(block_num) AS block_num,
+  max(timestamp) AS timestamp,
+  argMax(closed, a.version) AS closed
+FROM closed_state_latest AS a
+WHERE is_deleted = 0 AND closed != 0
+GROUP BY account;
+
+CREATE OR REPLACE VIEW accounts_frozen_view AS
+SELECT
+  account,
+  max(version)   AS version,
+  max(block_num) AS block_num,
+  max(timestamp) AS timestamp,
+  argMax(frozen, a.version) AS frozen
+FROM frozen_state_latest AS a
+WHERE is_deleted = 0 AND frozen != 0
+GROUP BY account;
+
+/* COMBINED VIEW — owner is required, others are optional */
+CREATE OR REPLACE VIEW accounts_view AS
+SELECT
+  o.account,
+  o.block_num,                 -- authoritative block_num from owner
+  o.timestamp,                 -- authoritative timestamp from owner
+  o.owner AS owner,
+  if(empty(m.mint),  NULL, m.mint)  AS mint,
+  if(empty(c.closed), 0, c.closed) AS closed,
+  if(empty(f.frozen), 0, f.frozen) AS frozen
+FROM accounts_owner_view AS o
+LEFT JOIN accounts_mint_view   AS m USING (account)
+LEFT JOIN accounts_closed_view AS c USING (account)
+LEFT JOIN accounts_frozen_view AS f USING (account);

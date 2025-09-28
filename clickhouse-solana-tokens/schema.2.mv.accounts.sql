@@ -1,69 +1,49 @@
--- OWNER
-CREATE TABLE IF NOT EXISTS owner_state_latest (
-    account    String,
-    owner      String,
-    version    UInt64,
-    block_num  UInt32,
-    timestamp  DateTime('UTC'),
+CREATE TABLE IF NOT EXISTS TEMPLATE_ACCOUNTS_STATE (
+    account      String,
+    version      UInt64,
+    is_deleted   UInt8,
+    block_num    UInt32,
+    timestamp    DateTime('UTC'),
 
     -- indexes --
     INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
     INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
 )
-ENGINE = ReplacingMergeTree(version)
+ENGINE = ReplacingMergeTree(version, is_deleted)
 ORDER BY (account);
 
-ALTER TABLE owner_state_latest MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+ALTER TABLE TEMPLATE_ACCOUNTS_STATE
+  MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+ALTER TABLE TEMPLATE_ACCOUNTS_STATE
+  MODIFY SETTING allow_experimental_replacing_merge_with_cleanup = 1;
+
+-- OWNER
+CREATE TABLE IF NOT EXISTS owner_state_latest AS TEMPLATE_ACCOUNTS_STATE;
 ALTER TABLE owner_state_latest
+    ADD COLUMN IF NOT EXISTS owner String,
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(owner = '', 1, 0),
     ADD PROJECTION IF NOT EXISTS prj_owner (SELECT * ORDER BY owner);
 
 -- MINT
-CREATE TABLE IF NOT EXISTS mint_state_latest (
-    account    String,
-    mint       LowCardinality(String),
-    version    UInt64,
-    block_num  UInt32,
-    timestamp  DateTime('UTC'),
-
-      -- indexes --
-    INDEX idx_mint (mint) TYPE bloom_filter(0.005) GRANULARITY 1,
-    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
-    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (account);
+CREATE TABLE IF NOT EXISTS mint_state_latest AS TEMPLATE_ACCOUNTS_STATE;
+ALTER TABLE mint_state_latest
+    ADD COLUMN IF NOT EXISTS mint LowCardinality(String),
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(mint = '', 1, 0),
+    ADD PROJECTION IF NOT EXISTS prj_mint (SELECT * ORDER BY (mint, account));
 
 -- CLOSED (0/1)
-CREATE TABLE IF NOT EXISTS closed_state_latest (
-    account    String,
-    closed     UInt8,
-    version    UInt64,
-    block_num  UInt32,
-    timestamp  DateTime('UTC'),
-
-    -- indexes --
-    INDEX idx_closed (closed) TYPE set(2) GRANULARITY 1,
-    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
-    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (account);
+CREATE TABLE IF NOT EXISTS closed_state_latest AS TEMPLATE_ACCOUNTS_STATE;
+ALTER TABLE closed_state_latest
+    ADD COLUMN IF NOT EXISTS closed UInt8,
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(closed = 0, 1, 0),
+    ADD PROJECTION IF NOT EXISTS prj_closed (SELECT * ORDER BY (closed, account));
 
 -- FROZEN (0/1)
-CREATE TABLE IF NOT EXISTS frozen_state_latest (
-    account    String,
-    frozen     UInt8,
-    version    UInt64,
-    block_num  UInt32,
-    timestamp  DateTime('UTC'),
-
-      -- indexes --
-    INDEX idx_frozen (frozen) TYPE set(2) GRANULARITY 1,
-    INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
-    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
-)
-ENGINE = ReplacingMergeTree(version)
-ORDER BY (account);
+CREATE TABLE IF NOT EXISTS frozen_state_latest AS TEMPLATE_ACCOUNTS_STATE;
+ALTER TABLE frozen_state_latest
+    ADD COLUMN IF NOT EXISTS frozen UInt8,
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(frozen = 0, 1, 0),
+    ADD PROJECTION IF NOT EXISTS prj_frozen (SELECT * ORDER BY (frozen, account));
 
 -- INITIALIZE
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_initialize_owner
@@ -74,8 +54,7 @@ SELECT
   version,
   block_num,
   timestamp
-FROM initialize_account
-WHERE owner IS NOT NULL;
+FROM initialize_account;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_mint_state_initialize_mint
 TO mint_state_latest AS
@@ -85,8 +64,7 @@ SELECT
   version,
   block_num,
   timestamp
-FROM initialize_account
-WHERE mint IS NOT NULL;
+FROM initialize_account;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_initialize_closed0
 TO closed_state_latest AS
