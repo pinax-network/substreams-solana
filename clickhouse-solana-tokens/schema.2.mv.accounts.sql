@@ -7,15 +7,17 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_ACCOUNTS_STATE (
 
     -- indexes --
     INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
-    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1
+    INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1,
+    INDEX idx_is_deleted (is_deleted) TYPE set(2) GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(version, is_deleted)
 ORDER BY (account);
 
-ALTER TABLE TEMPLATE_ACCOUNTS_STATE
-  MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+-- TTL to clean up deleted rows after 0 seconds (immediate cleanup on merge)
 ALTER TABLE TEMPLATE_ACCOUNTS_STATE
   MODIFY SETTING allow_experimental_replacing_merge_with_cleanup = 1;
+ALTER TABLE TEMPLATE_ACCOUNTS_STATE
+  MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 
 -- OWNER
 CREATE TABLE IF NOT EXISTS owner_state_latest AS TEMPLATE_ACCOUNTS_STATE;
@@ -35,15 +37,13 @@ ALTER TABLE mint_state_latest
 CREATE TABLE IF NOT EXISTS closed_state_latest AS TEMPLATE_ACCOUNTS_STATE;
 ALTER TABLE closed_state_latest
     ADD COLUMN IF NOT EXISTS closed UInt8,
-    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(closed = 0, 1, 0),
-    ADD PROJECTION IF NOT EXISTS prj_closed (SELECT * ORDER BY (closed, account));
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(closed = 0, 1, 0);
 
 -- FROZEN (0/1)
 CREATE TABLE IF NOT EXISTS frozen_state_latest AS TEMPLATE_ACCOUNTS_STATE;
 ALTER TABLE frozen_state_latest
     ADD COLUMN IF NOT EXISTS frozen UInt8,
-    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(frozen = 0, 1, 0),
-    ADD PROJECTION IF NOT EXISTS prj_frozen (SELECT * ORDER BY (frozen, account));
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(frozen = 0, 1, 0);
 
 -- INITIALIZE
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_initialize_owner
@@ -127,7 +127,7 @@ SELECT
   block_num,
   timestamp
 FROM set_authority
-WHERE authority_type = 'AccountOwner' AND new_authority IS NOT NULL;
+WHERE authority_type = 'AccountOwner';
 
 -- FREEZE / THAW
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_frozen_state_freeze_account
