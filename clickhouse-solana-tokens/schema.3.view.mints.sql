@@ -41,7 +41,7 @@ SELECT
   d.decimals AS decimals,
   i.immutable AS immutable
 FROM decimals_view AS d
-LEFT JOIN accounts_owner_view AS o ON account = d.mint
+LEFT JOIN owner_view AS o ON o.account = d.mint
 LEFT JOIN mint_authority_view AS m USING (mint)
 LEFT JOIN freeze_authority_view AS f USING (mint)
-LEFT JOIN accounts_immutable_view AS i ON (account = d.mint);
+LEFT JOIN immutable_owner_view AS i ON i.account = d.mint;

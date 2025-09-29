@@ -27,21 +27,21 @@ ALTER TABLE owner_state_latest
     ADD PROJECTION IF NOT EXISTS prj_owner (SELECT * ORDER BY owner);
 
 -- MINT
-CREATE TABLE IF NOT EXISTS mint_state_latest AS TEMPLATE_ACCOUNTS_STATE;
-ALTER TABLE mint_state_latest
+CREATE TABLE IF NOT EXISTS account_mint_state_latest AS TEMPLATE_ACCOUNTS_STATE;
+ALTER TABLE account_mint_state_latest
     ADD COLUMN IF NOT EXISTS mint LowCardinality(String),
     MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(mint = '', 1, 0),
     ADD PROJECTION IF NOT EXISTS prj_mint (SELECT * ORDER BY (mint, account));
 
--- CLOSED (0/1)
-CREATE TABLE IF NOT EXISTS closed_state_latest AS TEMPLATE_ACCOUNTS_STATE;
-ALTER TABLE closed_state_latest
+-- CLOSE ACCOUNT (0/1)
+CREATE TABLE IF NOT EXISTS close_account_state_latest AS TEMPLATE_ACCOUNTS_STATE;
+ALTER TABLE close_account_state_latest
     ADD COLUMN IF NOT EXISTS closed UInt8,
     MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(closed = 0, 1, 0);
 
 -- FROZEN (0/1)
-CREATE TABLE IF NOT EXISTS frozen_state_latest AS TEMPLATE_ACCOUNTS_STATE;
-ALTER TABLE frozen_state_latest
+CREATE TABLE IF NOT EXISTS freeze_account_state_latest AS TEMPLATE_ACCOUNTS_STATE;
+ALTER TABLE freeze_account_state_latest
     ADD COLUMN IF NOT EXISTS frozen UInt8,
     MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(frozen = 0, 1, 0);
 
@@ -63,7 +63,7 @@ SELECT
 FROM initialize_account;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_mint_state_initialize_mint
-TO mint_state_latest AS
+TO account_mint_state_latest AS
 SELECT
   account,
   mint,
@@ -72,8 +72,8 @@ SELECT
   timestamp
 FROM initialize_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_initialize_closed0
-TO closed_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_initialize_closed0
+TO close_account_state_latest AS
 SELECT
   account,
   0 as closed,
@@ -82,8 +82,8 @@ SELECT
   timestamp
 FROM initialize_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_frozen_state_initialize_frozen0
-TO frozen_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account_state_initialize_frozen0
+TO freeze_account_state_latest AS
 SELECT
   account,
   0 as frozen,
@@ -93,8 +93,8 @@ SELECT
 FROM initialize_account;
 
 -- CLOSE -> closed = 1 (do not touch others)
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_close_account
-TO closed_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_close_account
+TO close_account_state_latest AS
 SELECT
   account,
   1 as closed,
@@ -103,7 +103,7 @@ SELECT
   timestamp
 FROM close_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_close_account_owner
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_close_account_owner
 TO owner_state_latest AS
 SELECT
   account,
@@ -113,8 +113,8 @@ SELECT
   timestamp
 FROM close_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_close_account_mint
-TO mint_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_close_account_mint
+TO account_mint_state_latest AS
 SELECT
   account,
   '' as mint,
@@ -136,8 +136,8 @@ FROM set_authority
 WHERE authority_type = 'AccountOwner';
 
 -- FREEZE / THAW
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_frozen_state_freeze_account
-TO frozen_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account_state_freeze_account
+TO freeze_account_state_latest AS
 SELECT
   account,
   1 as frozen,
@@ -146,8 +146,8 @@ SELECT
   timestamp
 FROM freeze_account;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_frozen_state_thaw_account
-TO frozen_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account_state_thaw_account
+TO freeze_account_state_latest AS
 SELECT
   account,
   0 as frozen,
