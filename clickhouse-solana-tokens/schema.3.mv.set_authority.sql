@@ -20,7 +20,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_freeze_authority
 TO freeze_authority_state_latest AS
 SELECT
   account AS mint,
-  new_authority AS freeze_authority,
+  new_authority_raw AS freeze_authority,
   version,
   block_num,
   timestamp
@@ -32,7 +32,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_mint_authority
 TO mint_authority_state_latest AS
 SELECT
   account AS mint,
-  new_authority AS mint_authority,
+  new_authority_raw AS mint_authority,
   version,
   block_num,
   timestamp
@@ -44,7 +44,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_owner
 TO owner_state_latest AS
 SELECT
   account,
-  new_authority as owner,
+  new_authority_raw AS owner,
   version,
   block_num,
   timestamp

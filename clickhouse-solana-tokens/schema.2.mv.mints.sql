@@ -70,7 +70,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_authority_state_initialize_mint
 TO freeze_authority_state_latest AS
 SELECT
   mint,
-  freeze_authority,
+  freeze_authority_raw AS freeze_authority,
   version,
   block_num,
   timestamp
