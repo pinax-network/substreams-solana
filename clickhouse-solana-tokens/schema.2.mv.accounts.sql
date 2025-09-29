@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_ACCOUNTS_STATE (
     version      UInt64,
     is_deleted   UInt8,
     block_num    UInt32,
-    timestamp    DateTime('UTC'),
+    timestamp    DateTime(0, 'UTC'),
 
     -- indexes --
     INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
@@ -44,6 +44,12 @@ CREATE TABLE IF NOT EXISTS frozen_state_latest AS TEMPLATE_ACCOUNTS_STATE;
 ALTER TABLE frozen_state_latest
     ADD COLUMN IF NOT EXISTS frozen UInt8,
     MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(frozen = 0, 1, 0);
+
+-- IMMUTABLE OWNER (0/1)
+CREATE TABLE IF NOT EXISTS immutable_owner_state_latest AS TEMPLATE_ACCOUNTS_STATE;
+ALTER TABLE immutable_owner_state_latest
+    ADD COLUMN IF NOT EXISTS immutable UInt8,
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(immutable = 0, 1, 0);
 
 -- INITIALIZE
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_initialize_owner
@@ -150,3 +156,13 @@ SELECT
   timestamp
 FROM thaw_account;
 
+-- IMMUTABLE OWNER
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_immutable_owner_state_set_authority_immutable_owner
+TO immutable_owner_state_latest AS
+SELECT
+  account,
+  1 as immutable,
+  version,
+  block_num,
+  timestamp
+FROM initialize_immutable_owner;
