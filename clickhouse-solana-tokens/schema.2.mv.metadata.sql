@@ -34,7 +34,6 @@ ALTER TABLE metadata_symbol_state_latest
     ADD COLUMN IF NOT EXISTS symbol LowCardinality(String) AFTER metadata,
     ADD PROJECTION IF NOT EXISTS prj_symbol (SELECT * ORDER BY (symbol, metadata));
 
-
 /* URI */
 CREATE TABLE IF NOT EXISTS metadata_uri_state_latest AS TEMPLATE_METADATA;
 ALTER TABLE metadata_uri_state_latest

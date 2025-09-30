@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS TEMPLATE_MINTS_STATE (
     mint         String,
+    program_id   LowCardinality(String),
     version      UInt64,
     is_deleted   UInt8,
     block_num    UInt32,
@@ -8,6 +9,7 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_MINTS_STATE (
     -- indexes --
     INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
     INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1,
+    INDEX idx_program_id (program_id) TYPE set(2) GRANULARITY 1,
     INDEX idx_is_deleted (is_deleted) TYPE set(2) GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(version, is_deleted)
@@ -49,6 +51,7 @@ ALTER TABLE close_mint_state_latest
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_decimals_state_initialize_mint
 TO decimals_state_latest AS
 SELECT
+  program_id,
   mint,
   decimals,
   version,
@@ -59,6 +62,7 @@ FROM initialize_mint;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_mint_authority_state_initialize_mint
 TO mint_authority_state_latest AS
 SELECT
+  program_id,
   mint,
   mint_authority,
   version,
@@ -69,6 +73,7 @@ FROM initialize_mint;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_authority_state_initialize_mint
 TO freeze_authority_state_latest AS
 SELECT
+  program_id,
   mint,
   freeze_authority_raw AS freeze_authority,
   version,
@@ -79,6 +84,7 @@ FROM initialize_mint;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_mint_state_initialize_closed0
 TO close_mint_state_latest AS
 SELECT
+  program_id,
   mint,
   0 as closed,
   version,
