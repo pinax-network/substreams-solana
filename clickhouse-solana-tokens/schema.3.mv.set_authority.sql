@@ -19,6 +19,7 @@ ALTER TABLE set_authority
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_freeze_authority
 TO freeze_authority_state_latest AS
 SELECT
+  program_id,
   account AS mint,
   new_authority_raw AS freeze_authority,
   version,
@@ -31,6 +32,7 @@ WHERE authority_type = 'AUTHORITY_TYPE_FREEZE_ACCOUNT';
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_mint_authority
 TO mint_authority_state_latest AS
 SELECT
+  program_id,
   account AS mint,
   new_authority_raw AS mint_authority,
   version,
@@ -43,6 +45,7 @@ WHERE authority_type = 'AUTHORITY_TYPE_MINT_TOKENS';
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_owner
 TO owner_state_latest AS
 SELECT
+  program_id,
   account,
   new_authority_raw AS owner,
   version,
@@ -55,6 +58,7 @@ WHERE authority_type = 'AUTHORITY_TYPE_ACCOUNT_OWNER';
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_set_authority_owner
 TO owner_state_latest AS
 SELECT
+  program_id,
   account,
   '' as owner,
   version,
@@ -67,6 +71,7 @@ WHERE authority_type = 'AUTHORITY_TYPE_CLOSE_ACCOUNT';
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_mint_state_set_authority_close_mint
 TO close_mint_state_latest AS
 SELECT
+  program_id,
   account AS mint,
   1 AS closed,
   version,
