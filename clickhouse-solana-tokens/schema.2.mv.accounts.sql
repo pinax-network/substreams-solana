@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS TEMPLATE_ACCOUNTS_STATE (
     account      String,
+    program_id   LowCardinality(String),
     version      UInt64,
     is_deleted   UInt8,
     block_num    UInt32,
@@ -8,6 +9,7 @@ CREATE TABLE IF NOT EXISTS TEMPLATE_ACCOUNTS_STATE (
     -- indexes --
     INDEX idx_block_num (block_num) TYPE minmax GRANULARITY 1,
     INDEX idx_timestamp (timestamp) TYPE minmax GRANULARITY 1,
+    INDEX idx_program_id (program_id) TYPE set(2) GRANULARITY 1,
     INDEX idx_is_deleted (is_deleted) TYPE set(2) GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree(version, is_deleted)
@@ -18,6 +20,9 @@ ALTER TABLE TEMPLATE_ACCOUNTS_STATE
   MODIFY SETTING allow_experimental_replacing_merge_with_cleanup = 1;
 ALTER TABLE TEMPLATE_ACCOUNTS_STATE
   MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
+
+-- ACCOUNT (CREATED AT)
+CREATE TABLE IF NOT EXISTS account_state_latest AS TEMPLATE_ACCOUNTS_STATE;
 
 -- OWNER
 CREATE TABLE IF NOT EXISTS owner_state_latest AS TEMPLATE_ACCOUNTS_STATE;
@@ -55,8 +60,19 @@ ALTER TABLE immutable_owner_state_latest
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_initialize_owner
 TO owner_state_latest AS
 SELECT
+  program_id,
   account,
   owner,
+  version,
+  block_num,
+  timestamp
+FROM initialize_account;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_account_state_initialize_created
+TO account_state_latest AS
+SELECT
+  program_id,
+  account,
   version,
   block_num,
   timestamp
@@ -65,6 +81,7 @@ FROM initialize_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_mint_state_initialize_mint
 TO account_mint_state_latest AS
 SELECT
+  program_id,
   account,
   mint,
   version,
@@ -75,6 +92,7 @@ FROM initialize_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_initialize_closed0
 TO close_account_state_latest AS
 SELECT
+  program_id,
   account,
   0 as closed,
   version,
@@ -85,6 +103,7 @@ FROM initialize_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account_state_initialize_frozen0
 TO freeze_account_state_latest AS
 SELECT
+  program_id,
   account,
   0 as frozen,
   version,
@@ -96,6 +115,7 @@ FROM initialize_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_close_account
 TO close_account_state_latest AS
 SELECT
+  program_id,
   account,
   1 as closed,
   version,
@@ -106,6 +126,7 @@ FROM close_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_close_account_owner
 TO owner_state_latest AS
 SELECT
+  program_id,
   account,
   '' as owner,
   version,
@@ -116,6 +137,7 @@ FROM close_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_state_close_account_mint
 TO account_mint_state_latest AS
 SELECT
+  program_id,
   account,
   '' as mint,
   version,
@@ -127,6 +149,7 @@ FROM close_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_set_authority_owner
 TO owner_state_latest AS
 SELECT
+  program_id,
   account,
   new_authority as owner,
   version,
@@ -139,6 +162,7 @@ WHERE authority_type = 'AccountOwner';
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account_state_freeze_account
 TO freeze_account_state_latest AS
 SELECT
+  program_id,
   account,
   1 as frozen,
   version,
@@ -149,6 +173,7 @@ FROM freeze_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account_state_thaw_account
 TO freeze_account_state_latest AS
 SELECT
+  program_id,
   account,
   0 as frozen,
   version,
@@ -160,6 +185,7 @@ FROM thaw_account;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_immutable_owner_state_set_authority_immutable_owner
 TO immutable_owner_state_latest AS
 SELECT
+  program_id,
   account,
   1 as immutable,
   version,
