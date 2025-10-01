@@ -31,7 +31,9 @@ SELECT
   d.decimals AS decimals,
   i.immutable AS immutable
 FROM decimals_state_latest AS d
-LEFT JOIN metadata_update_authority_view AS u ON u.metadata = d.mint
+LEFT JOIN metadata_mint_state_latest AS mm USING (mint)          -- 1:1 mint -> metadata
+LEFT JOIN metadata_update_authority_view AS u USING (metadata)   -- now cheap
 LEFT JOIN mint_authority_view AS m USING (mint)
 LEFT JOIN freeze_authority_view AS f USING (mint)
-LEFT JOIN immutable_owner_view AS i ON i.account = d.mint;
+LEFT JOIN immutable_owner_view  AS i ON i.account = d.mint;
+
