@@ -6,7 +6,7 @@ SELECT
   max(block_num) as block_num,
   max(timestamp) as timestamp,
   argMax(name, m.version) AS name
-FROM metadata_name_state_latest as m
+FROM metadata_name_state as m
 GROUP BY metadata;
 
 /* SYMBOL */
@@ -17,7 +17,7 @@ SELECT
   max(block_num) as block_num,
   max(timestamp) as timestamp,
   argMax(symbol, m.version) AS symbol
-FROM metadata_symbol_state_latest as m
+FROM metadata_symbol_state as m
 GROUP BY metadata;
 
 /* URI */
@@ -28,7 +28,7 @@ SELECT
   max(block_num) as block_num,
   max(timestamp) as timestamp,
   argMax(uri, m.version) AS uri
-FROM metadata_uri_state_latest as m
+FROM metadata_uri_state as m
 GROUP BY metadata;
 
 /* MINT AUTHORITY */
@@ -39,7 +39,7 @@ SELECT
   max(block_num) as block_num,
   max(timestamp) as timestamp,
   argMax(mint_authority, m.version) AS mint_authority
-FROM metadata_mint_authority_state_latest as m
+FROM metadata_mint_authority_state as m
 GROUP BY metadata;
 
 /* UPDATE AUTHORITY */
@@ -50,7 +50,7 @@ SELECT
   max(block_num) as block_num,
   max(timestamp) as timestamp,
   argMax(update_authority, m.version) AS update_authority
-FROM metadata_update_authority_state_latest as m
+FROM metadata_update_authority_state as m
 GROUP BY metadata;
 
 /* COMBINED VIEW */
@@ -65,7 +65,7 @@ SELECT
     if(empty(u.uri), NULL, u.uri) AS uri,
     if(empty(ma.mint_authority), NULL, ma.mint_authority) AS mint_authority,
     if(empty(ua.update_authority), NULL, ua.update_authority) AS update_authority
-FROM metadata_mint_state_latest AS k
+FROM metadata_mint_state AS k
     LEFT JOIN metadata_name_view              AS n  USING (metadata)
     LEFT JOIN metadata_symbol_view            AS s  USING (metadata)
     LEFT JOIN metadata_uri_view               AS u  USING (metadata)

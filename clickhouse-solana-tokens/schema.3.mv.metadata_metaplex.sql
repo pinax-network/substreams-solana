@@ -5,7 +5,7 @@
 /* ---------- CREATE: fan-out initial state ---------- */
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_update_authority
-TO metadata_update_authority_state_latest AS
+TO metadata_update_authority_state AS
 SELECT
     metadata,
     update_authority,
@@ -15,7 +15,7 @@ SELECT
 FROM metaplex_create_metadata_account;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_mint
-TO metadata_mint_state_latest AS
+TO metadata_mint_state AS
 SELECT
     metadata,
     mint,
@@ -28,7 +28,7 @@ FROM metaplex_create_metadata_account;
 -- For now, Metaplex create schema doesn’t include mint_authority.
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_name
-TO metadata_name_state_latest AS
+TO metadata_name_state AS
 SELECT
     metadata,
     name,
@@ -39,7 +39,7 @@ FROM metaplex_create_metadata_account
 WHERE name != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_symbol
-TO metadata_symbol_state_latest AS
+TO metadata_symbol_state AS
 SELECT
     metadata,
     symbol,
@@ -50,7 +50,7 @@ FROM metaplex_create_metadata_account
 WHERE symbol != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_uri
-TO metadata_uri_state_latest AS
+TO metadata_uri_state AS
 SELECT
     metadata,
     uri,
@@ -63,8 +63,8 @@ WHERE uri != '';
 /* ---------- UPDATE AUTHORITY ---------- */
 
 -- Only apply if provided (ignore empty string = no-op)
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_update_authority_latest
-TO metadata_update_authority_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_update_authority
+TO metadata_update_authority_state AS
 SELECT
     metadata,
     update_authority,
@@ -79,7 +79,7 @@ WHERE update_authority != '';
 
 -- Only apply if provided (ignore empty string = no-op)
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_field_name
-TO metadata_name_state_latest AS
+TO metadata_name_state AS
 SELECT
     metadata,
     name,
@@ -90,7 +90,7 @@ FROM metaplex_update_metadata_account
 WHERE name != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_field_symbol
-TO metadata_symbol_state_latest AS
+TO metadata_symbol_state AS
 SELECT
     metadata,
     symbol,
@@ -101,7 +101,7 @@ FROM metaplex_update_metadata_account
 WHERE symbol != '';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_field_uri
-TO metadata_uri_state_latest AS
+TO metadata_uri_state AS
 SELECT
     metadata,
     uri,

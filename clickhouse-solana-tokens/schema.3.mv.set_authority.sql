@@ -17,11 +17,11 @@ ALTER TABLE set_authority
 
 -- FREEZE AUTHORITY
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_freeze_authority
-TO freeze_authority_state_latest AS
+TO freeze_authority_state AS
 SELECT
   program_id,
   account AS mint,
-  new_authority_raw AS freeze_authority,
+  new_authority_raw AS authority,
   version,
   block_num,
   timestamp
@@ -30,11 +30,11 @@ WHERE authority_type = 'AUTHORITY_TYPE_FREEZE_ACCOUNT';
 
 -- MINT AUTHORITY
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_mint_authority
-TO mint_authority_state_latest AS
+TO mint_authority_state AS
 SELECT
   program_id,
   account AS mint,
-  new_authority_raw AS mint_authority,
+  new_authority_raw AS authority,
   version,
   block_num,
   timestamp
@@ -43,7 +43,7 @@ WHERE authority_type = 'AUTHORITY_TYPE_MINT_TOKENS';
 
 -- OWNER (UPDATE AUTHORITY)
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_authority_owner
-TO owner_state_latest AS
+TO owner_state AS
 SELECT
   program_id,
   account,
@@ -55,12 +55,12 @@ FROM set_authority
 WHERE authority_type = 'AUTHORITY_TYPE_ACCOUNT_OWNER';
 
 -- CLOSE ACCOUNT
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_closed_state_set_authority_owner
-TO owner_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_close_account_authority
+TO close_account_authority_state AS
 SELECT
   program_id,
   account,
-  '' as owner,
+  new_authority_raw AS authority,
   version,
   block_num,
   timestamp
@@ -68,12 +68,12 @@ FROM set_authority
 WHERE authority_type = 'AUTHORITY_TYPE_CLOSE_ACCOUNT';
 
 -- CLOSE MINT
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_mint_state_set_authority_close_mint
-TO close_mint_state_latest AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_set_close_mint_authority
+TO close_mint_authority_state AS
 SELECT
   program_id,
   account AS mint,
-  1 AS closed,
+  new_authority_raw AS authority,
   version,
   block_num,
   timestamp

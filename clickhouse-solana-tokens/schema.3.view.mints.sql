@@ -5,7 +5,7 @@ SELECT
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
   argMax(a.mint_authority, a.version) AS mint_authority
-FROM mint_authority_state_latest AS a
+FROM mint_authority_state AS a
 GROUP BY mint;
 
 CREATE OR REPLACE VIEW freeze_authority_view AS
@@ -15,7 +15,7 @@ SELECT
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
   argMax(a.freeze_authority, a.version) AS freeze_authority
-FROM freeze_authority_state_latest AS a
+FROM freeze_authority_state AS a
 GROUP BY mint;
 
 -- Ideal for general mints lookups
@@ -30,8 +30,8 @@ SELECT
   if(empty(f.freeze_authority), NULL, f.freeze_authority) AS freeze_authority, -- can be null (non-freezable)
   d.decimals AS decimals,
   i.immutable AS immutable
-FROM decimals_state_latest AS d
-LEFT JOIN metadata_mint_state_latest AS mm USING (mint)          -- 1:1 mint -> metadata
+FROM decimals_state AS d
+LEFT JOIN metadata_mint_state AS mm USING (mint)          -- 1:1 mint -> metadata
 LEFT JOIN metadata_update_authority_view AS u USING (metadata)   -- now cheap
 LEFT JOIN mint_authority_view AS m USING (mint)
 LEFT JOIN freeze_authority_view AS f USING (mint)

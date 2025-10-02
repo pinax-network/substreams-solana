@@ -7,7 +7,7 @@ SELECT
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
   argMax(a.owner, a.version) AS owner
-FROM owner_state_latest AS a
+FROM owner_state AS a
 GROUP BY account;
 
 /* Optional fields kept as separate views (same pattern) */
@@ -19,7 +19,7 @@ SELECT
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
   argMax(a.mint, a.version) AS mint
-FROM account_mint_state_latest AS a
+FROM account_mint_state AS a
 GROUP BY account;
 
 CREATE OR REPLACE VIEW close_account_view AS
@@ -30,7 +30,7 @@ SELECT
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
   argMax(a.closed, a.version) AS closed
-FROM close_account_state_latest AS a
+FROM close_account_state AS a
 GROUP BY account;
 
 CREATE OR REPLACE VIEW freeze_account_view AS
@@ -41,7 +41,7 @@ SELECT
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
   argMax(a.frozen, a.version) AS frozen
-FROM freeze_account_state_latest AS a
+FROM freeze_account_state AS a
 GROUP BY account;
 
 CREATE OR REPLACE VIEW immutable_owner_view AS
@@ -52,7 +52,7 @@ SELECT
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
   argMax(a.immutable, a.version) AS immutable
-FROM immutable_owner_state_latest AS a
+FROM immutable_owner_state AS a
 GROUP BY account;
 
 -- Ideal for general account lookups
@@ -67,7 +67,7 @@ SELECT
   c.closed AS closed,
   f.frozen AS frozen,
   i.immutable AS immutable
-FROM account_state_latest AS a
+FROM account_state AS a
 LEFT JOIN account_mint_view AS m USING (account)
 LEFT JOIN owner_view AS o USING (account)
 LEFT JOIN close_account_view AS c USING (account)
