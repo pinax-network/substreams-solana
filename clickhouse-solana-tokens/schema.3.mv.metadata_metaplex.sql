@@ -8,7 +8,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_create_update_authority
 TO metadata_update_authority_state AS
 SELECT
     metadata,
-    update_authority,
+    update_authority as authority,
     version,
     block_num,
     timestamp
@@ -67,13 +67,11 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_update_authority
 TO metadata_update_authority_state AS
 SELECT
     metadata,
-    update_authority,
+    update_authority as authority,
     version,
     block_num,
     timestamp
-FROM metaplex_update_metadata_account
-WHERE update_authority != '';
-
+FROM metaplex_update_metadata_account;
 
 /* ---------- FIELD UPDATES (name/symbol/uri) ---------- */
 
@@ -86,8 +84,7 @@ SELECT
     version,
     block_num,
     timestamp
-FROM metaplex_update_metadata_account
-WHERE name != '';
+FROM metaplex_update_metadata_account;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_field_symbol
 TO metadata_symbol_state AS
@@ -97,8 +94,7 @@ SELECT
     version,
     block_num,
     timestamp
-FROM metaplex_update_metadata_account
-WHERE symbol != '';
+FROM metaplex_update_metadata_account;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_metaplex_update_field_uri
 TO metadata_uri_state AS
@@ -108,5 +104,4 @@ SELECT
     version,
     block_num,
     timestamp
-FROM metaplex_update_metadata_account
-WHERE uri != '';
+FROM metaplex_update_metadata_account;

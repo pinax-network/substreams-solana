@@ -57,9 +57,9 @@ ALTER TABLE immutable_owner_state
 -- CLOSE ACCOUNT AUTHORITY
 CREATE TABLE IF NOT EXISTS close_account_authority_state AS TEMPLATE_ACCOUNTS_STATE;
 ALTER TABLE close_account_authority_state
-    ADD COLUMN IF NOT EXISTS close_account_authority String,
-    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(close_account_authority = '', 1, 0),
-    ADD PROJECTION IF NOT EXISTS prj_close_account_authority (SELECT * ORDER BY (close_account_authority, account));
+    ADD COLUMN IF NOT EXISTS authority String,
+    MODIFY COLUMN is_deleted UInt8 MATERIALIZED if(authority = '', 1, 0),
+    ADD PROJECTION IF NOT EXISTS prj_authority (SELECT * ORDER BY (authority, account));
 
 -- INITIALIZE
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_owner_state_initialize_owner

@@ -4,7 +4,7 @@ SELECT
   max(version)   AS version,
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
-  argMax(a.mint_authority, a.version) AS mint_authority
+  argMax(a.authority, a.version) AS authority
 FROM mint_authority_state AS a
 GROUP BY mint;
 
@@ -14,7 +14,7 @@ SELECT
   max(version)   AS version,
   max(block_num) AS block_num,
   max(timestamp) AS timestamp,
-  argMax(a.freeze_authority, a.version) AS freeze_authority
+  argMax(a.authority, a.version) AS authority
 FROM freeze_authority_state AS a
 GROUP BY mint;
 
@@ -25,9 +25,9 @@ SELECT
   d.program_id as program_id,
   d.block_num as block_num,                 -- authoritative block_num from decimals
   d.timestamp as timestamp,                 -- authoritative timestamp from decimals
-  if(empty(u.update_authority), NULL, u.update_authority) AS update_authority, -- can be null (belongs to system contract)
-  if(empty(m.mint_authority), NULL, m.mint_authority) AS mint_authority, -- can be null (non-mintable)
-  if(empty(f.freeze_authority), NULL, f.freeze_authority) AS freeze_authority, -- can be null (non-freezable)
+  if(empty(u.authority), NULL, u.authority) AS update_authority, -- can be null (belongs to system contract)
+  if(empty(m.authority), NULL, m.authority) AS mint_authority, -- can be null (non-mintable)
+  if(empty(f.authority), NULL, f.authority) AS freeze_authority, -- can be null (non-freezable)
   d.decimals AS decimals,
   i.immutable AS immutable
 FROM decimals_state AS d
