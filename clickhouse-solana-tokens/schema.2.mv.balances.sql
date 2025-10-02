@@ -38,7 +38,7 @@ SELECT
 FROM post_token_balances;
 
 -- Set account to 0 balance on CloseAccount --
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_balances
 TO balances AS
 SELECT
     block_num,

@@ -25,7 +25,7 @@ SELECT
 FROM system_post_balances;
 
 -- Set account to 0 balance on CloseAccount --
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_close_account_balances_native
 TO balances_native AS
 SELECT
     block_num,
@@ -33,8 +33,3 @@ SELECT
     account,
     0 AS lamports
 FROM close_account;
-
--- Check account that are closed
-SELECT * FROM balances_native
-JOIN close_account USING (account)
-LIMIT 100;
