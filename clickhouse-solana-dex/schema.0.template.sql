@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS base_events (
     INDEX idx_signer            (signer)            TYPE bloom_filter(0.005)    GRANULARITY 1
 )
 ENGINE = ReplacingMergeTree
-PARTITION BY toYYYYMM(timestamp)
 ORDER BY (
     timestamp, block_num,
     block_hash, transaction_index, instruction_index
