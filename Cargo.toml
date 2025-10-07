@@ -1,12 +1,14 @@
 [workspace]
 members = [
-  # Tokens
+  # Clickhouse
   "clickhouse-solana-tokens",
+  "clickhouse-solana-dex",
+
+  # Tokens
   "spl-token",
   "native-token",
 
   # DEXs
-  "clickhouse-solana-dex",
   "pumpfun/bonding_curve",
   "pumpfun/amm",
   "jupiter/v4",
@@ -20,10 +22,6 @@ members = [
   "meteora/amm",
   "meteora/daam",
   "meteora/dllm",
-
-  # # General
-  # "clickhouse-transactions",
-  # "clickhouse-contracts",
 
   # Common
   "proto",
