@@ -39,6 +39,11 @@ ORDER BY (
 ALTER TABLE base_events
   MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 
+ALTER TABLE base_events
+    ADD PROJECTION IF NOT EXISTS prj_signature (SELECT signature, timestamp, _part_offset ORDER BY (signature, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY (fee_payer, timestamp)),
+    ADD PROJECTION IF NOT EXISTS prj_signer (SELECT signer, timestamp, _part_offset ORDER BY (signer, timestamp));
+
 CREATE TABLE IF NOT EXISTS base_transactions AS base_events;
 ALTER TABLE base_transactions
     DROP PROJECTION IF EXISTS prj_part_program_id,
