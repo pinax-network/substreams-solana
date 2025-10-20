@@ -1,8 +1,8 @@
 -- Accounts interactions by Date --
 CREATE TABLE IF NOT EXISTS accounts_by_date (
     account                 String,
-    date                    Date,
-    hour                    UInt32,
+    date                    Date COMMENT 'toDate(timestamp)',
+    hour                    UInt8 COMMENT 'toHour(timestamp)',
 
     INDEX idx_date          (date) TYPE minmax GRANULARITY 1,
     INDEX idx_hour          (hour) TYPE minmax GRANULARITY 1
@@ -16,7 +16,7 @@ TO accounts_by_date
 AS
 SELECT
     toDate(timestamp) AS date,
-    toRelativeHourNum(timestamp) AS hour,
+    toHour(timestamp) AS hour,
     arrayJoin(
         arrayDistinct(
             arrayFilter(s -> isNotNull(s) AND s != '',
