@@ -31,5 +31,4 @@ SELECT
             )
         )
     ) AS account
-FROM transfers
-GROUP BY account, date, hour;
+FROM transfers;
