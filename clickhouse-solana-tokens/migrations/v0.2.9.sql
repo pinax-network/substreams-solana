@@ -2,12 +2,14 @@
 CREATE TABLE IF NOT EXISTS accounts_by_date ON CLUSTER 'tokenapis-b' (
     account                 String,
     date                    Date COMMENT 'toDate(timestamp)',
+    hour                    UInt32 COMMENT 'toRelativeHourNum(timestamp)',
 
-    INDEX idx_date          (date) TYPE minmax GRANULARITY 1
+    INDEX idx_date          (date) TYPE minmax GRANULARITY 1,
+    INDEX idx_hour          (hour) TYPE minmax GRANULARITY 1
 )
 ENGINE = ReplicatedReplacingMergeTree
-ORDER BY (account, date)
-COMMENT 'Accounts interactions by date';
+ORDER BY (account, date, hour)
+COMMENT 'Accounts interactions by date/hour';
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_accounts_by_date ON CLUSTER 'tokenapis-b'
 TO accounts_by_date
@@ -27,9 +29,10 @@ SELECT
             )
         )
     ) AS account,
-    toDate(timestamp) AS date
+    toDate(timestamp) AS date,
+    toRelativeHourNum(timestamp) AS hour
 FROM transfers
-GROUP BY account, date;
+GROUP BY account, date, hour;
 
 -- Set Projections for Transfers --
 ALTER TABLE transfers ON CLUSTER 'tokenapis-b'
@@ -55,7 +58,7 @@ ALTER TABLE transfers ON CLUSTER 'tokenapis-b' MATERIALIZE PROJECTION prj_destin
 ALTER TABLE transfers ON CLUSTER 'tokenapis-b' MATERIALIZE PROJECTION prj_mint;
 
 -- Backfill historical data directly into the target table
-INSERT INTO accounts_by_date (account, date)
+INSERT INTO accounts_by_date (account, date, hour)
 SELECT
     arrayJoin(
         arrayDistinct(
@@ -64,12 +67,13 @@ SELECT
             )
         )
     )                                   AS account,
-    toDate(timestamp)                   AS date
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
 FROM transfers
 WHERE YEAR(timestamp) IN (2023) AND MONTH(timestamp) IN (1,2,3,4,5,6)
-GROUP BY account, date;
+GROUP BY account, date, hour;
 
-INSERT INTO accounts_by_date (account, date)
+INSERT INTO accounts_by_date (account, date, hour)
 SELECT
     arrayJoin(
         arrayDistinct(
@@ -78,7 +82,8 @@ SELECT
             )
         )
     )                                   AS account,
-    toDate(timestamp)                   AS date
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
 FROM transfers
 WHERE YEAR(timestamp) IN (2023) AND MONTH(timestamp) IN (7,8,9,10,11,12)
-GROUP BY account, date;
+GROUP BY account, date, hour;
