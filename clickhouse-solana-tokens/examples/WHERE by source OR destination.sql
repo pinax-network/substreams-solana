@@ -63,17 +63,18 @@ LIMIT 10
 
 
 EXPLAIN indexes = 1, projections = 1
-WITH ('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB') AS accounts,
+WITH ('Mc5XB47H3DKJHym5RLa9mPzWv5snERsF3KNv5AauXK8') AS accounts,
 dates AS (
     SELECT DISTINCT date FROM accounts_by_date
     WHERE account IN accounts
     GROUP BY date
-    ORDER BY date
 )
 SELECT *
 FROM transfers
-WHERE toDate(timestamp) IN dates AND (source IN accounts OR destination IN accounts)
+WHERE toDate(timestamp) IN dates
+    AND (source IN accounts OR destination IN accounts)
 LIMIT 10
+
 
 
 EXPLAIN indexes =1, projections = 1
