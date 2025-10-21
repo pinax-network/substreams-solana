@@ -63,13 +63,24 @@ LIMIT 10
 
 
 EXPLAIN indexes = 1, projections = 1
-WITH ('2NJZ1Ajcwtc7hZdVXTXrh2SAiAXnFkVm6MWcGjBZfPkS') AS accounts,
+WITH ('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB') AS accounts,
 dates AS (
-    SELECT date, hour FROM accounts_by_date
+    SELECT DISTINCT date FROM accounts_by_date
     WHERE account IN accounts
-    GROUP BY date, hour
+    GROUP BY date
+    ORDER BY date
 )
 SELECT *
 FROM transfers
 WHERE toDate(timestamp) IN dates AND (source IN accounts OR destination IN accounts)
-LIMIT 100
+LIMIT 10
+
+
+EXPLAIN indexes =1, projections = 1
+SELECT *
+FROM transfers
+WHERE _part_starting_offset + _part_offset IN (
+    SELECT _part_starting_offset + _part_offset
+    FROM transfers
+    WHERE source = 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'
+);

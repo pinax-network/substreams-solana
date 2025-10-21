@@ -28,4 +28,5 @@ SELECT
             )
         )
     ) AS account
-FROM transfers;
+FROM transfers
+GROUP BY account, date;
