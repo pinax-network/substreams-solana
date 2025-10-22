@@ -10,7 +10,16 @@ GROUP BY
     `table`,
     partition
 ORDER BY partition DESC
-LIMIT 30
+LIMIT 30;
+
+/* How many active projection parts exist?  */
+SELECT name,
+    sum(rows) AS total_rows,
+    formatReadableSize(sum(data_compressed_bytes)) AS on_disk
+FROM system.projection_parts
+WHERE database = currentDatabase() AND active = 1 AND table = 'transfers'
+GROUP BY name
+ORDER BY sum(data_compressed_bytes) DESC;
 
 EXPLAIN indexes =1, projections = 1
 SELECT *

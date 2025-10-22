@@ -14,6 +14,8 @@ WITH dates AS (
 )
 SELECT *
 FROM transfers
-WHERE toRelativeMinuteNum(timestamp) IN dates
-    AND (destination IN ['zzzzzupPKEyu2dHMVKSWzCYm3rHc5q4WmV68rwM4Ncq'] OR source IN ['zzzzzupPKEyu2dHMVKSWzCYm3rHc5q4WmV68rwM4Ncq'])
-LIMIT 10;
+WHERE toRelativeMinuteNum(timestamp) IN dates AND (
+    destination IN ['zzzzzupPKEyu2dHMVKSWzCYm3rHc5q4WmV68rwM4Ncq'] OR
+    source IN ['zzzzzupPKEyu2dHMVKSWzCYm3rHc5q4WmV68rwM4Ncq']
+)
+LIMIT 100;
