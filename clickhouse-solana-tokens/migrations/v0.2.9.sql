@@ -70,7 +70,7 @@ SELECT
     toDate(timestamp)                   AS date,
     toRelativeHourNum(timestamp)       AS hour
 FROM transfers
-WHERE YEAR(timestamp) IN (2023) AND MONTH(timestamp) IN (1,2,3,4,5,6)
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (1)
 GROUP BY account, date, hour;
 
 INSERT INTO accounts_by_date (account, date, hour)
@@ -85,5 +85,155 @@ SELECT
     toDate(timestamp)                   AS date,
     toRelativeHourNum(timestamp)       AS hour
 FROM transfers
-WHERE YEAR(timestamp) IN (2023) AND MONTH(timestamp) IN (7,8,9,10,11,12)
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (2)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (3)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (4)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (5)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (6)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (7)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (8)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (9)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (10)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (11)
+GROUP BY account, date, hour;
+
+INSERT INTO accounts_by_date (account, date, hour)
+SELECT
+    arrayJoin(
+        arrayDistinct(
+            arrayFilter(s -> isNotNull(s) AND s != '',
+                [source, destination, authority, signer, fee_payer, CAST(mint AS String)]
+            )
+        )
+    )                                   AS account,
+    toDate(timestamp)                   AS date,
+    toRelativeHourNum(timestamp)       AS hour
+FROM transfers
+WHERE YEAR(timestamp) IN (2025) AND MONTH(timestamp) IN (12)
 GROUP BY account, date, hour;

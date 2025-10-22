@@ -61,9 +61,23 @@ WHERE toDate(timestamp) IN dates AND (
 )
 LIMIT 10
 
-
+-- // granules=10198
 EXPLAIN indexes = 1, projections = 1
-WITH ('Mc5XB47H3DKJHym5RLa9mPzWv5snERsF3KNv5AauXK8') AS accounts,
+WITH ('zzzzzupPKEyu2dHMVKSWzCYm3rHc5q4WmV68rwM4Ncq') AS accounts,
+dates AS (
+    SELECT DISTINCT hour FROM accounts_by_date
+    WHERE account IN accounts
+    GROUP BY hour
+)
+SELECT *
+FROM transfers
+WHERE toRelativeHourNum(timestamp) IN dates
+    AND (source IN accounts OR destination IN accounts)
+LIMIT 10
+
+-- // granules=223727
+EXPLAIN indexes = 1, projections = 1
+WITH ('zzzzzupPKEyu2dHMVKSWzCYm3rHc5q4WmV68rwM4Ncq') AS accounts,
 dates AS (
     SELECT DISTINCT date FROM accounts_by_date
     WHERE account IN accounts
@@ -74,8 +88,6 @@ FROM transfers
 WHERE toDate(timestamp) IN dates
     AND (source IN accounts OR destination IN accounts)
 LIMIT 10
-
-
 
 EXPLAIN indexes =1, projections = 1
 SELECT *
