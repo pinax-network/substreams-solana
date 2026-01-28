@@ -163,7 +163,7 @@ SELECT
   block_num,
   timestamp
 FROM set_authority
-WHERE authority_type = 'AccountOwner';
+WHERE authority_type = 'AUTHORITY_TYPE_ACCOUNT_OWNER';
 
 -- FREEZE / THAW
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_freeze_account_state_freeze_account

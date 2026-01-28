@@ -12,7 +12,7 @@ pub fn process_events(tables: &mut substreams_database_change::tables::Tables, c
                     handle_create_account(tables, clock, transaction, instruction, data, transaction_index, i);
                 }
                 Some(pb::instruction::Instruction::CreateAccountWithSeed(data)) => {
-                    create_account_with_seed(tables, clock, transaction, instruction, data, transaction_index, i);
+                    handle_create_account_with_seed(tables, clock, transaction, instruction, data, transaction_index, i);
                 }
                 _ => {}
             }
@@ -43,7 +43,7 @@ fn handle_create_account(
     set_clock(clock, row);
 }
 
-fn create_account_with_seed(
+fn handle_create_account_with_seed(
     tables: &mut substreams_database_change::tables::Tables,
     clock: &Clock,
     transaction: &pb::Transaction,
