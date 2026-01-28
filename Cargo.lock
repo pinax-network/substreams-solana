@@ -371,6 +371,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "clickhouse-solana-accounts"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "clickhouse-solana-balances"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
 name = "clickhouse-solana-dex"
 version = "0.0.0"
 dependencies = [
@@ -383,7 +405,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "clickhouse-solana-metadata"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
 name = "clickhouse-solana-tokens"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "clickhouse-solana-transfers"
 version = "0.0.0"
 dependencies = [
  "common 0.0.0",
