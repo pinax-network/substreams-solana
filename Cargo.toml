@@ -3,6 +3,10 @@ members = [
   # Clickhouse
   "clickhouse-solana-tokens",
   "clickhouse-solana-dex",
+  "clickhouse-solana-transfers",
+  "clickhouse-solana-balances",
+  "clickhouse-solana-accounts",
+  "clickhouse-solana-metadata",
 
   # Tokens
   "spl-token",
