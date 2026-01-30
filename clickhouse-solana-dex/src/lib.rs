@@ -13,7 +13,7 @@ mod raydium_launchpad;
 use common::clickhouse::set_clock;
 use proto::pb;
 use substreams::{errors::Error, pb::substreams::Clock};
-use substreams_database_change::pb::database::DatabaseChanges;
+use substreams_database_change::pb::sf::substreams::sink::database::v1::DatabaseChanges;
 
 #[substreams::handlers::map]
 pub fn db_out(
@@ -46,7 +46,7 @@ pub fn db_out(
     jupiter::process_events(&mut tables, &clock, &jupiter_v6_events);
 
     // ONLY include blocks if events are present
-    if tables.tables.len() > 0 {
+    if tables.all_row_count() > 0 {
         set_clock(&clock, tables.create_row("blocks", [("block_num", clock.number.to_string())]));
     }
 
