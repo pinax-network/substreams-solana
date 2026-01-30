@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use proto::pb::solana::spl::token::v1 as pb;
-use substreams::pb::substreams::Clock;
+use substreams::{pb::substreams::Clock};
 use substreams_solana::base58;
 
 use crate::set_clock;
@@ -46,7 +46,7 @@ fn handle_token_balances(
     let account = base58::encode(&data.account);
     let key = [("account", account.clone()), ("mint", mint.clone())];
     let row = tables
-        .create_row("spl_balances", key)
+        .upsert_row("spl_balances", key)
         .set("program_id", base58::encode(&data.program_id))
         .set("account", account)
         .set("mint", mint)
