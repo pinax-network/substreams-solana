@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: substreams-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dev-node
+      POSTGRES_PASSWORD: insecure-change-me-in-prod
+      POSTGRES_DB: dev-node
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev-node -d dev-node"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
