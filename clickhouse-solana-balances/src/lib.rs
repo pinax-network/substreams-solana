@@ -4,7 +4,7 @@ mod spl_token;
 use common::{clickhouse::set_clock, solana::update_genesis_clock};
 use proto::pb::solana as pb;
 use substreams::{errors::Error, pb::substreams::Clock};
-use substreams_database_change::pb::database::DatabaseChanges;
+use substreams_database_change::pb::sf::substreams::sink::database::v1::DatabaseChanges;
 
 #[substreams::handlers::map]
 pub fn db_out(
@@ -19,7 +19,7 @@ pub fn db_out(
     native_token::process_events(&mut tables, &clock, &native_token);
 
     // ONLY include blocks if events are present
-    if !tables.tables.is_empty() {
+    if tables.all_row_count() > 0 {
         set_clock(&clock, tables.create_row("blocks", [("block_num", clock.number.to_string())]));
     }
     substreams::log::info!("Total rows {}", tables.all_row_count());
