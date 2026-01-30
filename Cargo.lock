@@ -390,7 +390,7 @@ dependencies = [
  "common 0.0.0",
  "proto",
  "substreams 0.7.3",
- "substreams-database-change 2.1.2",
+ "substreams-database-change",
  "substreams-solana",
 ]
 
@@ -401,7 +401,7 @@ dependencies = [
  "common 0.0.0",
  "proto",
  "substreams 0.7.3",
- "substreams-database-change 2.1.2",
+ "substreams-database-change",
  "substreams-solana",
 ]
 
@@ -413,7 +413,7 @@ dependencies = [
  "num_enum",
  "proto",
  "substreams 0.7.3",
- "substreams-database-change 2.1.2",
+ "substreams-database-change",
  "substreams-solana",
 ]
 
@@ -424,7 +424,7 @@ dependencies = [
  "common 0.0.0",
  "proto",
  "substreams 0.7.3",
- "substreams-database-change 2.1.2",
+ "substreams-database-change",
  "substreams-solana",
 ]
 
@@ -435,7 +435,7 @@ dependencies = [
  "common 0.0.0",
  "proto",
  "substreams 0.7.3",
- "substreams-database-change 2.1.2",
+ "substreams-database-change",
  "substreams-solana",
 ]
 
@@ -448,7 +448,7 @@ dependencies = [
  "prost-types",
  "proto",
  "substreams 0.7.3",
- "substreams-database-change 4.0.0",
+ "substreams-database-change",
  "substreams-solana",
 ]
 
@@ -2880,17 +2880,6 @@ dependencies = [
  "prost-types",
  "substreams-macro 0.7.3",
  "thiserror 1.0.69",
-]
-
-[[package]]
-name = "substreams-database-change"
-version = "2.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a93bcd1a0cda40746b8c3a3d64b0945986722b2ca3b686595cfbb3f295246d7d"
-dependencies = [
- "prost",
- "prost-types",
- "substreams 0.6.2",
 ]
 
 [[package]]
