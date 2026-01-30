@@ -1,11 +1,14 @@
 [workspace]
 members = [
+  # DatabaseChanges
+  "db-solana-balances",
+
   # Clickhouse
-  "clickhouse-solana-dex",
-  "clickhouse-solana-transfers",
-  "clickhouse-solana-balances",
-  "clickhouse-solana-accounts",
-  "clickhouse-solana-metadata",
+  # "clickhouse-solana-dex",
+  # "clickhouse-solana-transfers",
+  # # "clickhouse-solana-balances",
+  # "clickhouse-solana-accounts",
+  # "clickhouse-solana-metadata",
 
   # Tokens
   "spl-token",
