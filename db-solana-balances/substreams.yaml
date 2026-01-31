@@ -18,7 +18,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/clickhouse_solana_balances.wasm
+    file: ../target/wasm32-unknown-unknown/release/db_solana_balances.wasm
 
 modules:
   - name: db_out
