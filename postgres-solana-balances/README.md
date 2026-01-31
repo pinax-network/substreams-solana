@@ -10,17 +10,20 @@ SPL Token & Native SOL balances for Solana stored in PostgreSQL.
 
 ## Quick Start
 
-### 1. Start PostgreSQL
+### 1. Start PostgreSQL & pgweb
 
 ```bash
 docker compose up -d
 ```
 
-This starts a PostgreSQL 16 container with:
+This starts:
+- **PostgreSQL 16** on port `5432`
+- **pgweb** (web UI) on port `8081` → http://localhost:8081
+
+PostgreSQL credentials:
 - **User**: `dev-node`
 - **Password**: `insecure-change-me-in-prod`
 - **Database**: `dev-node`
-- **Port**: `5432`
 
 ### 2. Setup Schema
 
@@ -38,6 +41,10 @@ make dev
 
 This streams SPL Token and native SOL balance data from Solana mainnet to your PostgreSQL database.
 
+## Web UI
+
+Access **pgweb** at http://localhost:8081 - auto-connects to the database, no setup needed!
+
 ## Querying PostgreSQL
 
 ### Using Docker exec
@@ -47,7 +54,7 @@ This streams SPL Token and native SOL balance data from Solana mainnet to your P
 docker exec -it substreams-postgres psql -U dev-node -d dev-node
 
 # Run a single query
-docker exec substreams-postgres psql -U dev-node -d dev-node -c "SELECT * FROM spl_token_balances LIMIT 10;"
+docker exec substreams-postgres psql -U dev-node -d dev-node -c "SELECT * FROM balances LIMIT 10;"
 ```
 
 ### Using psql directly (if installed locally)
@@ -60,43 +67,61 @@ psql "postgresql://dev-node:insecure-change-me-in-prod@localhost:5432/dev-node"
 
 ```sql
 -- Count all balances
-SELECT COUNT(*) FROM spl_token_balances;
-SELECT COUNT(*) FROM native_balances;
+SELECT COUNT(*) FROM balances;
+SELECT COUNT(*) FROM balances_native;
 
--- Get top 10 SPL Token balances for a specific mint (e.g., USDC)
-SELECT account, owner, balance 
-FROM spl_token_balances 
-WHERE mint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-ORDER BY balance DESC 
-LIMIT 10;
+-- Top 100 holders for a specific mint (e.g., Wrapped SOL)
+SELECT account, amount, block_num, timestamp
+FROM balances
+WHERE mint = 'So11111111111111111111111111111111111111112'
+ORDER BY amount DESC
+LIMIT 100;
 
--- Get all SPL Token balances for an owner
-SELECT mint, account, balance, timestamp 
-FROM spl_token_balances 
-WHERE owner = '...your_address...';
+-- Top 100 holders (non-zero only)
+SELECT account, amount, block_num, timestamp
+FROM balances
+WHERE mint = 'So11111111111111111111111111111111111111112'
+  AND amount != 0
+ORDER BY amount DESC
+LIMIT 100;
 
--- Get native SOL balance for an address
-SELECT balance, timestamp 
-FROM native_balances 
-WHERE address = '...your_address...';
+-- Get all token balances for an account (by token account address)
+SELECT mint, amount, decimals, timestamp 
+FROM balances 
+WHERE account = '...token_account_address...'
+  AND amount != 0;
+
+-- Get all tokens held by an account (find all token accounts)
+SELECT mint, account, amount, decimals, timestamp 
+FROM balances 
+WHERE account IN (
+    SELECT account FROM balances WHERE account LIKE '...owner_pattern...'
+)
+AND amount != 0
+ORDER BY amount DESC;
+
+-- Get native SOL balance for an account
+SELECT amount, timestamp 
+FROM balances_native 
+WHERE account = '...your_address...';
 
 -- List all tables
 \dt
 
 -- Describe a table
-\d spl_token_balances
+\d balances
 ```
 
 ## Docker Compose Commands
 
 ```bash
-# Start PostgreSQL
+# Start PostgreSQL & pgweb
 docker compose up -d
 
 # View logs
 docker compose logs -f postgres
 
-# Stop PostgreSQL (keeps data)
+# Stop (keeps data)
 docker compose down
 
 # Stop and remove all data (reset)
@@ -132,48 +157,65 @@ make dev START_BLOCK=300000000 STOP_BLOCK=300001000
 
 | Table | Description |
 |-------|-------------|
-| `blocks` | Block metadata (number, hash, timestamp) |
-| `spl_token_balances` | Latest SPL Token balances per account/mint |
-| `native_balances` | Latest native SOL balances per address |
+| `balances` | Latest SPL Token balances per account/mint |
+| `balances_native` | Latest native SOL balances per account |
 
 ### SPL Token Balances Schema
 
 ```sql
-CREATE TABLE spl_token_balances (
+CREATE TABLE balances (
+    -- block --
     block_num   INTEGER NOT NULL,
     block_hash  TEXT NOT NULL,
     timestamp   TIMESTAMP NOT NULL,
+
+    -- balance --
+    program_id  TEXT NOT NULL,      -- Token program ID
     mint        TEXT NOT NULL,      -- Token mint address
     account     TEXT NOT NULL,      -- Token account address
-    owner       TEXT NOT NULL,      -- Owner address
-    balance     NUMERIC NOT NULL,   -- Balance in lamports
+    amount      NUMERIC NOT NULL,   -- Balance amount
+    decimals    SMALLINT NOT NULL,  -- Token decimals
+
     PRIMARY KEY (mint, account)
 );
 ```
 
-### Native Balances Schema
+### Native SOL Balances Schema
 
 ```sql
-CREATE TABLE native_balances (
+CREATE TABLE balances_native (
+    -- block --
     block_num   INTEGER NOT NULL,
     block_hash  TEXT NOT NULL,
     timestamp   TIMESTAMP NOT NULL,
-    address     TEXT PRIMARY KEY,   -- Account address
-    balance     NUMERIC NOT NULL    -- Balance in lamports
+
+    -- balance --
+    account     TEXT PRIMARY KEY,   -- Account address
+    amount      NUMERIC NOT NULL    -- Balance in lamports
 );
 ```
 
-## How Upserts Work
+### Indexes
 
-The schema uses PostgreSQL `RULE`s to handle balance updates. When the same account receives multiple balance changes within a block, only the latest value is stored:
+The schema includes optimized indexes for common queries:
 
-```sql
--- Automatically converts INSERT to UPDATE when key exists
-CREATE RULE upsert_spl_token_balances AS
-    ON INSERT TO spl_token_balances
-    WHERE EXISTS (SELECT 1 FROM spl_token_balances WHERE mint = NEW.mint AND account = NEW.account)
-    DO INSTEAD UPDATE ...
-```
+**Block indexes** - for filtering by time/block:
+- `idx_balances_block_num`, `idx_balances_timestamp`
+- `idx_balances_native_block_num`, `idx_balances_native_timestamp`
+
+**Single column indexes** - for lookups:
+- `idx_balances_program_id`, `idx_balances_account`, `idx_balances_amount`
+- `idx_balances_native_amount`
+
+**Composite indexes** (non-zero balances only):
+- `idx_balances_nonzero` - (mint, account)
+- `idx_balances_account_mint` - (account, mint) for finding all tokens by account
+
+**Sorted indexes** (non-zero balances only) - for top/bottom holders:
+- `idx_balances_mint_amount_desc` - top holders per mint
+- `idx_balances_mint_amount_asc` - bottom holders per mint
+- `idx_balances_native_amount_desc` - top SOL holders
+- `idx_balances_native_amount_asc` - bottom SOL holders
 
 ## Troubleshooting
 
