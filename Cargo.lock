@@ -395,17 +395,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "clickhouse-solana-balances"
-version = "0.0.0"
-dependencies = [
- "common 0.0.0",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
 name = "clickhouse-solana-dex"
 version = "0.0.0"
 dependencies = [
@@ -550,6 +539,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.106",
+]
+
+[[package]]
+name = "db-solana-balances"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
 ]
 
 [[package]]
