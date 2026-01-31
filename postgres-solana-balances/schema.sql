@@ -22,7 +22,6 @@ CREATE INDEX IF NOT EXISTS idx_balances_timestamp ON balances (timestamp);
 
 -- Single column indexes
 CREATE INDEX IF NOT EXISTS idx_balances_program_id ON balances (program_id);
-CREATE INDEX IF NOT EXISTS idx_balances_mint ON balances (mint);
 CREATE INDEX IF NOT EXISTS idx_balances_account ON balances (account);
 CREATE INDEX IF NOT EXISTS idx_balances_amount ON balances (amount);
 
