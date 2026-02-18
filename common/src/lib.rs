@@ -1,4 +1,4 @@
-pub mod clickhouse;
+pub mod db;
 pub mod solana;
 use substreams::{hex, log, pb::substreams::Clock, scalar::BigInt};
 
