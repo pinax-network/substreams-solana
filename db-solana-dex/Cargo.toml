@@ -1,0 +1,17 @@
+[package]
+name = "db-solana-dex"
+description = { workspace = true }
+edition = { workspace = true }
+version = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+substreams-database-change = { workspace = true }
+num_enum = "0.7.4"
+
+proto = { path = "../proto" }
+common = { path = "../common" }

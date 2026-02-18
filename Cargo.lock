@@ -384,51 +384,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "clickhouse-solana-accounts"
-version = "0.0.0"
-dependencies = [
- "common 0.0.0",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "clickhouse-solana-dex"
-version = "0.0.0"
-dependencies = [
- "common 0.0.0",
- "num_enum",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "clickhouse-solana-metadata"
-version = "0.0.0"
-dependencies = [
- "common 0.0.0",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "clickhouse-solana-transfers"
-version = "0.0.0"
-dependencies = [
- "common 0.0.0",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
 name = "common"
 version = "0.0.0"
 dependencies = [
@@ -542,7 +497,52 @@ dependencies = [
 ]
 
 [[package]]
+name = "db-solana-accounts"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
 name = "db-solana-balances"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "db-solana-dex"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "num_enum",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "db-solana-metadata"
+version = "0.0.0"
+dependencies = [
+ "common 0.0.0",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "db-solana-transfers"
 version = "0.0.0"
 dependencies = [
  "common 0.0.0",

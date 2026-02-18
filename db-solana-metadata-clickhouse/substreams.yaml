@@ -1,13 +1,13 @@
 specVersion: v0.1.0
 package:
-  name: solana_balances_clickhouse
-  version: v0.2.0
+  name: solana_metadata_clickhouse
+  version: v0.1.0
   url: https://github.com/pinax-network/substreams-solana
-  description: SPL, SPL-2022 & Native token balances for Solana (ClickHouse).
+  description: SPL Token & Metaplex metadata events for Solana blockchains (ClickHouse).
   image: ../image.png
 
 imports:
-  db: ../db-solana-balances/substreams.yaml
+  db: ../db-solana-metadata/substreams.yaml
 
 modules:
   - name: db_out
