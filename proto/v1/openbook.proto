@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package openbook.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    PlaceOrderInstruction place_order = 3;
+    PlaceOrdersInstruction place_orders = 4;
+    PlaceTakeOrderInstruction place_take_order = 5;
+    CancelAllAndPlaceOrdersInstruction cancel_all_and_place_orders = 6;
+  }
+}
+
+message PlaceOrderInstruction {}
+message PlaceOrdersInstruction {}
+message PlaceTakeOrderInstruction {}
+message CancelAllAndPlaceOrdersInstruction {}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    FillLogEvent fill_log = 3;
+    TotalOrderFillEvent total_order_fill = 4;
+  }
+}
+
+message FillLogEvent {
+  bytes market = 1;
+  uint32 taker_side = 2;
+  uint32 maker_slot = 3;
+  bool maker_out = 4;
+  uint64 timestamp = 5;
+  uint64 seq_num = 6;
+  bytes maker = 7;
+  uint64 maker_client_order_id = 8;
+  uint64 maker_fee = 9;
+  uint64 maker_timestamp = 10;
+  bytes taker = 11;
+  uint64 taker_client_order_id = 12;
+  uint64 taker_fee_ceil = 13;
+  int64 price = 14;
+  int64 quantity = 15;
+}
+
+message TotalOrderFillEvent {
+  uint32 side = 1;
+  bytes taker = 2;
+  uint64 total_quantity_paid = 3;
+  uint64 total_quantity_received = 4;
+  uint64 fees = 5;
+}

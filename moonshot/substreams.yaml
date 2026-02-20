@@ -1,0 +1,35 @@
+specVersion: v0.1.0
+package:
+  name: moonshot
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: Moonshot DEX events for Solana.
+  image: ../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../target/wasm32-unknown-unknown/release/moonshot.wasm
+
+protobuf:
+  files:
+    - v1/moonshot.proto
+  importPaths:
+    - ../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG"
+    output:
+      type: proto:moonshot.v1.Events
+
+network: solana
