@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package stabble.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+  }
+}
+
+message SwapAccounts {
+  bytes user = 1;
+  bytes user_token_in = 2;
+  bytes user_token_out = 3;
+  bytes vault_token_in = 4;
+  bytes vault_token_out = 5;
+  bytes beneficiary_token_out = 6;
+  bytes pool = 7;
+  bytes withdraw_authority = 8;
+  bytes vault = 9;
+  bytes vault_authority = 10;
+  bytes vault_program = 11;
+  bytes token_program = 12;
+}
+
+message SwapInstruction {
+  SwapAccounts accounts = 1;
+  optional uint64 amount_in = 2;
+  uint64 minimum_amount_out = 3;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    PoolBalanceUpdatedEvent pool_balance_updated = 3;
+    PoolUpdatedEvent pool_updated = 4;
+  }
+}
+
+message PoolBalanceUpdatedEvent {
+  bytes pubkey = 1;
+  repeated uint64 balances = 2;
+}
+
+message PoolUpdatedEvent {
+  bytes pubkey = 1;
+  bool is_active = 2;
+  uint64 swap_fee = 3;
+  uint64 max_supply = 4;
+}

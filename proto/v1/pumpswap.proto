@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package pumpswap.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    BuyInstruction buy = 3;
+    BuyExactQuoteInInstruction buy_exact_quote_in = 4;
+    SellInstruction sell = 5;
+  }
+}
+
+message BuyInstruction {
+  uint64 base_amount_out = 1;
+  uint64 max_quote_amount_in = 2;
+}
+
+message BuyExactQuoteInInstruction {
+  uint64 spendable_quote_in = 1;
+  uint64 min_base_amount_out = 2;
+}
+
+message SellInstruction {
+  uint64 base_amount_in = 1;
+  uint64 min_quote_amount_out = 2;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    BuyEvent buy = 3;
+    SellEvent sell = 4;
+    CreatePoolEvent create_pool = 5;
+  }
+}
+
+message BuyEvent {
+  int64 timestamp = 1;
+  uint64 base_amount_out = 2;
+  uint64 max_quote_amount_in = 3;
+  uint64 user_base_token_reserves = 4;
+  uint64 user_quote_token_reserves = 5;
+  uint64 pool_base_token_reserves = 6;
+  uint64 pool_quote_token_reserves = 7;
+  uint64 quote_amount_in = 8;
+  uint64 lp_fee_basis_points = 9;
+  uint64 lp_fee = 10;
+  uint64 protocol_fee_basis_points = 11;
+  uint64 protocol_fee = 12;
+  uint64 quote_amount_in_with_lp_fee = 13;
+  uint64 user_quote_amount_in = 14;
+  bytes pool = 15;
+  bytes user = 16;
+  bytes coin_creator = 17;
+  uint64 coin_creator_fee_basis_points = 18;
+  uint64 coin_creator_fee = 19;
+  uint64 min_base_amount_out = 20;
+  string ix_name = 21;
+}
+
+message SellEvent {
+  int64 timestamp = 1;
+  uint64 base_amount_in = 2;
+  uint64 min_quote_amount_out = 3;
+  uint64 user_base_token_reserves = 4;
+  uint64 user_quote_token_reserves = 5;
+  uint64 pool_base_token_reserves = 6;
+  uint64 pool_quote_token_reserves = 7;
+  uint64 quote_amount_out = 8;
+  uint64 lp_fee_basis_points = 9;
+  uint64 lp_fee = 10;
+  uint64 protocol_fee_basis_points = 11;
+  uint64 protocol_fee = 12;
+  uint64 quote_amount_out_without_lp_fee = 13;
+  uint64 user_quote_amount_out = 14;
+  bytes pool = 15;
+  bytes user = 16;
+  bytes coin_creator = 17;
+  uint64 coin_creator_fee_basis_points = 18;
+  uint64 coin_creator_fee = 19;
+}
+
+message CreatePoolEvent {
+  int64 timestamp = 1;
+  uint32 index = 2;
+  bytes creator = 3;
+  bytes base_mint = 4;
+  bytes quote_mint = 5;
+  uint32 base_mint_decimals = 6;
+  uint32 quote_mint_decimals = 7;
+  uint64 base_amount_in = 8;
+  uint64 quote_amount_in = 9;
+  uint64 pool_base_amount = 10;
+  uint64 pool_quote_amount = 11;
+  uint64 minimum_liquidity = 12;
+  uint64 initial_liquidity = 13;
+  uint64 lp_token_amount_out = 14;
+  uint32 pool_bump = 15;
+  bytes pool = 16;
+  bytes lp_mint = 17;
+  bytes coin_creator = 18;
+}

@@ -1,4 +1,28 @@
 // @generated
+pub mod darklake {
+    pub mod v1 {
+        include!("darklake.v1.rs");
+        // @@protoc_insertion_point(darklake.v1)
+    }
+}
+pub mod openbook {
+    pub mod v1 {
+        include!("openbook.v1.rs");
+        // @@protoc_insertion_point(openbook.v1)
+    }
+}
+pub mod phoenix {
+    pub mod v1 {
+        include!("phoenix.v1.rs");
+        // @@protoc_insertion_point(phoenix.v1)
+    }
+}
+pub mod stabble {
+    pub mod v1 {
+        include!("stabble.v1.rs");
+        // @@protoc_insertion_point(stabble.v1)
+    }
+}
 pub mod bonk {
     pub mod swap {
         // @@protoc_insertion_point(attribute:bonk.swap.v1)
@@ -8,11 +32,29 @@ pub mod bonk {
         }
     }
 }
+pub mod lifinity {
+    pub mod v1 {
+        include!("lifinity.v1.rs");
+        // @@protoc_insertion_point(lifinity.v1)
+    }
+}
 pub mod jupiter {
     // @@protoc_insertion_point(attribute:jupiter.v1)
     pub mod v1 {
         include!("jupiter.v1.rs");
         // @@protoc_insertion_point(jupiter.v1)
+    }
+}
+pub mod orca {
+    pub mod v1 {
+        include!("orca.v1.rs");
+        // @@protoc_insertion_point(orca.v1)
+    }
+}
+pub mod moonshot {
+    pub mod v1 {
+        include!("moonshot.v1.rs");
+        // @@protoc_insertion_point(moonshot.v1)
     }
 }
 pub mod meteora {
@@ -36,6 +78,19 @@ pub mod meteora {
             include!("meteora.dllm.v1.rs");
             // @@protoc_insertion_point(meteora.dllm.v1)
         }
+    }
+}
+pub mod pancakeswap {
+    pub mod v1 {
+        include!("pancakeswap.v1.rs");
+        // @@protoc_insertion_point(pancakeswap.v1)
+    }
+}
+pub mod pumpswap {
+    // @@protoc_insertion_point(attribute:pumpswap.v1)
+    pub mod v1 {
+        include!("pumpswap.v1.rs");
+        // @@protoc_insertion_point(pumpswap.v1)
     }
 }
 pub mod pumpfun {

@@ -1,0 +1,67 @@
+syntax = "proto3";
+package moonshot.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    BuyInstruction buy = 3;
+    SellInstruction sell = 4;
+  }
+}
+
+message BuyInstruction {
+  uint64 amount = 1;
+  uint64 collateral_amount = 2;
+  uint64 slippage_bps = 3;
+}
+
+message SellInstruction {
+  uint64 amount = 1;
+  uint64 collateral_amount = 2;
+  uint64 slippage_bps = 3;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    TradeEvent trade = 3;
+    MigrationEvent migration = 4;
+  }
+}
+
+message TradeEvent {
+  uint64 amount = 1;
+  uint64 collateral_amount = 2;
+  uint64 dex_fee = 3;
+  uint64 helio_fee = 4;
+  uint64 allocation = 5;
+  bytes curve = 6;
+  bytes cost_token = 7;
+  bytes sender = 8;
+  uint32 trade_type = 9;
+  string label = 10;
+}
+
+message MigrationEvent {
+  uint64 tokens_migrated = 1;
+  uint64 tokens_burned = 2;
+  uint64 collateral_migrated = 3;
+  uint64 fee = 4;
+  string label = 5;
+}

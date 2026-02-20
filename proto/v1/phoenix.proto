@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package phoenix.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+    SwapWithFreeFundsInstruction swap_with_free_funds = 4;
+  }
+}
+
+message SwapAccounts {
+  bytes phoenix_program = 1;
+  bytes log_authority = 2;
+  bytes market = 3;
+  bytes trader = 4;
+  bytes base_account = 5;
+  bytes quote_account = 6;
+  bytes base_vault = 7;
+  bytes quote_vault = 8;
+  bytes token_program = 9;
+}
+
+message SwapInstruction {
+  SwapAccounts accounts = 1;
+  bytes order_packet = 2;
+}
+
+message SwapWithFreeFundsInstruction {
+  SwapAccounts accounts = 1;
+  bytes order_packet = 2;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    FillEvent fill = 3;
+  }
+}
+
+message FillEvent {
+  uint32 index = 1;
+  bytes maker_id = 2;
+  uint64 order_sequence_number = 3;
+  uint64 price_in_ticks = 4;
+  uint64 base_lots_filled = 5;
+  uint64 base_lots_remaining = 6;
+}

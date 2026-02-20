@@ -1,0 +1,45 @@
+syntax = "proto3";
+package lifinity.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+  }
+}
+
+message SwapAccounts {
+  bytes authority = 1;
+  bytes amm = 2;
+  bytes user_transfer_authority = 3;
+  bytes source_info = 4;
+  bytes destination_info = 5;
+  bytes swap_source = 6;
+  bytes swap_destination = 7;
+  bytes pool_mint = 8;
+  bytes fee_account = 9;
+  bytes token_program = 10;
+  bytes oracle_main_account = 11;
+  bytes oracle_sub_account = 12;
+  bytes oracle_pc_account = 13;
+}
+
+message SwapInstruction {
+  SwapAccounts accounts = 1;
+  uint64 amount_in = 2;
+  uint64 minimum_amount_out = 3;
+}

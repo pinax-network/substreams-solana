@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package darklake.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+  }
+}
+
+message SwapInstruction {
+  uint64 amount_in = 1;
+  bool is_swap_x_to_y = 2;
+  bytes c_min = 3;
+  optional bytes label = 4;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    SwapEvent swap = 3;
+    InitializePoolEvent initialize_pool = 4;
+    AddLiquidityEvent add_liquidity = 5;
+    RemoveLiquidityEvent remove_liquidity = 6;
+  }
+}
+
+message SwapEvent {
+  bytes trader = 1;
+  uint32 direction = 2;
+  uint64 deadline = 3;
+  uint64 trade_fee = 4;
+  uint64 protocol_fee = 5;
+  uint64 amount_in = 6;
+  uint64 amount_out = 7;
+  uint64 actual_amount_in = 8;
+  uint64 wsol_deposit = 9;
+  uint64 actual_amount_out = 10;
+  uint64 new_reserve_x = 11;
+  uint64 new_reserve_y = 12;
+  uint64 available_reserve_x = 13;
+  uint64 available_reserve_y = 14;
+  uint64 locked_x = 15;
+  uint64 locked_y = 16;
+  uint64 user_locked_x = 17;
+  uint64 user_locked_y = 18;
+  uint64 protocol_fee_x = 19;
+  uint64 protocol_fee_y = 20;
+  bytes user_token_account_x = 21;
+  bytes user_token_account_y = 22;
+  bytes token_mint_lp = 23;
+  bytes token_mint_x = 24;
+  bytes token_mint_y = 25;
+  string label = 26;
+}
+
+message InitializePoolEvent {
+  bytes trader = 1;
+  uint64 liquidity_minted = 2;
+  uint64 sol_create_pool_fee = 3;
+  uint64 new_reserve_x = 4;
+  uint64 new_reserve_y = 5;
+  bytes token_mint_x = 6;
+  bytes token_mint_y = 7;
+  bytes token_mint_lp = 8;
+  string label = 9;
+}
+
+message AddLiquidityEvent {
+  bytes supplier = 1;
+  uint64 max_amount_x = 2;
+  uint64 max_amount_y = 3;
+  uint64 transfer_in_x = 4;
+  uint64 transfer_in_y = 5;
+  uint64 liquidity_minted = 6;
+  uint64 user_token_lp_balance = 7;
+  uint64 new_reserve_x = 8;
+  uint64 new_reserve_y = 9;
+  uint64 available_reserve_x = 10;
+  uint64 available_reserve_y = 11;
+  bytes token_mint_lp = 12;
+  bytes token_mint_x = 13;
+  bytes token_mint_y = 14;
+  string ref_code = 15;
+  string label = 16;
+}
+
+message RemoveLiquidityEvent {
+  bytes supplier = 1;
+  uint64 min_amount_x = 2;
+  uint64 min_amount_y = 3;
+  uint64 transfer_out_x = 4;
+  uint64 transfer_out_y = 5;
+  uint64 liquidity_burned = 6;
+  uint64 user_token_lp_balance = 7;
+  uint64 new_reserve_x = 8;
+  uint64 new_reserve_y = 9;
+  uint64 available_reserve_x = 10;
+  uint64 available_reserve_y = 11;
+  bytes token_mint_lp = 12;
+  bytes token_mint_x = 13;
+  bytes token_mint_y = 14;
+  string label = 15;
+}
