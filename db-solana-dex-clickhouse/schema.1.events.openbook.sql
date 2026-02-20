@@ -1,0 +1,21 @@
+-- OpenBook Fill --
+CREATE TABLE IF NOT EXISTS openbook_fill AS base_events
+COMMENT 'OpenBook Fill Log';
+ALTER TABLE openbook_fill
+    ADD COLUMN IF NOT EXISTS market       FixedString(44) COMMENT 'Market account',
+    ADD COLUMN IF NOT EXISTS maker        FixedString(44) COMMENT 'Maker account',
+    ADD COLUMN IF NOT EXISTS taker        FixedString(44) COMMENT 'Taker account',
+    ADD COLUMN IF NOT EXISTS price        Int64 COMMENT 'Price',
+    ADD COLUMN IF NOT EXISTS quantity     Int64 COMMENT 'Quantity',
+    ADD COLUMN IF NOT EXISTS taker_side   UInt32 COMMENT 'Taker side',
+    ADD COLUMN IF NOT EXISTS seq_num      UInt64 COMMENT 'Sequence number';
+
+-- OpenBook Total Order Fill --
+CREATE TABLE IF NOT EXISTS openbook_total_order_fill AS base_events
+COMMENT 'OpenBook Total Order Fill';
+ALTER TABLE openbook_total_order_fill
+    ADD COLUMN IF NOT EXISTS taker                    FixedString(44) COMMENT 'Taker account',
+    ADD COLUMN IF NOT EXISTS side                     UInt32 COMMENT 'Side',
+    ADD COLUMN IF NOT EXISTS total_quantity_paid       UInt64 COMMENT 'Total quantity paid',
+    ADD COLUMN IF NOT EXISTS total_quantity_received   UInt64 COMMENT 'Total quantity received',
+    ADD COLUMN IF NOT EXISTS fees                     UInt64 COMMENT 'Fees';
