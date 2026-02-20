@@ -714,3 +714,472 @@ CREATE INDEX IF NOT EXISTS idx_meteora_amm_swap_signature ON meteora_amm_swap (s
 CREATE INDEX IF NOT EXISTS idx_meteora_amm_swap_pool ON meteora_amm_swap (pool);
 CREATE INDEX IF NOT EXISTS idx_meteora_amm_swap_input_mint ON meteora_amm_swap (input_mint);
 CREATE INDEX IF NOT EXISTS idx_meteora_amm_swap_output_mint ON meteora_amm_swap (output_mint);
+
+-- Orca Swap
+CREATE TABLE IF NOT EXISTS orca_swap (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    "user"                      TEXT NOT NULL,
+    whirlpool                   TEXT NOT NULL,
+    input_mint                  TEXT NOT NULL,
+    output_mint                 TEXT NOT NULL,
+    amount_in                   BIGINT NOT NULL,
+    amount_out                  BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_orca_swap_block_num ON orca_swap (block_num);
+CREATE INDEX IF NOT EXISTS idx_orca_swap_timestamp ON orca_swap (timestamp);
+CREATE INDEX IF NOT EXISTS idx_orca_swap_signature ON orca_swap (signature);
+CREATE INDEX IF NOT EXISTS idx_orca_swap_whirlpool ON orca_swap (whirlpool);
+CREATE INDEX IF NOT EXISTS idx_orca_swap_input_mint ON orca_swap (input_mint);
+CREATE INDEX IF NOT EXISTS idx_orca_swap_output_mint ON orca_swap (output_mint);
+
+-- Phoenix Swap
+CREATE TABLE IF NOT EXISTS phoenix_swap (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    trader                      TEXT NOT NULL,
+    market                      TEXT NOT NULL,
+    base_account                TEXT NOT NULL,
+    quote_account               TEXT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_phoenix_swap_block_num ON phoenix_swap (block_num);
+CREATE INDEX IF NOT EXISTS idx_phoenix_swap_timestamp ON phoenix_swap (timestamp);
+CREATE INDEX IF NOT EXISTS idx_phoenix_swap_signature ON phoenix_swap (signature);
+CREATE INDEX IF NOT EXISTS idx_phoenix_swap_market ON phoenix_swap (market);
+CREATE INDEX IF NOT EXISTS idx_phoenix_swap_trader ON phoenix_swap (trader);
+
+-- OpenBook Fill
+CREATE TABLE IF NOT EXISTS openbook_fill (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    market                      TEXT NOT NULL,
+    maker                       TEXT NOT NULL,
+    taker                       TEXT NOT NULL,
+    price                       BIGINT NOT NULL,
+    quantity                    BIGINT NOT NULL,
+    taker_side                  INTEGER NOT NULL,
+    seq_num                     BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_openbook_fill_block_num ON openbook_fill (block_num);
+CREATE INDEX IF NOT EXISTS idx_openbook_fill_timestamp ON openbook_fill (timestamp);
+CREATE INDEX IF NOT EXISTS idx_openbook_fill_signature ON openbook_fill (signature);
+CREATE INDEX IF NOT EXISTS idx_openbook_fill_market ON openbook_fill (market);
+
+-- OpenBook Total Order Fill
+CREATE TABLE IF NOT EXISTS openbook_total_order_fill (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    taker                       TEXT NOT NULL,
+    side                        INTEGER NOT NULL,
+    total_quantity_paid         BIGINT NOT NULL,
+    total_quantity_received     BIGINT NOT NULL,
+    fees                        BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_openbook_total_order_fill_block_num ON openbook_total_order_fill (block_num);
+CREATE INDEX IF NOT EXISTS idx_openbook_total_order_fill_timestamp ON openbook_total_order_fill (timestamp);
+CREATE INDEX IF NOT EXISTS idx_openbook_total_order_fill_signature ON openbook_total_order_fill (signature);
+CREATE INDEX IF NOT EXISTS idx_openbook_total_order_fill_taker ON openbook_total_order_fill (taker);
+
+-- PumpSwap Buy
+CREATE TABLE IF NOT EXISTS pumpswap_buy (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    pool                        TEXT NOT NULL,
+    "user"                      TEXT NOT NULL,
+    base_amount_out             BIGINT NOT NULL,
+    quote_amount_in             BIGINT NOT NULL,
+    lp_fee                      BIGINT NOT NULL,
+    protocol_fee                BIGINT NOT NULL,
+    coin_creator_fee            BIGINT NOT NULL,
+    pool_base_token_reserves    BIGINT NOT NULL,
+    pool_quote_token_reserves   BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pumpswap_buy_block_num ON pumpswap_buy (block_num);
+CREATE INDEX IF NOT EXISTS idx_pumpswap_buy_timestamp ON pumpswap_buy (timestamp);
+CREATE INDEX IF NOT EXISTS idx_pumpswap_buy_signature ON pumpswap_buy (signature);
+CREATE INDEX IF NOT EXISTS idx_pumpswap_buy_pool ON pumpswap_buy (pool);
+
+-- PumpSwap Sell
+CREATE TABLE IF NOT EXISTS pumpswap_sell (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    pool                        TEXT NOT NULL,
+    "user"                      TEXT NOT NULL,
+    base_amount_in              BIGINT NOT NULL,
+    quote_amount_out            BIGINT NOT NULL,
+    lp_fee                      BIGINT NOT NULL,
+    protocol_fee                BIGINT NOT NULL,
+    coin_creator_fee            BIGINT NOT NULL,
+    pool_base_token_reserves    BIGINT NOT NULL,
+    pool_quote_token_reserves   BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pumpswap_sell_block_num ON pumpswap_sell (block_num);
+CREATE INDEX IF NOT EXISTS idx_pumpswap_sell_timestamp ON pumpswap_sell (timestamp);
+CREATE INDEX IF NOT EXISTS idx_pumpswap_sell_signature ON pumpswap_sell (signature);
+CREATE INDEX IF NOT EXISTS idx_pumpswap_sell_pool ON pumpswap_sell (pool);
+
+-- Darklake Swap
+CREATE TABLE IF NOT EXISTS darklake_swap (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    trader                      TEXT NOT NULL,
+    amount_in                   BIGINT NOT NULL,
+    amount_out                  BIGINT NOT NULL,
+    token_mint_x                TEXT NOT NULL,
+    token_mint_y                TEXT NOT NULL,
+    direction                   INTEGER NOT NULL,
+    trade_fee                   BIGINT NOT NULL,
+    protocol_fee                BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_darklake_swap_block_num ON darklake_swap (block_num);
+CREATE INDEX IF NOT EXISTS idx_darklake_swap_timestamp ON darklake_swap (timestamp);
+CREATE INDEX IF NOT EXISTS idx_darklake_swap_signature ON darklake_swap (signature);
+CREATE INDEX IF NOT EXISTS idx_darklake_swap_trader ON darklake_swap (trader);
+
+-- Lifinity Swap
+CREATE TABLE IF NOT EXISTS lifinity_swap (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    "user"                      TEXT NOT NULL,
+    amm                         TEXT NOT NULL,
+    swap_source                 TEXT NOT NULL,
+    swap_destination            TEXT NOT NULL,
+    amount_in                   BIGINT NOT NULL,
+    minimum_amount_out          BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_lifinity_swap_block_num ON lifinity_swap (block_num);
+CREATE INDEX IF NOT EXISTS idx_lifinity_swap_timestamp ON lifinity_swap (timestamp);
+CREATE INDEX IF NOT EXISTS idx_lifinity_swap_signature ON lifinity_swap (signature);
+CREATE INDEX IF NOT EXISTS idx_lifinity_swap_amm ON lifinity_swap (amm);
+
+-- Moonshot Buy
+CREATE TABLE IF NOT EXISTS moonshot_buy (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    amount                      BIGINT NOT NULL,
+    collateral_amount           BIGINT NOT NULL,
+    dex_fee                     BIGINT NOT NULL,
+    helio_fee                   BIGINT NOT NULL,
+    sender                      TEXT NOT NULL,
+    trade_type                  INTEGER NOT NULL,
+    cost_token                  TEXT NOT NULL,
+    curve                       TEXT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_moonshot_buy_block_num ON moonshot_buy (block_num);
+CREATE INDEX IF NOT EXISTS idx_moonshot_buy_timestamp ON moonshot_buy (timestamp);
+CREATE INDEX IF NOT EXISTS idx_moonshot_buy_signature ON moonshot_buy (signature);
+CREATE INDEX IF NOT EXISTS idx_moonshot_buy_sender ON moonshot_buy (sender);
+
+-- Moonshot Sell
+CREATE TABLE IF NOT EXISTS moonshot_sell (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    amount                      BIGINT NOT NULL,
+    collateral_amount           BIGINT NOT NULL,
+    dex_fee                     BIGINT NOT NULL,
+    helio_fee                   BIGINT NOT NULL,
+    sender                      TEXT NOT NULL,
+    trade_type                  INTEGER NOT NULL,
+    cost_token                  TEXT NOT NULL,
+    curve                       TEXT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_moonshot_sell_block_num ON moonshot_sell (block_num);
+CREATE INDEX IF NOT EXISTS idx_moonshot_sell_timestamp ON moonshot_sell (timestamp);
+CREATE INDEX IF NOT EXISTS idx_moonshot_sell_signature ON moonshot_sell (signature);
+CREATE INDEX IF NOT EXISTS idx_moonshot_sell_sender ON moonshot_sell (sender);
+
+-- PancakeSwap Swap
+CREATE TABLE IF NOT EXISTS pancakeswap_swap (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    pool_state                  TEXT NOT NULL,
+    sender                      TEXT NOT NULL,
+    amount_0                    BIGINT NOT NULL,
+    amount_1                    BIGINT NOT NULL,
+    zero_for_one                BOOLEAN NOT NULL,
+    tick                        INTEGER NOT NULL,
+    sqrt_price_x64              TEXT NOT NULL,
+    liquidity                   TEXT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pancakeswap_swap_block_num ON pancakeswap_swap (block_num);
+CREATE INDEX IF NOT EXISTS idx_pancakeswap_swap_timestamp ON pancakeswap_swap (timestamp);
+CREATE INDEX IF NOT EXISTS idx_pancakeswap_swap_signature ON pancakeswap_swap (signature);
+CREATE INDEX IF NOT EXISTS idx_pancakeswap_swap_pool_state ON pancakeswap_swap (pool_state);
+
+-- Stabble Swap
+CREATE TABLE IF NOT EXISTS stabble_swap (
+    -- block --
+    block_num                   INTEGER NOT NULL,
+    block_hash                  TEXT NOT NULL,
+    timestamp                   TIMESTAMP NOT NULL,
+
+    -- ordering --
+    transaction_index           INTEGER NOT NULL,
+    instruction_index           INTEGER NOT NULL,
+
+    -- transaction --
+    signature                   TEXT NOT NULL,
+    fee_payer                   TEXT NOT NULL,
+    signers_raw                 TEXT NOT NULL DEFAULT '',
+    fee                         BIGINT NOT NULL DEFAULT 0,
+    compute_units_consumed      BIGINT NOT NULL DEFAULT 0,
+
+    -- instruction --
+    program_id                  TEXT NOT NULL,
+    stack_height                INTEGER NOT NULL,
+
+    -- event --
+    "user"                      TEXT NOT NULL,
+    pool                        TEXT NOT NULL,
+    amount_in                   BIGINT NOT NULL,
+    minimum_amount_out          BIGINT NOT NULL,
+
+    PRIMARY KEY (block_hash, transaction_index, instruction_index)
+);
+
+CREATE INDEX IF NOT EXISTS idx_stabble_swap_block_num ON stabble_swap (block_num);
+CREATE INDEX IF NOT EXISTS idx_stabble_swap_timestamp ON stabble_swap (timestamp);
+CREATE INDEX IF NOT EXISTS idx_stabble_swap_signature ON stabble_swap (signature);
+CREATE INDEX IF NOT EXISTS idx_stabble_swap_pool ON stabble_swap (pool);

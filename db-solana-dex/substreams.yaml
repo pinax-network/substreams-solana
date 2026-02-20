@@ -24,6 +24,17 @@ imports:
   jupiter_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v4-v0.2.0.spkg
   jupiter_v6: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v6-v0.2.0.spkg
 
+  # New DEXs (local paths until first release)
+  orca: ../orca/whirlpool/substreams.yaml
+  phoenix: ../phoenix/substreams.yaml
+  openbook: ../openbook/substreams.yaml
+  pumpswap: ../pumpswap/substreams.yaml
+  darklake: ../darklake/substreams.yaml
+  lifinity: ../lifinity/substreams.yaml
+  moonshot: ../moonshot/substreams.yaml
+  pancakeswap: ../pancakeswap/substreams.yaml
+  stabble: ../stabble/substreams.yaml
+
 binaries:
   default:
     type: wasm/rust-v1
@@ -47,6 +58,17 @@ modules:
       - map: meteora_amm:map_events
       - map: jupiter_v4:map_events
       - map: jupiter_v6:map_events
+
+      # New DEXs
+      - map: orca:map_events
+      - map: phoenix:map_events
+      - map: openbook:map_events
+      - map: pumpswap:map_events
+      - map: darklake:map_events
+      - map: lifinity:map_events
+      - map: moonshot:map_events
+      - map: pancakeswap:map_events
+      - map: stabble:map_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
