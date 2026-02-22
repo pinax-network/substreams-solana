@@ -47,20 +47,10 @@ export SUBSTREAMS_API_TOKEN="your-jwt-token"
 
 Get your API key from [thegraph.market](https://thegraph.market) or [pinax.network](https://pinax.network).
 
-## Language Recommendations
+## References
 
-| Language | Recommendation | Best For |
-|----------|---------------|----------|
-| **Go** | Official SDK (Recommended) | Production sinks, StreamingFast sinks |
-| **JavaScript** | Official SDK | Web apps, Node.js services |
-| **Python** | Reference implementation | Prototyping, data analysis |
-| **Rust** | Reference implementation | High-performance custom sinks |
-
-See the `references/` directory for language-specific sink guides:
-- `go-sink.md` — Go (recommended)
-- `javascript-sink.md` — JavaScript/Node.js
-- `python-sink.md` — Python
-- `rust-sink.md` — Rust
+See the `references/` directory for detailed guides:
+- `rust-sink.md` — Rust sink implementation
 - `cursor-reorg.md` — Cursor management & reorg handling
 
 ## Quick Start: SQL Sink (Recommended)
