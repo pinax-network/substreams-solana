@@ -7,6 +7,7 @@ Solana networks supported by Substreams, derived from [The Graph Networks Regist
 | Network ID | Description |
 |-----------|-------------|
 | `solana` | Solana Mainnet |
+| `solana-mainnet-beta` | Solana Mainnet Beta (used in postgres sink manifests) |
 | `solana-accounts` | Solana Mainnet (Accounts data) |
 
 ## Manifest Usage
