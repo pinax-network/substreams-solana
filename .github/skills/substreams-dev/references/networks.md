@@ -7,6 +7,7 @@ Solana networks supported by Substreams, derived from [The Graph Networks Regist
 | Network ID | Description |
 |-----------|-------------|
 | `solana` | Solana Mainnet |
+| `solana-mainnet-beta` | Solana Mainnet Beta (alias used in some manifests) |
 | `solana-accounts` | Solana Mainnet (Accounts data) |
 
 ## Manifest Usage
