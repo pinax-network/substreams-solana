@@ -1,0 +1,35 @@
+specVersion: v0.1.0
+package:
+  name: pancakeswap
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: PancakeSwap DEX events for Solana.
+  image: ../../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../../target/wasm32-unknown-unknown/release/pancakeswap.wasm
+
+protobuf:
+  files:
+    - v1/pancakeswap.proto
+  importPaths:
+    - ../../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq"
+    output:
+      type: proto:pancakeswap.v1.Events
+
+network: solana

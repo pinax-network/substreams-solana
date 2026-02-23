@@ -1,0 +1,25 @@
+specVersion: v0.1.0
+package:
+  name: solana_postgres_balances
+  version: v0.2.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: SPL Token & Native SOL balances for Solana (PostgreSQL).
+  image: ../../image.png
+
+imports:
+  db: ../substreams.yaml
+
+modules:
+  - name: db_out
+    use: db:db_out
+
+sink:
+  module: db_out
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    schema: "./schema.sql"
+    engine: postgres
+    postgraphile_frontend:
+      enabled: false
+
+network: solana-mainnet-beta

@@ -1,39 +1,39 @@
 [workspace]
 members = [
   # DatabaseChanges
-  "db-solana-balances",
-  "db-solana-dex",
-  "db-solana-transfers",
-  "db-solana-accounts",
-  "db-solana-metadata",
+  "solana-balances",
+  "solana-dex",
+  "solana-transfers",
+  "solana-accounts",
+  "solana-metadata",
 
   # Tokens
   "spl-token",
   "native-token",
 
   # DEXs
-  "pumpfun/bonding_curve",
-  "pumpfun/amm",
-  "jupiter/v4",
-  "jupiter/v6",
-  "raydium/amm-v4",
-  "raydium/clmm",
-  "raydium/cpmm",
-  "raydium/launchpad",
+  "dex/pumpfun/bonding_curve",
+  "dex/pumpfun/amm",
+  "dex/jupiter/v4",
+  "dex/jupiter/v6",
+  "dex/raydium/amm-v4",
+  "dex/raydium/clmm",
+  "dex/raydium/cpmm",
+  "dex/raydium/launchpad",
   "metaplex",
-  "bonk-swap",
-  "orca/whirlpool",
-  "pumpswap",
-  "moonshot",
-  "pancakeswap",
-  "lifinity",
-  "meteora/amm",
-  "meteora/daam",
-  "meteora/dllm",
-  "phoenix",
-  "openbook",
-  "stabble",
-  "darklake",
+  "dex/bonk-swap",
+  "dex/orca/whirlpool",
+  "dex/pumpswap",
+  "dex/moonshot",
+  "dex/pancakeswap",
+  "dex/lifinity",
+  "dex/meteora/amm",
+  "dex/meteora/daam",
+  "dex/meteora/dllm",
+  "dex/phoenix",
+  "dex/openbook",
+  "dex/stabble",
+  "dex/darklake",
 
   # Common
   "proto",
@@ -42,7 +42,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-description = "EVM Tokens"
+description = "Solana Substreams"
 edition = "2021"
 version = "0.0.0"
 license = "Apache-2.0"
