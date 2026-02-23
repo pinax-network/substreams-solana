@@ -1,0 +1,35 @@
+specVersion: v0.1.0
+package:
+  name: openbook
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-solana
+  description: Openbook V2 DEX events for Solana.
+  image: ../../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../../target/wasm32-unknown-unknown/release/openbook.wasm
+
+protobuf:
+  files:
+    - v1/openbook.proto
+  importPaths:
+    - ../../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb"
+    output:
+      type: proto:openbook.v1.Events
+
+network: solana
