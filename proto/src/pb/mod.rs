@@ -1,4 +1,34 @@
 // @generated
+pub mod dumpfun {
+    pub mod v1 {
+        include!("dumpfun.v1.rs");
+        // @@protoc_insertion_point(dumpfun.v1)
+    }
+}
+pub mod goonfi {
+    pub mod v1 {
+        include!("goonfi.v1.rs");
+        // @@protoc_insertion_point(goonfi.v1)
+    }
+}
+pub mod heaven {
+    pub mod v1 {
+        include!("heaven.v1.rs");
+        // @@protoc_insertion_point(heaven.v1)
+    }
+}
+pub mod plasma {
+    pub mod v1 {
+        include!("plasma.v1.rs");
+        // @@protoc_insertion_point(plasma.v1)
+    }
+}
+pub mod saros {
+    pub mod v1 {
+        include!("saros.v1.rs");
+        // @@protoc_insertion_point(saros.v1)
+    }
+}
 pub mod darklake {
     pub mod v1 {
         include!("darklake.v1.rs");

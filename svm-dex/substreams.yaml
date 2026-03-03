@@ -34,6 +34,11 @@ imports:
   moonshot: ../dex/moonshot/substreams.yaml
   pancakeswap: ../dex/pancakeswap/substreams.yaml
   stabble: ../dex/stabble/substreams.yaml
+  dumpfun: ../dex/dumpfun/substreams.yaml
+  goonfi: ../dex/goonfi/substreams.yaml
+  heaven: ../dex/heaven/substreams.yaml
+  plasma: ../dex/plasma/substreams.yaml
+  saros: ../dex/saros/substreams.yaml
 
 binaries:
   default:
@@ -69,6 +74,11 @@ modules:
       - map: moonshot:map_events
       - map: pancakeswap:map_events
       - map: stabble:map_events
+      - map: dumpfun:map_events
+      - map: goonfi:map_events
+      - map: heaven:map_events
+      - map: plasma:map_events
+      - map: saros:map_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges

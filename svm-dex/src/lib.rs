@@ -1,5 +1,8 @@
 mod darklake;
+mod dumpfun;
 mod enums;
+mod goonfi;
+mod heaven;
 mod jupiter;
 mod lifinity;
 mod meteora_amm;
@@ -10,6 +13,7 @@ mod openbook;
 mod orca;
 mod pancakeswap;
 mod phoenix;
+mod plasma;
 mod pumpfun;
 mod pumpfun_amm;
 mod pumpswap;
@@ -17,6 +21,7 @@ mod raydium_amm_v4;
 mod raydium_clmm;
 mod raydium_cpmm;
 mod raydium_launchpad;
+mod saros;
 mod stabble;
 
 use common::db::set_clock;
@@ -47,6 +52,11 @@ pub fn db_out(
     moonshot_events: pb::moonshot::v1::Events,
     pancakeswap_events: pb::pancakeswap::v1::Events,
     stabble_events: pb::stabble::v1::Events,
+    dumpfun_events: pb::dumpfun::v1::Events,
+    goonfi_events: pb::goonfi::v1::Events,
+    heaven_events: pb::heaven::v1::Events,
+    plasma_events: pb::plasma::v1::Events,
+    saros_events: pb::saros::v1::Events,
 ) -> Result<DatabaseChanges, Error> {
     let mut tables = substreams_database_change::tables::Tables::new();
 
@@ -71,6 +81,11 @@ pub fn db_out(
     moonshot::process_events(&mut tables, &clock, &moonshot_events);
     pancakeswap::process_events(&mut tables, &clock, &pancakeswap_events);
     stabble::process_events(&mut tables, &clock, &stabble_events);
+    dumpfun::process_events(&mut tables, &clock, &dumpfun_events);
+    goonfi::process_events(&mut tables, &clock, &goonfi_events);
+    heaven::process_events(&mut tables, &clock, &heaven_events);
+    plasma::process_events(&mut tables, &clock, &plasma_events);
+    saros::process_events(&mut tables, &clock, &saros_events);
 
     // ONLY include blocks if events are present
     if tables.all_row_count() > 0 {

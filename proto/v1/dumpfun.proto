@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package dumpfun.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    BuyExactTokensInstruction buy_exact_tokens = 3;
+    BuyTokensWithExactSolInstruction buy_tokens_with_exact_sol = 4;
+    SellExactTokensInstruction sell_exact_tokens = 5;
+  }
+}
+
+message BuyExactTokensInstruction {
+  uint64 token_out = 1;
+  uint64 max_sol_in = 2;
+}
+
+message BuyTokensWithExactSolInstruction {
+  uint64 sol_in = 1;
+  uint64 min_token_out = 2;
+}
+
+message SellExactTokensInstruction {
+  uint64 token_in = 1;
+  uint64 min_sol_out = 2;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    BuyTokenEvent buy = 3;
+    SellTokenEvent sell = 4;
+    TokenCreatedEvent token_created = 5;
+    DrainPoolEvent drain_pool = 6;
+  }
+}
+
+message BuyTokenEvent {
+  bytes user = 1;
+  bytes mint = 2;
+  uint64 sol_in = 3;
+  uint64 token_out = 4;
+  int64 buy_time = 5;
+}
+
+message SellTokenEvent {
+  bytes user = 1;
+  bytes mint = 2;
+  uint64 token_in = 3;
+  uint64 sol_out = 4;
+  int64 sell_time = 5;
+}
+
+message TokenCreatedEvent {
+  bytes creator = 1;
+  bytes mint = 2;
+  int64 create_time = 3;
+  int64 sell_lock_period = 4;
+}
+
+message DrainPoolEvent {
+  bytes pool = 1;
+  bytes mint = 2;
+  bytes creator_wallet = 3;
+  bytes company_wallet = 4;
+  uint64 creator_amount = 5;
+  uint64 company_amount = 6;
+  uint64 total_drained = 7;
+  int64 drain_time = 8;
+}
