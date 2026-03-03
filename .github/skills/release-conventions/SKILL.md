@@ -27,7 +27,7 @@ Examples:
 ## Tag Format
 
 ```
-solana-<type>-v<version>
+svm-<type>-v<version>
 ```
 
 Examples: `svm-dex-v0.3.1`, `svm-balances-v0.2.0`, `svm-transfers-v0.1.0`
@@ -35,7 +35,7 @@ Examples: `svm-dex-v0.3.1`, `svm-balances-v0.2.0`, `svm-transfers-v0.1.0`
 ## Release Name
 
 ```
-solana-<type> v<version>
+svm-<type> v<version>
 ```
 
 Examples: `svm-dex v0.3.1`, `svm-balances v0.2.0`
@@ -47,18 +47,18 @@ Each crate may produce up to 3 SPKGs. All share the same version number.
 | Type | Pattern | Example |
 |------|---------|---------|
 | Base DB module | `svm-<type>-v<version>.spkg` | `svm-dex-v0.3.1.spkg` |
-| ClickHouse sink | `clickhouse-solana-<type>-v<version>.spkg` | `clickhouse-svm-dex-v0.3.1.spkg` |
-| PostgreSQL sink | `postgres-solana-<type>-v<version>.spkg` | `postgres-svm-dex-v0.3.1.spkg` |
+| ClickHouse sink | `clickhouse-svm-<type>-v<version>.spkg` | `clickhouse-svm-dex-v0.3.1.spkg` |
+| PostgreSQL sink | `postgres-svm-<type>-v<version>.spkg` | `postgres-svm-dex-v0.3.1.spkg` |
 
-> **Key**: Engine prefix comes first (`clickhouse-` / `postgres-`), then `solana-<type>`.
+> **Key**: Engine prefix comes first (`clickhouse-` / `postgres-`), then `svm-<type>`.
 
 ## substreams.yaml Package Names
 
 | Type | Pattern | Example |
 |------|---------|---------|
-| Base DB module | `solana_<type>` | `svm_dex` |
-| ClickHouse sink | `solana_<type>_clickhouse` | `svm_dex_clickhouse` |
-| PostgreSQL sink | `solana_<type>_postgres` | `svm_dex_postgres` |
+| Base DB module | `svm_<type>` | `svm_dex` |
+| ClickHouse sink | `svm_<type>_clickhouse` | `svm_dex_clickhouse` |
+| PostgreSQL sink | `svm_<type>_postgres` | `svm_dex_postgres` |
 
 ## SPKG Distribution
 
@@ -75,7 +75,7 @@ SPKGs must be placed in **two locations**:
 4. **Pack** each module: `substreams pack` in the base, clickhouse, and postgres directories
 5. **Copy SPKGs** to `./spkg/` (with correct naming) and remove old versions
 6. **Commit** version bumps + spkg files
-7. **Tag**: `git tag -a solana-<type>-v<version> -m "solana-<type> v<version>"`
+7. **Tag**: `git tag -a svm-<type>-v<version> -m "svm-<type> v<version>"`
 8. **Push** commit and tag
 9. **Create GitHub release** with the tag, attach all 3 SPKGs as assets
 
