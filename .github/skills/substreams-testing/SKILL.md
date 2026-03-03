@@ -134,7 +134,7 @@ substreams run ./raydium/amm-v4/substreams.yaml \
   --stop-block +100
 
 # Test the aggregate db_out module
-substreams run ./db-solana-dex/substreams.yaml \
+substreams run ./db-svm-dex/substreams.yaml \
   db_out \
   --start-block 250000000 \
   --stop-block +100
@@ -171,7 +171,7 @@ cargo build --target wasm32-unknown-unknown --release -p raydium-amm-v4
 For ClickHouse sinks with split schema files, verify schemas concatenate correctly:
 
 ```bash
-cd db-solana-dex-clickhouse
+cd db-svm-dex-clickhouse
 make schema  # Concatenates split files into schema.sql
 ```
 

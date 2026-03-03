@@ -42,23 +42,23 @@ Level 0 — Leaf crates (individual DEX/token modules):
   └── ... (moonshot, pancakeswap, lifinity, phoenix, openbook, etc.)
 
 Level 1 — DB layer (imports Level 0 .spkg files):
-  ├── db-solana-dex/             → solana-dex-v*.spkg
-  ├── db-solana-transfers/       → solana-transfers-v*.spkg
-  ├── db-solana-balances/        → solana-balances-v*.spkg
-  ├── db-solana-accounts/        → solana-accounts-v*.spkg
-  └── db-solana-metadata/        → solana-metadata-v*.spkg
+  ├── db-svm-dex/             → svm-dex-v*.spkg
+  ├── db-svm-transfers/       → svm-transfers-v*.spkg
+  ├── db-svm-balances/        → svm-balances-v*.spkg
+  ├── db-svm-accounts/        → svm-accounts-v*.spkg
+  └── db-svm-metadata/        → svm-metadata-v*.spkg
 
 Level 2 — Sink layer (imports Level 1 .spkg files):
-  ├── db-solana-dex-clickhouse/       → clickhouse-solana-dex-v*.spkg
-  ├── db-solana-dex-postgres/         → postgres-solana-dex-v*.spkg
-  ├── db-solana-transfers-clickhouse/ → clickhouse-solana-transfers-v*.spkg
-  ├── db-solana-transfers-postgres/   → postgres-solana-transfers-v*.spkg
-  ├── db-solana-balances-clickhouse/  → clickhouse-solana-balances-v*.spkg
-  ├── db-solana-balances-postgres/    → postgres-solana-balances-v*.spkg
-  ├── db-solana-accounts-clickhouse/  → clickhouse-solana-accounts-v*.spkg
-  ├── db-solana-accounts-postgres/    → postgres-solana-accounts-v*.spkg
-  ├── db-solana-metadata-clickhouse/  → clickhouse-solana-metadata-v*.spkg
-  └── db-solana-metadata-postgres/    → postgres-solana-metadata-v*.spkg
+  ├── db-svm-dex-clickhouse/       → clickhouse-svm-dex-v*.spkg
+  ├── db-svm-dex-postgres/         → postgres-svm-dex-v*.spkg
+  ├── db-svm-transfers-clickhouse/ → clickhouse-svm-transfers-v*.spkg
+  ├── db-svm-transfers-postgres/   → postgres-svm-transfers-v*.spkg
+  ├── db-svm-balances-clickhouse/  → clickhouse-svm-balances-v*.spkg
+  ├── db-svm-balances-postgres/    → postgres-svm-balances-v*.spkg
+  ├── db-svm-accounts-clickhouse/  → clickhouse-svm-accounts-v*.spkg
+  ├── db-svm-accounts-postgres/    → postgres-svm-accounts-v*.spkg
+  ├── db-svm-metadata-clickhouse/  → clickhouse-svm-metadata-v*.spkg
+  └── db-svm-metadata-postgres/    → postgres-svm-metadata-v*.spkg
 ```
 
 ## Step-by-Step: Full Rebuild
@@ -83,7 +83,7 @@ Or build specific crates:
 cargo build --target wasm32-unknown-unknown --release \
   -p raydium-amm-v4 \
   -p jupiter-v6 \
-  -p db-solana-dex
+  -p db-svm-dex
 ```
 
 ### 3. Pack Level 0 (leaf crates)
@@ -101,9 +101,9 @@ cd native-token   && substreams pack && cp native-token-v*.spkg ../spkg/
 These import Level 0 `.spkg` files, so Level 0 must be packed first.
 
 ```bash
-cd db-solana-dex       && substreams pack && cp solana-dex-v*.spkg ../spkg/
-cd db-solana-transfers && substreams pack && cp solana-transfers-v*.spkg ../spkg/
-cd db-solana-balances  && substreams pack && cp solana-balances-v*.spkg ../spkg/
+cd db-svm-dex       && substreams pack && cp svm-dex-v*.spkg ../spkg/
+cd db-svm-transfers && substreams pack && cp svm-transfers-v*.spkg ../spkg/
+cd db-svm-balances  && substreams pack && cp svm-balances-v*.spkg ../spkg/
 ```
 
 ### 5. Pack Level 2 (Sink layer)
@@ -111,8 +111,8 @@ cd db-solana-balances  && substreams pack && cp solana-balances-v*.spkg ../spkg/
 These import Level 1 `.spkg` files, so Level 1 must be packed first.
 
 ```bash
-cd db-solana-dex-clickhouse && substreams pack && cp clickhouse-solana-dex-v*.spkg ../spkg/
-cd db-solana-dex-postgres   && substreams pack && cp postgres-solana-dex-v*.spkg ../spkg/
+cd db-svm-dex-clickhouse && substreams pack && cp clickhouse-svm-dex-v*.spkg ../spkg/
+cd db-svm-dex-postgres   && substreams pack && cp postgres-svm-dex-v*.spkg ../spkg/
 ```
 
 ## Important Notes

@@ -1,11 +1,11 @@
 [workspace]
 members = [
   # DatabaseChanges
-  "solana-balances",
-  "solana-dex",
-  "solana-transfers",
-  "solana-accounts",
-  "solana-metadata",
+  "svm-balances",
+  "svm-dex",
+  "svm-transfers",
+  "svm-accounts",
+  "svm-metadata",
 
   # Tokens
   "spl-token",

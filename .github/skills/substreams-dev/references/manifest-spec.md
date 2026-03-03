@@ -115,11 +115,11 @@ inputs:
 ```yaml
 specVersion: v0.1.0
 package:
-  name: solana_dex_clickhouse
+  name: svm_dex_clickhouse
   version: v0.3.1
 
 imports:
-  db: ../db-solana-dex/substreams.yaml
+  db: ../db-svm-dex/substreams.yaml
 
 modules:
   - name: db_out
@@ -142,11 +142,11 @@ network: solana
 ```yaml
 specVersion: v0.1.0
 package:
-  name: solana_dex_postgres
+  name: svm_dex_postgres
   version: v0.3.1
 
 imports:
-  db: ../db-solana-dex/substreams.yaml
+  db: ../db-svm-dex/substreams.yaml
 
 modules:
   - name: db_out
@@ -172,8 +172,8 @@ Aggregate modules combine multiple DEX module outputs into a single `db_out`:
 imports:
   database_changes: ../spkg/substreams-sink-database-changes-v4.0.0.spkg
   sql: ../spkg/substreams-sink-sql-protodefs-v1.0.7.spkg
-  pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/pumpfun-bonding-curve-v0.2.2.spkg
-  raydium_amm_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-amm-v4-v0.2.0.spkg
+  pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/svm-dex-v0.3.0/pumpfun-bonding-curve-v0.2.2.spkg
+  raydium_amm_v4: https://github.com/pinax-network/substreams-solana/releases/download/svm-dex-v0.2.0/raydium-amm-v4-v0.2.0.spkg
   # ... more DEX imports
 
 modules:

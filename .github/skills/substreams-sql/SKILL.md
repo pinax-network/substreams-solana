@@ -78,7 +78,7 @@ pub fn common_key_v2(clock: &Clock, transaction_index: usize, instruction_index:
 The SVM repo uses split schema files for maintainability:
 
 ```
-db-solana-dex-clickhouse/
+db-svm-dex-clickhouse/
 ├── schema.0.blocks.sql                    # Block metadata table
 ├── schema.0.functions.helpers.sql         # Helper functions
 ├── schema.0.functions.programs.sql        # Program ID mappings
@@ -229,10 +229,10 @@ sink:
 # ClickHouse
 substreams-sink-sql run \
   "clickhouse://default:@localhost:9000/solana" \
-  ./db-solana-dex-clickhouse/substreams.yaml
+  ./db-svm-dex-clickhouse/substreams.yaml
 
 # PostgreSQL
 substreams-sink-sql run \
   "postgres://user:pass@localhost:5432/solana?sslmode=disable" \
-  ./db-solana-dex-postgres/substreams.yaml
+  ./db-svm-dex-postgres/substreams.yaml
 ```
