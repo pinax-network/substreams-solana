@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package plasma.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+  }
+}
+
+message SwapInstruction {
+  uint32 side = 1;
+  uint32 swap_type = 2;
+  uint64 amount = 3;
+  uint64 limit_amount = 4;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+}
