@@ -21,24 +21,24 @@ https://github.com/pinax-network/substreams-svm/releases/download/<tag>/<spkg-fi
 ```
 
 Examples:
-- `https://github.com/pinax-network/substreams-svm/releases/download/solana-dex-v0.3.1/clickhouse-solana-dex-v0.3.1.spkg`
-- `https://github.com/pinax-network/substreams-svm/releases/download/solana-balances-v0.2.0/clickhouse-solana-balances-v0.2.0.spkg`
+- `https://github.com/pinax-network/substreams-svm/releases/download/svm-dex-v0.3.1/clickhouse-svm-dex-v0.3.1.spkg`
+- `https://github.com/pinax-network/substreams-svm/releases/download/svm-balances-v0.2.0/clickhouse-svm-balances-v0.2.0.spkg`
 
 ## Tag Format
 
 ```
-solana-<type>-v<version>
+svm-<type>-v<version>
 ```
 
-Examples: `solana-dex-v0.3.1`, `solana-balances-v0.2.0`, `solana-transfers-v0.1.0`
+Examples: `svm-dex-v0.3.1`, `svm-balances-v0.2.0`, `svm-transfers-v0.1.0`
 
 ## Release Name
 
 ```
-solana-<type> v<version>
+svm-<type> v<version>
 ```
 
-Examples: `solana-dex v0.3.1`, `solana-balances v0.2.0`
+Examples: `svm-dex v0.3.1`, `svm-balances v0.2.0`
 
 ## SPKG Naming
 
@@ -46,19 +46,19 @@ Each crate may produce up to 3 SPKGs. All share the same version number.
 
 | Type | Pattern | Example |
 |------|---------|---------|
-| Base DB module | `solana-<type>-v<version>.spkg` | `solana-dex-v0.3.1.spkg` |
-| ClickHouse sink | `clickhouse-solana-<type>-v<version>.spkg` | `clickhouse-solana-dex-v0.3.1.spkg` |
-| PostgreSQL sink | `postgres-solana-<type>-v<version>.spkg` | `postgres-solana-dex-v0.3.1.spkg` |
+| Base DB module | `svm-<type>-v<version>.spkg` | `svm-dex-v0.3.1.spkg` |
+| ClickHouse sink | `clickhouse-svm-<type>-v<version>.spkg` | `clickhouse-svm-dex-v0.3.1.spkg` |
+| PostgreSQL sink | `postgres-svm-<type>-v<version>.spkg` | `postgres-svm-dex-v0.3.1.spkg` |
 
-> **Key**: Engine prefix comes first (`clickhouse-` / `postgres-`), then `solana-<type>`.
+> **Key**: Engine prefix comes first (`clickhouse-` / `postgres-`), then `svm-<type>`.
 
 ## substreams.yaml Package Names
 
 | Type | Pattern | Example |
 |------|---------|---------|
-| Base DB module | `solana_<type>` | `solana_dex` |
-| ClickHouse sink | `solana_<type>_clickhouse` | `solana_dex_clickhouse` |
-| PostgreSQL sink | `solana_<type>_postgres` | `solana_dex_postgres` |
+| Base DB module | `svm_<type>` | `svm_dex` |
+| ClickHouse sink | `svm_<type>_clickhouse` | `svm_dex_clickhouse` |
+| PostgreSQL sink | `svm_<type>_postgres` | `svm_dex_postgres` |
 
 ## SPKG Distribution
 
@@ -75,7 +75,7 @@ SPKGs must be placed in **two locations**:
 4. **Pack** each module: `substreams pack` in the base, clickhouse, and postgres directories
 5. **Copy SPKGs** to `./spkg/` (with correct naming) and remove old versions
 6. **Commit** version bumps + spkg files
-7. **Tag**: `git tag -a solana-<type>-v<version> -m "solana-<type> v<version>"`
+7. **Tag**: `git tag -a svm-<type>-v<version> -m "svm-<type> v<version>"`
 8. **Push** commit and tag
 9. **Create GitHub release** with the tag, attach all 3 SPKGs as assets
 
@@ -85,25 +85,25 @@ All 3 SPKGs for a given crate (base, clickhouse, postgres) **must share the same
 
 ## Directory Structure
 
-The SVM repo uses a flat structure with `db-solana-*` prefixed directories for sink layers:
+The SVM repo uses a flat structure with `db-svm-*` prefixed directories for sink layers:
 
 ```
-db-solana-<type>/                    # Base DB module
+db-svm-<type>/                    # Base DB module
 ├── substreams.yaml
 ├── src/lib.rs
 ├── Cargo.toml
-db-solana-<type>-clickhouse/         # ClickHouse sink
+db-svm-<type>-clickhouse/         # ClickHouse sink
 ├── substreams.yaml
 ├── schema.*.sql                     # Split schema files
 ├── Makefile
-db-solana-<type>-postgres/           # PostgreSQL sink
+db-svm-<type>-postgres/           # PostgreSQL sink
 ├── substreams.yaml
 ├── schema.sql
 ```
 
 ## Individual DEX Module SPKGs
 
-Individual DEX modules (e.g., `raydium-amm-v4`, `pumpfun`, `jupiter-v6`) are also published as SPKGs and referenced by the aggregate `db-solana-dex` module via imports:
+Individual DEX modules (e.g., `raydium-amm-v4`, `pumpfun`, `jupiter-v6`) are also published as SPKGs and referenced by the aggregate `db-svm-dex` module via imports:
 
 ```
 raydium-amm-v4-v0.2.0.spkg

@@ -14,10 +14,10 @@ This repository contains Substreams modules for tracking Solana blockchain data,
 
 This is a Rust workspace with multiple crates organized by functionality:
 
-- **Token modules**: `spl-token`, `native-token`, `clickhouse-solana-tokens`
+- **Token modules**: `spl-token`, `native-token`, `clickhouse-svm-tokens`
 - **DEX modules**: `raydium/*`, `jupiter/*`, `meteora/*`, `pumpfun/*`, etc.
 - **Common utilities**: `common`, `proto`
-- **Database integration**: `clickhouse-solana-dex`
+- **Database integration**: `clickhouse-svm-dex`
 
 ### Key Technologies
 

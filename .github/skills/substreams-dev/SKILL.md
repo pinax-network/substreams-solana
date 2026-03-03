@@ -95,23 +95,23 @@ substreams-svm/
 ├── metaplex/                    # Metaplex metadata
 │
 ├── # Aggregate DB modules
-├── db-solana-dex/               # DEX DatabaseChanges (all DEXs)
-├── db-solana-transfers/         # Transfer DatabaseChanges
-├── db-solana-balances/          # Balance DatabaseChanges
-├── db-solana-accounts/          # Account DatabaseChanges
-├── db-solana-metadata/          # Metadata DatabaseChanges
+├── db-svm-dex/               # DEX DatabaseChanges (all DEXs)
+├── db-svm-transfers/         # Transfer DatabaseChanges
+├── db-svm-balances/          # Balance DatabaseChanges
+├── db-svm-accounts/          # Account DatabaseChanges
+├── db-svm-metadata/          # Metadata DatabaseChanges
 │
 ├── # Sink modules (ClickHouse / Postgres)
-├── db-solana-dex-clickhouse/
-├── db-solana-dex-postgres/
-├── db-solana-transfers-clickhouse/
-├── db-solana-transfers-postgres/
-├── db-solana-balances-clickhouse/
-├── db-solana-balances-postgres/
-├── db-solana-accounts-clickhouse/
-├── db-solana-accounts-postgres/
-├── db-solana-metadata-clickhouse/
-└── db-solana-metadata-postgres/
+├── db-svm-dex-clickhouse/
+├── db-svm-dex-postgres/
+├── db-svm-transfers-clickhouse/
+├── db-svm-transfers-postgres/
+├── db-svm-balances-clickhouse/
+├── db-svm-balances-postgres/
+├── db-svm-accounts-clickhouse/
+├── db-svm-accounts-postgres/
+├── db-svm-metadata-clickhouse/
+└── db-svm-metadata-postgres/
 ```
 
 ## Prerequisites

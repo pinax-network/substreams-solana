@@ -62,7 +62,7 @@ For most use cases, use `substreams-sink-sql` with the pre-built SVM SPKGs:
 ```bash
 substreams-sink-sql run \
   "clickhouse://default:@localhost:9000/solana" \
-  "https://github.com/pinax-network/substreams-svm/releases/download/solana-dex-v0.3.1/clickhouse-solana-dex-v0.3.1.spkg" \
+  "https://github.com/pinax-network/substreams-svm/releases/download/svm-dex-v0.3.1/clickhouse-svm-dex-v0.3.1.spkg" \
   db_out
 ```
 
@@ -71,7 +71,7 @@ substreams-sink-sql run \
 ```bash
 substreams-sink-sql run \
   "postgres://user:pass@localhost:5432/solana?sslmode=disable" \
-  "https://github.com/pinax-network/substreams-svm/releases/download/solana-dex-v0.3.1/postgres-solana-dex-v0.3.1.spkg" \
+  "https://github.com/pinax-network/substreams-svm/releases/download/svm-dex-v0.3.1/postgres-svm-dex-v0.3.1.spkg" \
   db_out
 ```
 
@@ -79,10 +79,10 @@ substreams-sink-sql run \
 
 | Module | Description | Output |
 |--------|-------------|--------|
-| `solana-dex` | All DEX swaps (Raydium, Jupiter, Orca, PumpFun, Meteora, etc.) | `DatabaseChanges` |
-| `solana-transfers` | SPL token + native SOL transfers | `DatabaseChanges` |
-| `solana-balances` | Token balance changes | `DatabaseChanges` |
-| `solana-accounts` | Account creation/updates | `DatabaseChanges` |
-| `solana-metadata` | Metaplex token metadata | `DatabaseChanges` |
+| `svm-dex` | All DEX swaps (Raydium, Jupiter, Orca, PumpFun, Meteora, etc.) | `DatabaseChanges` |
+| `svm-transfers` | SPL token + native SOL transfers | `DatabaseChanges` |
+| `svm-balances` | Token balance changes | `DatabaseChanges` |
+| `svm-accounts` | Account creation/updates | `DatabaseChanges` |
+| `svm-metadata` | Metaplex token metadata | `DatabaseChanges` |
 
 Each is available in ClickHouse and PostgreSQL variants.
