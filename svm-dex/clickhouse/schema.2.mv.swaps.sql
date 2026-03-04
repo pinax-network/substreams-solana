@@ -1,4 +1,4 @@
--- Solana Swaps --
+-- SVM Swaps --
 CREATE TABLE IF NOT EXISTS swaps AS base_events
 COMMENT 'Solana Swaps';
 ALTER TABLE swaps
@@ -549,4 +549,190 @@ SELECT
     output_mint,
     amount_out AS output_amount
 FROM meteora_amm_swap AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Orca Whirlpool → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_orca_swap
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    user,
+    program_id AS amm,
+    whirlpool AS amm_pool,
+    input_mint,
+    amount_in AS input_amount,
+    output_mint,
+    amount_out AS output_amount
+FROM orca_swap AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Darklake → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_darklake_swap
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    trader AS user,
+    program_id AS amm,
+    '' AS amm_pool,
+    if(direction = 0, token_mint_x, token_mint_y) AS input_mint,
+    amount_in AS input_amount,
+    if(direction = 0, token_mint_y, token_mint_x) AS output_mint,
+    amount_out AS output_amount
+FROM darklake_swap AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  DumpFun → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_dumpfun_buy
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    user,
+    program_id AS amm,
+    '' AS amm_pool,
+    'So11111111111111111111111111111111111111111' AS input_mint,
+    sol_in AS input_amount,
+    mint AS output_mint,
+    token_out AS output_amount
+FROM dumpfun_buy AS s
+WHERE sol_in > 1 AND token_out > 1;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_dumpfun_sell
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    user,
+    program_id AS amm,
+    '' AS amm_pool,
+    mint AS input_mint,
+    token_in AS input_amount,
+    'So11111111111111111111111111111111111111111' AS output_mint,
+    sol_out AS output_amount
+FROM dumpfun_sell AS s
+WHERE token_in > 1 AND sol_out > 1;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1.  Boop → swaps
+   ────────────────────────────────────────────────────────────────────────── */
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_boop_buy
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    buyer AS user,
+    program_id AS amm,
+    '' AS amm_pool,
+    'So11111111111111111111111111111111111111111' AS input_mint,
+    amount_in AS input_amount,
+    mint AS output_mint,
+    amount_out AS output_amount
+FROM boop_buy AS s
+WHERE input_amount > 1 AND output_amount > 1;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_boop_sell
+TO swaps AS
+SELECT
+    block_num,
+    block_hash,
+    timestamp,
+
+    transaction_index,
+    instruction_index,
+
+    signature,
+    fee_payer,
+    signers_raw,
+    fee,
+    compute_units_consumed,
+
+    program_id,
+    stack_height,
+
+    seller AS user,
+    program_id AS amm,
+    '' AS amm_pool,
+    mint AS input_mint,
+    amount_in AS input_amount,
+    'So11111111111111111111111111111111111111111' AS output_mint,
+    amount_out AS output_amount
+FROM boop_sell AS s
 WHERE input_amount > 1 AND output_amount > 1;
