@@ -242,11 +242,25 @@ pub mod solana {
         }
     }
     pub mod native {
+        pub mod stake {
+            // @@protoc_insertion_point(attribute:solana.native.stake.v1)
+            pub mod v1 {
+                include!("solana.native.stake.v1.rs");
+                // @@protoc_insertion_point(solana.native.stake.v1)
+            }
+        }
         pub mod token {
             // @@protoc_insertion_point(attribute:solana.native.token.v1)
             pub mod v1 {
                 include!("solana.native.token.v1.rs");
                 // @@protoc_insertion_point(solana.native.token.v1)
+            }
+        }
+        pub mod vote {
+            // @@protoc_insertion_point(attribute:solana.native.vote.v1)
+            pub mod v1 {
+                include!("solana.native.vote.v1.rs");
+                // @@protoc_insertion_point(solana.native.vote.v1)
             }
         }
     }
@@ -256,6 +270,20 @@ pub mod solana {
             pub mod v1 {
                 include!("solana.spl.token.v1.rs");
                 // @@protoc_insertion_point(solana.spl.token.v1)
+            }
+        }
+        pub mod token_lending {
+            // @@protoc_insertion_point(attribute:solana.spl.token_lending.v1)
+            pub mod v1 {
+                include!("solana.spl.token_lending.v1.rs");
+                // @@protoc_insertion_point(solana.spl.token_lending.v1)
+            }
+        }
+        pub mod token_swap {
+            // @@protoc_insertion_point(attribute:solana.spl.token_swap.v1)
+            pub mod v1 {
+                include!("solana.spl.token_swap.v1.rs");
+                // @@protoc_insertion_point(solana.spl.token_swap.v1)
             }
         }
     }

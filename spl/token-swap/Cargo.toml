@@ -1,0 +1,14 @@
+[package]
+name = "spl-token-swap"
+description = "SPL Token Swap"
+edition = { workspace = true }
+version = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+proto = { path = "../../proto" }
+common = { path = "../../common" }

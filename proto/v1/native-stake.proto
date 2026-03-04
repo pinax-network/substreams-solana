@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package solana.native.stake.v1;
+// https://docs.rs/solana-program/latest/solana_program/stake/
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    bool is_root = 3; // Indicates if this instruction is a root instruction.
+    oneof instruction {
+        Initialize initialize = 10;
+        Delegate delegate = 11;
+        Deactivate deactivate = 12;
+        Withdraw withdraw = 13;
+        Merge merge = 14;
+        Split split = 15;
+    }
+}
+
+message Initialize {
+    bytes stake_account = 1; // Stake account to initialize.
+    bytes staker = 2; // Staker authority.
+    bytes withdrawer = 3; // Withdrawer authority.
+    optional int64 lockup_unix_timestamp = 4; // Lockup timestamp.
+    optional uint64 lockup_epoch = 5; // Lockup epoch.
+    optional bytes lockup_custodian = 6; // Lockup custodian.
+}
+
+message Delegate {
+    bytes stake_account = 1; // Stake account.
+    bytes vote_account = 2; // Vote account to delegate to.
+    bytes stake_authority = 3; // Stake authority.
+}
+
+message Deactivate {
+    bytes stake_account = 1; // Stake account to deactivate.
+    bytes stake_authority = 2; // Stake authority.
+}
+
+message Withdraw {
+    bytes stake_account = 1; // Stake account.
+    bytes destination = 2; // Destination account.
+    uint64 lamports = 3; // Amount to withdraw.
+    bytes withdraw_authority = 4; // Withdraw authority.
+    optional bytes custodian = 5; // Lockup custodian (optional).
+}
+
+message Merge {
+    bytes destination_stake_account = 1; // Destination stake account.
+    bytes source_stake_account = 2; // Source stake account (to merge from).
+    bytes stake_authority = 3; // Stake authority.
+}
+
+message Split {
+    bytes stake_account = 1; // Source stake account.
+    bytes split_stake_account = 2; // New split stake account.
+    uint64 lamports = 3; // Amount to split.
+    bytes stake_authority = 4; // Stake authority.
+}

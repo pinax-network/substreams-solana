@@ -1,0 +1,36 @@
+specVersion: v0.1.0
+package:
+  name: native_vote
+  version: v1.0.0
+  url: https://github.com/pinax-network/substreams-svm
+  description: Native Vote Program
+  image: ../../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../../target/wasm32-unknown-unknown/release/native_vote.wasm
+
+protobuf:
+  files:
+    - v1/native-vote.proto
+  importPaths:
+    - ../../proto
+
+modules:
+  - name: map_events
+    kind: map
+    doc: Native Vote Program
+    inputs:
+      - source: sf.solana.type.v1.Block
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:Vote111111111111111111111111111111111111111"
+    output:
+      type: proto:solana.native.vote.v1.Events
+
+network: solana

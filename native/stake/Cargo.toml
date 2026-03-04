@@ -1,9 +1,8 @@
 [package]
-name = "spl-token"
-description = "SPL Token"
+name = "native-stake"
+description = "Native Stake Program"
 edition = { workspace = true }
 version = { workspace = true }
-authors = ["Denis <denis@pinax.network>"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -12,6 +11,7 @@ crate-type = ["cdylib", "rlib"]
 substreams = { workspace = true }
 substreams-solana = { workspace = true }
 substreams-solana-program-instructions = { workspace = true }
-spl-token-metadata-interface = "0.7.0"
-proto = { path = "../proto" }
-common = { path = "../common" }
+solana-program = "2.3.0"
+bincode = { version = "2.0.1", features = ["serde"] }
+proto = { path = "../../proto" }
+common = { path = "../../common" }

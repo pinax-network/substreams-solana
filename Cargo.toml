@@ -10,8 +10,13 @@ members = [
   "svm-native",
 
   # Tokens
-  "spl-token",
-  "native-token",
+  "spl/token",
+  "spl/token-2022",
+  "spl/token-swap",
+  "spl/token-lending",
+  "native/system",
+  "native/stake",
+  "native/vote",
 
   # DEXs
   "dex/pumpfun/bonding_curve",

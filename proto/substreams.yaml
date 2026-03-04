@@ -6,7 +6,11 @@ package:
 protobuf:
   files:
     - v1/spl-token.proto
+    - v1/spl-token-swap.proto
+    - v1/spl-token-lending.proto
     - v1/native-token.proto
+    - v1/native-stake.proto
+    - v1/native-vote.proto
     - v1/pumpfun.proto
     - v1/pumpfun-amm.proto
     - v1/jupiter.proto

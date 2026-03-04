@@ -1,9 +1,8 @@
 [package]
-name = "native-token"
-description = "Native Token"
+name = "native-vote"
+description = "Native Vote Program"
 edition = { workspace = true }
 version = { workspace = true }
-authors = ["Denis <denis@pinax.network>"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -14,5 +13,5 @@ substreams-solana = { workspace = true }
 substreams-solana-program-instructions = { workspace = true }
 solana-program = "2.3.0"
 bincode = { version = "2.0.1", features = ["serde"] }
-proto = { path = "../proto" }
-common = { path = "../common" }
+proto = { path = "../../proto" }
+common = { path = "../../common" }

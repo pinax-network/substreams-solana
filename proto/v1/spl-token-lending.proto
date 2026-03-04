@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package solana.spl.token_lending.v1;
+// https://github.com/solana-labs/solana-program-library/tree/master/token-lending
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    bool is_root = 3; // Indicates if this instruction is a root instruction.
+    oneof instruction {
+        InitLendingMarket init_lending_market = 10;
+        InitReserve init_reserve = 11;
+        DepositReserveLiquidity deposit_reserve_liquidity = 12;
+        RedeemReserveCollateral redeem_reserve_collateral = 13;
+        InitObligation init_obligation = 14;
+        DepositObligationCollateral deposit_obligation_collateral = 15;
+        WithdrawObligationCollateral withdraw_obligation_collateral = 16;
+        BorrowObligationLiquidity borrow_obligation_liquidity = 17;
+        RepayObligationLiquidity repay_obligation_liquidity = 18;
+        LiquidateObligation liquidate_obligation = 19;
+        FlashLoan flash_loan = 20;
+    }
+}
+
+message InitLendingMarket {
+    bytes lending_market = 1; // Lending market account.
+    bytes owner = 2; // Market owner.
+    bytes quote_currency = 3; // Quote currency.
+}
+
+message InitReserve {
+    bytes lending_market = 1; // Lending market account.
+    bytes reserve = 2; // Reserve account.
+    bytes liquidity_mint = 3; // Liquidity token mint.
+    bytes liquidity_supply = 4; // Liquidity supply account.
+    bytes collateral_mint = 5; // Collateral token mint.
+    bytes collateral_supply = 6; // Collateral supply account.
+    uint64 liquidity_amount = 7; // Initial liquidity amount.
+}
+
+message DepositReserveLiquidity {
+    bytes reserve = 1; // Reserve account.
+    bytes source_liquidity = 2; // Source liquidity token account.
+    bytes destination_collateral = 3; // Destination collateral token account.
+    uint64 liquidity_amount = 4; // Amount of liquidity to deposit.
+}
+
+message RedeemReserveCollateral {
+    bytes reserve = 1; // Reserve account.
+    bytes source_collateral = 2; // Source collateral token account.
+    bytes destination_liquidity = 3; // Destination liquidity token account.
+    uint64 collateral_amount = 4; // Amount of collateral to redeem.
+}
+
+message InitObligation {
+    bytes obligation = 1; // Obligation account.
+    bytes lending_market = 2; // Lending market account.
+    bytes owner = 3; // Obligation owner.
+}
+
+message DepositObligationCollateral {
+    bytes obligation = 1; // Obligation account.
+    bytes source_collateral = 2; // Source collateral token account.
+    bytes reserve = 3; // Reserve account.
+    uint64 collateral_amount = 4; // Amount of collateral to deposit.
+}
+
+message WithdrawObligationCollateral {
+    bytes obligation = 1; // Obligation account.
+    bytes destination_collateral = 2; // Destination collateral token account.
+    bytes reserve = 3; // Reserve account.
+    uint64 collateral_amount = 4; // Amount of collateral to withdraw.
+}
+
+message BorrowObligationLiquidity {
+    bytes obligation = 1; // Obligation account.
+    bytes destination_liquidity = 2; // Destination liquidity token account.
+    bytes reserve = 3; // Reserve account.
+    uint64 liquidity_amount = 4; // Amount of liquidity to borrow.
+}
+
+message RepayObligationLiquidity {
+    bytes obligation = 1; // Obligation account.
+    bytes source_liquidity = 2; // Source liquidity token account.
+    bytes reserve = 3; // Reserve account.
+    uint64 liquidity_amount = 4; // Amount of liquidity to repay.
+}
+
+message LiquidateObligation {
+    bytes obligation = 1; // Obligation account.
+    bytes repay_reserve = 2; // Repay reserve account.
+    bytes withdraw_reserve = 3; // Withdraw reserve account.
+    bytes source_liquidity = 4; // Source liquidity token account.
+    bytes destination_collateral = 5; // Destination collateral token account.
+    uint64 liquidity_amount = 6; // Amount of liquidity to repay.
+}
+
+message FlashLoan {
+    bytes reserve = 1; // Reserve account.
+    bytes source_liquidity = 2; // Source liquidity token account.
+    bytes destination_liquidity = 3; // Destination liquidity token account.
+    uint64 amount = 4; // Amount of flash loan.
+}

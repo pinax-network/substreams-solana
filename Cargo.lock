@@ -1110,7 +1110,33 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d87ecb2933e8aeadb3e3a02b828fed80a7528047e68b4f424523a0981a3a084"
 
 [[package]]
+name = "native-stake"
+version = "0.0.0"
+dependencies = [
+ "bincode 2.0.1",
+ "common",
+ "proto",
+ "solana-program",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+]
+
+[[package]]
 name = "native-token"
+version = "0.0.0"
+dependencies = [
+ "bincode 2.0.1",
+ "common",
+ "proto",
+ "solana-program",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+]
+
+[[package]]
+name = "native-vote"
 version = "0.0.0"
 dependencies = [
  "bincode 2.0.1",
@@ -2871,6 +2897,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "spl-token-2022"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "spl-token-metadata-interface",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+]
+
+[[package]]
+name = "spl-token-lending"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+]
+
+[[package]]
 name = "spl-token-metadata-interface"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2889,6 +2937,16 @@ dependencies = [
  "spl-pod",
  "spl-type-length-value",
  "thiserror 2.0.16",
+]
+
+[[package]]
+name = "spl-token-swap"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
 ]
 
 [[package]]

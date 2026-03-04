@@ -1,0 +1,17 @@
+[package]
+name = "spl-token"
+description = "SPL Token"
+edition = { workspace = true }
+version = { workspace = true }
+authors = ["Denis <denis@pinax.network>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+substreams-solana-program-instructions = { workspace = true }
+spl-token-metadata-interface = "0.7.0"
+proto = { path = "../../proto" }
+common = { path = "../../common" }
