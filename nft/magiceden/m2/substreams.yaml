@@ -1,0 +1,35 @@
+specVersion: v0.1.0
+package:
+  name: magiceden_m2
+  version: v1.0.0
+  url: https://github.com/pinax-network/substreams-svm
+  description: Magic Eden M2 NFT Marketplace events for Solana.
+  image: ../../../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../../../target/wasm32-unknown-unknown/release/magiceden_m2.wasm
+
+protobuf:
+  files:
+    - v1/magiceden-m2.proto
+  importPaths:
+    - ../../../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"
+    output:
+      type: proto:magiceden.m2.v1.Events
+
+network: solana

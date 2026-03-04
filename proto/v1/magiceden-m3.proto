@@ -1,0 +1,91 @@
+syntax = "proto3";
+package magiceden.m3.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SolDepositBuyInstruction sol_deposit_buy = 3;
+    SolWithdrawBuyInstruction sol_withdraw_buy = 4;
+    SolFulfillBuyInstruction sol_fulfill_buy = 5;
+    SolFulfillSellInstruction sol_fulfill_sell = 6;
+    DepositSellInstruction deposit_sell = 7;
+    WithdrawSellInstruction withdraw_sell = 8;
+    SolMip1FulfillBuyInstruction sol_mip1_fulfill_buy = 9;
+    SolMip1FulfillSellInstruction sol_mip1_fulfill_sell = 10;
+    SolOcpFulfillBuyInstruction sol_ocp_fulfill_buy = 11;
+    SolOcpFulfillSellInstruction sol_ocp_fulfill_sell = 12;
+  }
+}
+
+message SolDepositBuyInstruction {
+  uint64 payment_amount = 1;
+}
+
+message SolWithdrawBuyInstruction {
+  uint64 payment_amount = 1;
+}
+
+message SolFulfillBuyInstruction {
+  uint64 asset_amount = 1;
+  uint64 min_payment_amount = 2;
+  int32 maker_fee_bp = 3;
+  int32 taker_fee_bp = 4;
+}
+
+message SolFulfillSellInstruction {
+  uint64 asset_amount = 1;
+  uint64 max_payment_amount = 2;
+  uint32 buyside_creator_royalty_bp = 3;
+  int32 maker_fee_bp = 4;
+  int32 taker_fee_bp = 5;
+}
+
+message DepositSellInstruction {
+  uint64 asset_amount = 1;
+}
+
+message WithdrawSellInstruction {
+  uint64 asset_amount = 1;
+}
+
+message SolMip1FulfillBuyInstruction {
+  uint64 asset_amount = 1;
+  uint64 min_payment_amount = 2;
+  int32 maker_fee_bp = 3;
+  int32 taker_fee_bp = 4;
+}
+
+message SolMip1FulfillSellInstruction {
+  uint64 asset_amount = 1;
+  uint64 max_payment_amount = 2;
+  int32 maker_fee_bp = 3;
+  int32 taker_fee_bp = 4;
+}
+
+message SolOcpFulfillBuyInstruction {
+  uint64 asset_amount = 1;
+  uint64 min_payment_amount = 2;
+  int32 maker_fee_bp = 3;
+  int32 taker_fee_bp = 4;
+}
+
+message SolOcpFulfillSellInstruction {
+  uint64 asset_amount = 1;
+  uint64 max_payment_amount = 2;
+  int32 maker_fee_bp = 3;
+  int32 taker_fee_bp = 4;
+}

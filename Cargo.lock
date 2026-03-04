@@ -563,7 +563,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "db-svm-nfts"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
 name = "db-svm-spl"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "db-svm-staking"
 version = "0.0.0"
 dependencies = [
  "common",
@@ -1006,6 +1028,39 @@ name = "log"
 version = "0.4.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
+
+[[package]]
+name = "magiceden-m2"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "magiceden-m3"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "marinade"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
 
 [[package]]
 name = "memchr"
@@ -3157,6 +3212,17 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys",
+]
+
+[[package]]
+name = "tensor"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]

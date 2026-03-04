@@ -288,3 +288,25 @@ pub mod solana {
         }
     }
 }
+pub mod magiceden {
+    pub mod m2 {
+        pub mod v1 {
+            include!("magiceden.m2.v1.rs");
+        }
+    }
+    pub mod m3 {
+        pub mod v1 {
+            include!("magiceden.m3.v1.rs");
+        }
+    }
+}
+pub mod tensor {
+    pub mod v1 {
+        include!("tensor.v1.rs");
+    }
+}
+pub mod marinade {
+    pub mod v1 {
+        include!("marinade.v1.rs");
+    }
+}

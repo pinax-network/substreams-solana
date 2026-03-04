@@ -1,0 +1,109 @@
+syntax = "proto3";
+package tensor.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    ListInstruction list = 3;
+    DelistInstruction delist = 4;
+    EditInstruction edit = 5;
+    BuyInstruction buy = 6;
+    BidInstruction bid = 7;
+    TakeBidInstruction take_bid = 8;
+  }
+}
+
+message ListInstruction {
+  uint64 amount = 1;
+  optional uint64 expire_in_sec = 2;
+  optional bytes currency = 3;
+  optional bytes private_taker = 4;
+  optional bytes maker_broker = 5;
+  string nft_standard = 6;
+}
+
+message DelistInstruction {
+  string nft_standard = 1;
+}
+
+message EditInstruction {
+  uint64 amount = 1;
+  optional uint64 expire_in_sec = 2;
+  optional bytes currency = 3;
+  optional bytes private_taker = 4;
+  optional bytes maker_broker = 5;
+}
+
+message BuyInstruction {
+  uint64 max_amount = 1;
+  string nft_standard = 2;
+}
+
+message BidInstruction {
+  bytes bid_id = 1;
+  uint32 target = 2;
+  bytes target_id = 3;
+  uint64 amount = 4;
+  uint32 quantity = 5;
+  optional uint64 expire_in_sec = 6;
+  optional bytes currency = 7;
+  optional bytes private_taker = 8;
+  optional bytes maker_broker = 9;
+}
+
+message TakeBidInstruction {
+  uint64 min_amount = 1;
+  string nft_standard = 2;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+  oneof log {
+    MakeEvent make = 3;
+    TakeEvent take = 4;
+  }
+}
+
+message MakeEvent {
+  bytes maker = 1;
+  optional bytes bid_id = 2;
+  uint32 target = 3;
+  bytes target_id = 4;
+  uint64 amount = 5;
+  uint32 quantity = 6;
+  optional bytes currency = 7;
+  int64 expiry = 8;
+  optional bytes private_taker = 9;
+  optional bytes asset_id = 10;
+}
+
+message TakeEvent {
+  bytes taker = 1;
+  optional bytes bid_id = 2;
+  uint32 target = 3;
+  bytes target_id = 4;
+  uint64 amount = 5;
+  uint32 quantity = 6;
+  uint64 tcomp_fee = 7;
+  uint64 taker_broker_fee = 8;
+  uint64 maker_broker_fee = 9;
+  uint64 creator_fee = 10;
+  optional bytes currency = 11;
+  optional bytes asset_id = 12;
+}
