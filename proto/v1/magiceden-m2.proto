@@ -1,0 +1,94 @@
+syntax = "proto3";
+package magiceden.m2.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SellInstruction sell = 3;
+    CancelSellInstruction cancel_sell = 4;
+    BuyInstruction buy = 5;
+    BuyV2Instruction buy_v2 = 6;
+    CancelBuyInstruction cancel_buy = 7;
+    ExecuteSaleV2Instruction execute_sale_v2 = 8;
+    OcpSellInstruction ocp_sell = 9;
+    OcpExecuteSaleV2Instruction ocp_execute_sale_v2 = 10;
+    Mip1SellInstruction mip1_sell = 11;
+    Mip1ExecuteSaleV2Instruction mip1_execute_sale_v2 = 12;
+  }
+}
+
+message SellInstruction {
+  uint64 buyer_price = 1;
+  uint64 token_size = 2;
+  int64 seller_state_expiry = 3;
+}
+
+message CancelSellInstruction {
+  uint64 buyer_price = 1;
+  uint64 token_size = 2;
+  int64 seller_state_expiry = 3;
+}
+
+message BuyInstruction {
+  uint64 buyer_price = 1;
+  uint64 token_size = 2;
+  int64 buyer_state_expiry = 3;
+}
+
+message BuyV2Instruction {
+  uint64 buyer_price = 1;
+  uint64 token_size = 2;
+  int64 buyer_state_expiry = 3;
+  uint32 buyer_creator_royalty_bp = 4;
+}
+
+message CancelBuyInstruction {
+  uint64 buyer_price = 1;
+  uint64 token_size = 2;
+  int64 buyer_state_expiry = 3;
+}
+
+message ExecuteSaleV2Instruction {
+  uint64 buyer_price = 1;
+  uint64 token_size = 2;
+  int64 buyer_state_expiry = 3;
+  int64 seller_state_expiry = 4;
+  int32 maker_fee_bp = 5;
+  uint32 taker_fee_bp = 6;
+}
+
+message OcpSellInstruction {
+  uint64 price = 1;
+  int64 expiry = 2;
+}
+
+message OcpExecuteSaleV2Instruction {
+  uint64 price = 1;
+  int32 maker_fee_bp = 2;
+  uint32 taker_fee_bp = 3;
+}
+
+message Mip1SellInstruction {
+  uint64 price = 1;
+  int64 expiry = 2;
+}
+
+message Mip1ExecuteSaleV2Instruction {
+  uint64 price = 1;
+  int32 maker_fee_bp = 2;
+  uint32 taker_fee_bp = 3;
+}

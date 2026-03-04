@@ -59,6 +59,18 @@ members = [
   "dex/solfi-v1",
   "dex/solfi-v2",
 
+  # NFT Marketplaces
+  "nft/magiceden/m2",
+  "nft/magiceden/m3",
+  "nft/tensor",
+
+  # Staking
+  "staking/marinade",
+
+  # NFT & Staking DatabaseChanges
+  "svm-nfts",
+  "svm-staking",
+
   # Common
   "proto",
   "common",
