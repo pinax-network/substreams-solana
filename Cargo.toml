@@ -6,6 +6,8 @@ members = [
   "svm-transfers",
   "svm-accounts",
   "svm-metadata",
+  "svm-spl",
+  "svm-native",
 
   # Tokens
   "spl-token",
