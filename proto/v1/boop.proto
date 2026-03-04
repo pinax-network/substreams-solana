@@ -1,0 +1,26 @@
+syntax = "proto3";
+package boop.v1;
+message Events { repeated Transaction transactions = 1; }
+message Transaction {
+  bytes signature = 1; bytes fee_payer = 2; repeated bytes signers = 3;
+  uint64 fee = 4; uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6; repeated Log logs = 7;
+}
+message Instruction {
+  bytes program_id = 1; uint32 stack_height = 2;
+  oneof instruction { BuyTokenInstruction buy = 3; SellTokenInstruction sell = 4; }
+}
+message BuyTokenInstruction { uint64 buy_amount = 1; uint64 amount_out_min = 2; }
+message SellTokenInstruction { uint64 sell_amount = 1; uint64 amount_out_min = 2; }
+message Log {
+  bytes program_id = 1; uint32 invoke_depth = 2;
+  oneof log { TokenBoughtEvent bought = 3; TokenSoldEvent sold = 4; }
+}
+message TokenBoughtEvent {
+  bytes mint = 1; uint64 amount_in = 2; uint64 amount_out = 3;
+  uint64 swap_fee = 4; bytes buyer = 5; bytes recipient = 6;
+}
+message TokenSoldEvent {
+  bytes mint = 1; uint64 amount_in = 2; uint64 amount_out = 3;
+  uint64 swap_fee = 4; bytes seller = 5; bytes recipient = 6;
+}

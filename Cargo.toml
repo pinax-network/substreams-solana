@@ -39,6 +39,18 @@ members = [
   "dex/heaven",
   "dex/plasma",
   "dex/saros",
+  "dex/aldrin",
+  "dex/boop",
+  "dex/byreal",
+  "dex/dflow",
+  "dex/drift",
+  "dex/obric-v2",
+  "dex/obric-v3",
+  "dex/okx-dex",
+  "dex/sanctum",
+  "dex/serum",
+  "dex/solfi-v1",
+  "dex/solfi-v2",
 
   # Common
   "proto",

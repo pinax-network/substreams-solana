@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package okx_dex.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapInstruction swap = 3;
+  }
+}
+
+message SwapInstruction {
+  uint64 amount_in = 1;
+  uint64 minimum_amount_out = 2;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+}
