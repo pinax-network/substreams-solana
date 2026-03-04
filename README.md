@@ -105,3 +105,13 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 | 1Sol | 1MooN32fuBBgApc8ujknKJw5sef3BVwPGgz3pto1BAh |
 | GooseFX SSL | 7WduLbRfYhTJktjLw5FDEyrqoEv61aTTCuGAetgLjzN5 |
 | Serum DEX V3 | 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin |
+| DumpFun | DumpFunGAgW6kPHzWMA3Nnqecyrd6SGnLZvNGp2aHwEa |
+| Boop | boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4 |
+| Heaven | HEAVENoP2qxoeuF8Dj2oT1GHEnu49U5mJYkdeC8BAX2o |
+| Plasma (Gavel) | srAMMzfVHVAtgSJc8iH6CfKzuWuUTzLHVCE81QU1rgi |
+| Drift V2 | dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH |
+| DFlow V4 | DF1ow4tspfHX9JwWJsAb9epbkA8hmpSEAtxXy1V27QBH |
+| OKX DEX V2 | 6m2CDdhRgxpH4WjvdzxAYbGxwdGUz5MziiL5jek2kBma |
+| ByReal CLMM | REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2 |
+| Obric V3 | ob2wXVFGiWXkPwYv8CSpPMm5m3NR7DjSrVJAHGSb9Gu |
+| SolFi V2 | SV2EYYJyRz2YhfXwXnhNAevDEui5Q6yrfyo13WtupPF |
