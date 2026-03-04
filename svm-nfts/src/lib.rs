@@ -9,7 +9,7 @@ use substreams_database_change::pb::sf::substreams::sink::database::v1::Database
 
 #[substreams::handlers::map]
 pub fn db_out(
-    mut clock: Clock,
+    clock: Clock,
     magiceden_m2_events: pb::magiceden::m2::v1::Events,
     magiceden_m3_events: pb::magiceden::m3::v1::Events,
     tensor_events: pb::tensor::v1::Events,
