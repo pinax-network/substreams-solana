@@ -60,6 +60,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "aldrin"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.99"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -197,6 +208,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "boop"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "borsh"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -293,6 +315,17 @@ checksum = "8834bb1d8ee5dc048ee3124f2c7c1afcc6bc9aed03f11e9dfd8c69470a5db340"
 dependencies = [
  "feature-probe",
  "serde",
+]
+
+[[package]]
+name = "byreal"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]
@@ -474,7 +507,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "db-solana-accounts"
+name = "db-svm-accounts"
 version = "0.0.0"
 dependencies = [
  "common",
@@ -485,7 +518,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "db-solana-balances"
+name = "db-svm-balances"
 version = "0.0.0"
 dependencies = [
  "common",
@@ -496,7 +529,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "db-solana-dex"
+name = "db-svm-dex"
 version = "0.0.0"
 dependencies = [
  "common",
@@ -508,7 +541,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "db-solana-metadata"
+name = "db-svm-metadata"
 version = "0.0.0"
 dependencies = [
  "common",
@@ -519,7 +552,29 @@ dependencies = [
 ]
 
 [[package]]
-name = "db-solana-transfers"
+name = "db-svm-native"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "db-svm-spl"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "db-svm-transfers"
 version = "0.0.0"
 dependencies = [
  "common",
@@ -534,6 +589,17 @@ name = "derivation-path"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e5c37193a1db1d8ed868c03ec7b152175f26160a5b740e5e484143877e0adf0"
+
+[[package]]
+name = "dflow"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
 
 [[package]]
 name = "digest"
@@ -553,6 +619,28 @@ dependencies = [
  "block-buffer 0.10.4",
  "crypto-common",
  "subtle",
+]
+
+[[package]]
+name = "drift"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "dumpfun"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]
@@ -684,6 +772,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "goonfi"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -697,6 +796,17 @@ name = "hashbrown"
 version = "0.15.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
+
+[[package]]
+name = "heaven"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
 
 [[package]]
 name = "heck"
@@ -1085,6 +1195,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "obric-v2"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "obric-v3"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "okx-dex"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1232,6 +1375,17 @@ dependencies = [
 
 [[package]]
 name = "phoenix"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "plasma"
 version = "0.0.0"
 dependencies = [
  "common",
@@ -1604,6 +1758,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 
 [[package]]
+name = "sanctum"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "saros"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
 name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1664,6 +1840,17 @@ dependencies = [
  "memchr",
  "ryu",
  "serde_core",
+]
+
+[[package]]
+name = "serum"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]
@@ -2591,6 +2778,28 @@ dependencies = [
  "thiserror 2.0.16",
  "wasm-bindgen",
  "zeroize",
+]
+
+[[package]]
+name = "solfi-v1"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
+]
+
+[[package]]
+name = "solfi-v2"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-solana",
+ "substreams-solana-idls",
 ]
 
 [[package]]

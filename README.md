@@ -20,11 +20,9 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 
 ## Supported DEXes and AMMs
 
-### Full Support of DEX protocol
+### Native Support
 
-> Includes `amm_pool` field
->
-> Swaps are being reported via **Swap** programs
+> Swaps decoded directly from on-chain program instructions
 >
 > Ordered by most transactions
 
@@ -39,28 +37,43 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 | Meteora Pools Program | Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB |
 | Meteora DAMM v2 | cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG |
 | Raydium Launchpad | LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj |
+| Whirlpools Program | whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc |
+| Lifinity Swap V2 | 2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c |
+| Phoenix | PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY |
+| Openbook V2 | opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb |
+| stabble Weighted Swap | swapFpHZwjELNnjvThjajtiVmkz3yPQEHjLtka2fwHW |
+| BonkSwap | BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p |
+| PancakeSwap | HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq |
+| Moonshot | MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG |
+| Darklake | darkr3FB87qAZmgLwKov6Hk9Yiah5UT4rUYu8Zhthw1 |
+| Aldrin AMM V2 | CURVGoZn8zycx6FXwwevgBTB2gVvdbGTEpvMJDbgs2t4 |
+| Serum DEX V3 | 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin |
+| SolFi | SoLFiHG9TfgtdUXUjWAxi3LtvYuFyDLVhBWxdMZxyCe |
+| SolFi V2 | SV2EYYJyRz2YhfXwXnhNAevDEui5Q6yrfyo13WtupPF |
+| Obric V2 | coUnmi3oBUtwtd9fU42p6jg75UmdnNMgBQMedGNYEAs |
+| Obric V3 | ob2wXVFGiWXkPwYv8CSpPMm5m3NR7DjSrVJAHGSb9Gu |
+| GoonFi | goonERTdGsjnkZqWuVjs73BZ3Pb9qoCUdBUL17BnS5j |
+| Saros AMM | SSwapUtytfBdBn1b9NUGG6foMVPtcWgpRU32HToDUZr |
+| Sanctum | 5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx |
+| DumpFun | DumpFunGAgW6kPHzWMA3Nnqecyrd6SGnLZvNGp2aHwEa |
+| Boop | boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4 |
+| Heaven | HEAVENoP2qxoeuF8Dj2oT1GHEnu49U5mJYkdeC8BAX2o |
+| Plasma (Gavel) | srAMMzfVHVAtgSJc8iH6CfKzuWuUTzLHVCE81QU1rgi |
+| Drift V2 | dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH |
+| DFlow V4 | DF1ow4tspfHX9JwWJsAb9epbkA8hmpSEAtxXy1V27QBH |
+| OKX DEX V2 | 6m2CDdhRgxpH4WjvdzxAYbGxwdGUz5MziiL5jek2kBma |
+| ByReal CLMM | REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2 |
 
-### Partial Support of AMM
+### Aggregator Support
 
-> Does **NOT** include `amm_pool` field
->
-> Swaps are being reported via **Aggregator** programs
+> Swaps reported via **Aggregator** programs (no native decoder yet)
 >
 > Ordered by most transactions
 
 | AMM Name | AMM ID |
 |-----|--------------|
-| Whirlpools Program | whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc |
-| Lifinity Swap V2 | 2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c |
-| SolFi | SoLFiHG9TfgtdUXUjWAxi3LtvYuFyDLVhBWxdMZxyCe |
-| Obric V2 | obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y |
-| stabble Stable Swap | swapNyd8XiQwJ6ianp9snpu4brUqFxadzvHebnAXjJZ |
-| Phoenix | PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY |
 | ZeroFi | ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY |
-| Openbook V2 | opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb |
 | Invariant Swap | HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt |
-| stabble Weighted Swap | swapFpHZwjELNnjvThjajtiVmkz3yPQEHjLtka2fwHW |
-| GoonFi | goonERTdGsjnkZqWuVjs73BZ3Pb9qoCUdBUL17BnS5j |
 | 1Dex Program | DEXYosS6oEGvk8uCDayvwEZz4qEyDJRf9nFgYCaqPMTm |
 | Fluxbeam Program | FLUXubRmkEi2q6K3Y9kBPg9248ggaZVsoSFhtJHSrm1X |
 | Mercurial Stable Swap | MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky |
@@ -69,15 +82,12 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 | Cropper Whirlpool | H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt |
 | Lifinity Swap | EewxydAPCCVuNEyrVN68PuSYdQ7wKn27V9Gjeoi8dy3S |
 | Meteora Dynamic Bonding Curve Program | dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN |
-| Moonit | MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG |
-| BonkSwap | BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p |
+| stabble Stable Swap | swapNyd8XiQwJ6ianp9snpu4brUqFxadzvHebnAXjJZ |
 | Saber Decimal Wrapper | DecZY86MU5Gj7kppfUCEmd4LbXXuyZH1yHaP2NTqdiZB |
-| Saros AMM | SSwapUtytfBdBn1b9NUGG6foMVPtcWgpRU32HToDUZr |
 | Jupiter Perpetuals | PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu |
 | Sanctum Router Program | stkitrT1Uoy18Dk1fTrgPw8W6MVzoCfYoAFT4MLsmhq |
 | Numeraire | NUMERUNsFCP3kuNmWZuXtm1AaQCPj9uw6Guv2Ekoi5P |
 | Crema Finance Program | CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR |
-| Sanctum Program | 5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx |
 | GooseFX: GAMMA | GAMMA7meSFWaBXF25oSUgmGRwaW6sCMFLmBNiMSdbHVT |
 | Orca Token Swap | DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1 |
 | OpenBook | srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX |
@@ -85,9 +95,8 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 | Guac Swap | Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1 |
 | Dexlab Swap | DSwpgjMvXhtGn6BsbqmacdBZyfLj6jSWf3HJpdJtmg6N |
 | GooseFX V2 | GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn |
-| Aldrin AMM V2 | CURVGoZn8zycx6FXwwevgBTB2gVvdbGTEpvMJDbgs2t4 |
-| Helium Treasury Management | treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5 |
 | Aldrin AMM | AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6 |
+| Helium Treasury Management | treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5 |
 | Symmetry Engine | 2KehYt3KsEQR53jYcxjbQp2d2kCp4AkuQW68atufRwSr |
 | Marinade Finance | MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD |
 | Cropper Finance | CTMAxxk34HjKWxQ3QLZK1HpaLXmBveao3ESePXbiyfzh |
@@ -104,14 +113,3 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 | Clone | C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr |
 | 1Sol | 1MooN32fuBBgApc8ujknKJw5sef3BVwPGgz3pto1BAh |
 | GooseFX SSL | 7WduLbRfYhTJktjLw5FDEyrqoEv61aTTCuGAetgLjzN5 |
-| Serum DEX V3 | 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin |
-| DumpFun | DumpFunGAgW6kPHzWMA3Nnqecyrd6SGnLZvNGp2aHwEa |
-| Boop | boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4 |
-| Heaven | HEAVENoP2qxoeuF8Dj2oT1GHEnu49U5mJYkdeC8BAX2o |
-| Plasma (Gavel) | srAMMzfVHVAtgSJc8iH6CfKzuWuUTzLHVCE81QU1rgi |
-| Drift V2 | dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH |
-| DFlow V4 | DF1ow4tspfHX9JwWJsAb9epbkA8hmpSEAtxXy1V27QBH |
-| OKX DEX V2 | 6m2CDdhRgxpH4WjvdzxAYbGxwdGUz5MziiL5jek2kBma |
-| ByReal CLMM | REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2 |
-| Obric V3 | ob2wXVFGiWXkPwYv8CSpPMm5m3NR7DjSrVJAHGSb9Gu |
-| SolFi V2 | SV2EYYJyRz2YhfXwXnhNAevDEui5Q6yrfyo13WtupPF |
