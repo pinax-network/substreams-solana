@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: svm_transfers
-  version: v0.1.0
+  version: v1.0.0
   url: https://github.com/pinax-network/substreams-svm
   description: SPL, SPL-2022 & Native token transfers for Solana blockchains.
   image: ../image.png
