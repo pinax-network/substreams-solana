@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package solana.native.vote.v1;
+// https://docs.rs/solana-program/latest/solana_program/vote/
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    bool is_root = 3; // Indicates if this instruction is a root instruction.
+    oneof instruction {
+        InitializeAccount initialize_account = 10;
+        Vote vote = 11;
+        Withdraw withdraw = 12;
+        UpdateValidatorIdentity update_validator_identity = 13;
+        UpdateCommission update_commission = 14;
+        VoteSwitch vote_switch = 15;
+        CompactUpdateVoteState compact_update_vote_state = 16;
+    }
+}
+
+message InitializeAccount {
+    bytes vote_account = 1; // Vote account.
+    bytes node_pubkey = 2; // Validator identity.
+    bytes authorized_voter = 3; // Authorized voter.
+    bytes authorized_withdrawer = 4; // Authorized withdrawer.
+    uint32 commission = 5; // Commission percentage (0-100).
+}
+
+message Vote {
+    bytes vote_account = 1; // Vote account.
+    bytes vote_authority = 2; // Vote authority.
+    repeated uint64 slots = 3; // Slots voted on.
+    bytes hash = 4; // Recent block hash.
+}
+
+message Withdraw {
+    bytes vote_account = 1; // Vote account.
+    bytes destination = 2; // Destination account.
+    uint64 lamports = 3; // Amount to withdraw.
+    bytes withdraw_authority = 4; // Withdraw authority.
+}
+
+message UpdateValidatorIdentity {
+    bytes vote_account = 1; // Vote account.
+    bytes node_pubkey = 2; // New validator identity.
+    bytes authorized_withdrawer = 3; // Authorized withdrawer.
+}
+
+message UpdateCommission {
+    bytes vote_account = 1; // Vote account.
+    uint32 commission = 2; // New commission percentage (0-100).
+    bytes authorized_withdrawer = 3; // Authorized withdrawer.
+}
+
+message VoteSwitch {
+    bytes vote_account = 1; // Vote account.
+    bytes vote_authority = 2; // Vote authority.
+    repeated uint64 slots = 3; // Slots voted on.
+    bytes hash = 4; // Recent block hash.
+    bytes proof_hash = 5; // Proof hash for the switch.
+}
+
+message CompactUpdateVoteState {
+    bytes vote_account = 1; // Vote account.
+    bytes vote_authority = 2; // Vote authority.
+}

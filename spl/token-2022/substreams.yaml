@@ -1,10 +1,10 @@
 specVersion: v0.1.0
 package:
-  name: spl_token
+  name: spl_token_2022
   version: v1.0.0
-  url: https://github.com/pinax-network/substreams-solana
-  description: SPL Token
-  image: ../image.png
+  url: https://github.com/pinax-network/substreams-svm
+  description: SPL Token-2022
+  image: ../../image.png
 
 imports:
   solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
@@ -12,27 +12,24 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1+wasm-bindgen-shims
-    file: ../target/wasm32-unknown-unknown/release/spl_token.wasm
+    file: ../../target/wasm32-unknown-unknown/release/spl_token_2022.wasm
 
 protobuf:
   files:
     - v1/spl-token.proto
   importPaths:
-    - ../proto
+    - ../../proto
 
 modules:
   - name: map_events
     kind: map
-    doc: SPL Token
+    doc: SPL Token-2022
     inputs:
       - map: solana_common:blocks_without_votes
     blockFilter:
       module: solana_common:program_ids_without_votes
       query:
-        string: "program:TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA ||
-                 program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb ||
-                 program:Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo ||
-                 program:MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+        string: "program:TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
     output:
       type: proto:solana.spl.token.v1.Events
 

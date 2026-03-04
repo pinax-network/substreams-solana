@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package solana.spl.token_swap.v1;
+// https://github.com/solana-labs/solana-program-library/tree/master/token-swap
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+    bytes signature = 1;
+    bytes fee_payer = 2; // Fee payer account address.
+    repeated bytes signers = 3; // Signers of the transaction.
+    uint64 fee = 4; // Lamports paid for this instruction.
+    uint64 compute_units_consumed = 5; // Compute units consumed by this instruction.
+    repeated Instruction instructions = 6; // Instructions executed in this transaction.
+}
+
+message Instruction {
+    bytes program_id = 1;
+    uint32 stack_height = 2;
+    bool is_root = 3; // Indicates if this instruction is a root instruction.
+    oneof instruction {
+        Initialize initialize = 10;
+        Swap swap = 11;
+        DepositAllTokenTypes deposit_all_token_types = 12;
+        WithdrawAllTokenTypes withdraw_all_token_types = 13;
+        DepositSingleTokenTypeExactAmountIn deposit_single_token_type_exact_amount_in = 14;
+        WithdrawSingleTokenTypeExactAmountOut withdraw_single_token_type_exact_amount_out = 15;
+    }
+}
+
+message Initialize {
+    bytes swap_account = 1; // Token swap account.
+    bytes authority = 2; // Swap authority.
+    bytes token_a = 3; // Token A account.
+    bytes token_b = 4; // Token B account.
+    bytes pool_mint = 5; // Pool token mint.
+    bytes fee_account = 6; // Fee account.
+    bytes destination = 7; // Destination for initial pool tokens.
+}
+
+message Swap {
+    bytes swap_account = 1; // Token swap account.
+    bytes authority = 2; // Swap authority.
+    bytes user_transfer_authority = 3; // User transfer authority.
+    bytes source = 4; // Source token account.
+    bytes swap_source = 5; // Swap source token account.
+    bytes swap_destination = 6; // Swap destination token account.
+    bytes destination = 7; // Destination token account.
+    bytes pool_mint = 8; // Pool token mint.
+    bytes fee_account = 9; // Fee account.
+    uint64 amount_in = 10; // Amount of tokens to swap.
+    uint64 minimum_amount_out = 11; // Minimum amount of tokens to receive.
+}
+
+message DepositAllTokenTypes {
+    bytes swap_account = 1;
+    bytes authority = 2;
+    bytes user_transfer_authority = 3;
+    bytes source_a = 4;
+    bytes source_b = 5;
+    bytes token_a = 6;
+    bytes token_b = 7;
+    bytes pool_mint = 8;
+    bytes destination = 9;
+    uint64 pool_token_amount = 10;
+    uint64 maximum_token_a_amount = 11;
+    uint64 maximum_token_b_amount = 12;
+}
+
+message WithdrawAllTokenTypes {
+    bytes swap_account = 1;
+    bytes authority = 2;
+    bytes user_transfer_authority = 3;
+    bytes pool_mint = 4;
+    bytes fee_account = 5;
+    bytes source = 6;
+    bytes token_a = 7;
+    bytes token_b = 8;
+    bytes destination_a = 9;
+    bytes destination_b = 10;
+    uint64 pool_token_amount = 11;
+    uint64 minimum_token_a_amount = 12;
+    uint64 minimum_token_b_amount = 13;
+}
+
+message DepositSingleTokenTypeExactAmountIn {
+    bytes swap_account = 1;
+    bytes authority = 2;
+    bytes user_transfer_authority = 3;
+    bytes source = 4;
+    bytes token_a = 5;
+    bytes token_b = 6;
+    bytes pool_mint = 7;
+    bytes destination = 8;
+    uint64 source_token_amount = 9;
+    uint64 minimum_pool_token_amount = 10;
+}
+
+message WithdrawSingleTokenTypeExactAmountOut {
+    bytes swap_account = 1;
+    bytes authority = 2;
+    bytes user_transfer_authority = 3;
+    bytes pool_mint = 4;
+    bytes fee_account = 5;
+    bytes source = 6;
+    bytes token_a = 7;
+    bytes token_b = 8;
+    bytes destination = 9;
+    uint64 destination_token_amount = 10;
+    uint64 maximum_pool_token_amount = 11;
+}
