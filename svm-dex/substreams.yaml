@@ -39,6 +39,18 @@ imports:
   heaven: ../dex/heaven/substreams.yaml
   plasma: ../dex/plasma/substreams.yaml
   saros: ../dex/saros/substreams.yaml
+  aldrin: ../dex/aldrin/substreams.yaml
+  boop: ../dex/boop/substreams.yaml
+  byreal: ../dex/byreal/substreams.yaml
+  dflow: ../dex/dflow/substreams.yaml
+  drift: ../dex/drift/substreams.yaml
+  obric_v2: ../dex/obric-v2/substreams.yaml
+  obric_v3: ../dex/obric-v3/substreams.yaml
+  okx_dex: ../dex/okx-dex/substreams.yaml
+  sanctum: ../dex/sanctum/substreams.yaml
+  serum: ../dex/serum/substreams.yaml
+  solfi_v1: ../dex/solfi-v1/substreams.yaml
+  solfi_v2: ../dex/solfi-v2/substreams.yaml
 
 binaries:
   default:
@@ -79,6 +91,18 @@ modules:
       - map: heaven:map_events
       - map: plasma:map_events
       - map: saros:map_events
+      - map: aldrin:map_events
+      - map: boop:map_events
+      - map: byreal:map_events
+      - map: dflow:map_events
+      - map: drift:map_events
+      - map: obric_v2:map_events
+      - map: obric_v3:map_events
+      - map: okx_dex:map_events
+      - map: sanctum:map_events
+      - map: serum:map_events
+      - map: solfi_v1:map_events
+      - map: solfi_v2:map_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges

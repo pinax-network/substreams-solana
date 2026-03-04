@@ -1,4 +1,29 @@
 // @generated
+pub mod aldrin {
+    pub mod v1 {
+        include!("aldrin.v1.rs");
+    }
+}
+pub mod boop {
+    pub mod v1 {
+        include!("boop.v1.rs");
+    }
+}
+pub mod byreal {
+    pub mod v1 {
+        include!("byreal.v1.rs");
+    }
+}
+pub mod dflow {
+    pub mod v1 {
+        include!("dflow.v1.rs");
+    }
+}
+pub mod drift {
+    pub mod v1 {
+        include!("drift.v1.rs");
+    }
+}
 pub mod dumpfun {
     pub mod v1 {
         include!("dumpfun.v1.rs");
@@ -27,6 +52,47 @@ pub mod saros {
     pub mod v1 {
         include!("saros.v1.rs");
         // @@protoc_insertion_point(saros.v1)
+    }
+}
+pub mod obric {
+    pub mod v2 {
+        pub mod v1 {
+            include!("obric.v2.v1.rs");
+        }
+    }
+    pub mod v3 {
+        pub mod v1 {
+            include!("obric.v3.v1.rs");
+        }
+    }
+}
+pub mod okx {
+    pub mod dex {
+        pub mod v1 {
+            include!("okx.dex.v1.rs");
+        }
+    }
+}
+pub mod sanctum {
+    pub mod v1 {
+        include!("sanctum.v1.rs");
+    }
+}
+pub mod serum {
+    pub mod v1 {
+        include!("serum.v1.rs");
+    }
+}
+pub mod solfi {
+    pub mod v1 {
+        pub mod v1 {
+            include!("solfi.v1.v1.rs");
+        }
+    }
+    pub mod v2 {
+        pub mod v1 {
+            include!("solfi.v2.v1.rs");
+        }
     }
 }
 pub mod darklake {

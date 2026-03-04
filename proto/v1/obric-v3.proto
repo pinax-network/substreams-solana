@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package obric.v3.v1;
+
+message Events {
+  repeated Transaction transactions = 1;
+}
+
+message Transaction {
+  bytes signature = 1;
+  bytes fee_payer = 2;
+  repeated bytes signers = 3;
+  uint64 fee = 4;
+  uint64 compute_units_consumed = 5;
+  repeated Instruction instructions = 6;
+  repeated Log logs = 7;
+}
+
+message Instruction {
+  bytes program_id = 1;
+  uint32 stack_height = 2;
+  oneof instruction {
+    SwapXToYInstruction swap_x_to_y = 3;
+    SwapYToXInstruction swap_y_to_x = 4;
+  }
+}
+
+message SwapXToYInstruction {
+  uint64 input_amount = 1;
+  uint64 min_output_amount = 2;
+}
+
+message SwapYToXInstruction {
+  uint64 input_amount = 1;
+  uint64 min_output_amount = 2;
+}
+
+message Log {
+  bytes program_id = 1;
+  uint32 invoke_depth = 2;
+}

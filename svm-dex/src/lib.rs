@@ -1,4 +1,9 @@
+mod aldrin;
+mod boop;
+mod byreal;
 mod darklake;
+mod dflow;
+mod drift;
 mod dumpfun;
 mod enums;
 mod goonfi;
@@ -9,6 +14,8 @@ mod meteora_amm;
 mod meteora_daam;
 mod meteora_dllm;
 mod moonshot;
+mod obric;
+mod okx_dex;
 mod openbook;
 mod orca;
 mod pancakeswap;
@@ -21,7 +28,10 @@ mod raydium_amm_v4;
 mod raydium_clmm;
 mod raydium_cpmm;
 mod raydium_launchpad;
+mod sanctum;
 mod saros;
+mod serum;
+mod solfi;
 mod stabble;
 
 use common::db::set_clock;
@@ -57,6 +67,18 @@ pub fn db_out(
     heaven_events: pb::heaven::v1::Events,
     plasma_events: pb::plasma::v1::Events,
     saros_events: pb::saros::v1::Events,
+    aldrin_events: pb::aldrin::v1::Events,
+    boop_events: pb::boop::v1::Events,
+    byreal_events: pb::byreal::v1::Events,
+    dflow_events: pb::dflow::v1::Events,
+    drift_events: pb::drift::v1::Events,
+    obric_v2_events: pb::obric::v2::v1::Events,
+    obric_v3_events: pb::obric::v3::v1::Events,
+    okx_events: pb::okx::dex::v1::Events,
+    sanctum_events: pb::sanctum::v1::Events,
+    serum_events: pb::serum::v1::Events,
+    solfi_v1_events: pb::solfi::v1::v1::Events,
+    solfi_v2_events: pb::solfi::v2::v1::Events,
 ) -> Result<DatabaseChanges, Error> {
     let mut tables = substreams_database_change::tables::Tables::new();
 
@@ -86,6 +108,18 @@ pub fn db_out(
     heaven::process_events(&mut tables, &clock, &heaven_events);
     plasma::process_events(&mut tables, &clock, &plasma_events);
     saros::process_events(&mut tables, &clock, &saros_events);
+    aldrin::process_events(&mut tables, &clock, &aldrin_events);
+    boop::process_events(&mut tables, &clock, &boop_events);
+    byreal::process_events(&mut tables, &clock, &byreal_events);
+    dflow::process_events(&mut tables, &clock, &dflow_events);
+    drift::process_events(&mut tables, &clock, &drift_events);
+    obric::process_v2_events(&mut tables, &clock, &obric_v2_events);
+    obric::process_v3_events(&mut tables, &clock, &obric_v3_events);
+    okx_dex::process_events(&mut tables, &clock, &okx_events);
+    sanctum::process_events(&mut tables, &clock, &sanctum_events);
+    serum::process_events(&mut tables, &clock, &serum_events);
+    solfi::process_v1_events(&mut tables, &clock, &solfi_v1_events);
+    solfi::process_v2_events(&mut tables, &clock, &solfi_v2_events);
 
     // ONLY include blocks if events are present
     if tables.all_row_count() > 0 {

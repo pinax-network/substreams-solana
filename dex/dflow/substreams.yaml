@@ -1,0 +1,35 @@
+specVersion: v0.1.0
+package:
+  name: dflow
+  version: v0.1.0
+  url: https://github.com/pinax-network/substreams-svm
+  description: DFlow v4 DEX events for Solana.
+  image: ../../image.png
+
+imports:
+  solana_common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/substreams-v0.3.3/solana-common-v0.3.3.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1+wasm-bindgen-shims
+    file: ../../target/wasm32-unknown-unknown/release/dflow.wasm
+
+protobuf:
+  files:
+    - v1/dflow.proto
+  importPaths:
+    - ../../proto
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - map: solana_common:blocks_without_votes
+    blockFilter:
+      module: solana_common:program_ids_without_votes
+      query:
+        string: "program:DF1ow4tspfHX9JwWJsAb9epbkA8hmpSEAtxXy1V27QBH"
+    output:
+      type: proto:dflow.v1.Events
+
+network: solana
