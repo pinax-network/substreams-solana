@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/serum.proto
+    - v1/dex/serum.proto
   importPaths:
     - ../../proto
 

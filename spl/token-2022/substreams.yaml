@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/spl-token.proto
+    - v1/spl/spl-token.proto
   importPaths:
     - ../../proto
 

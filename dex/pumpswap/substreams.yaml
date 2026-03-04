@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/pumpswap.proto
+    - v1/dex/pumpswap.proto
   importPaths:
     - ../../proto
 

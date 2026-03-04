@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/tensor.proto
+    - v1/nft/tensor.proto
   importPaths:
     - ../../proto
 

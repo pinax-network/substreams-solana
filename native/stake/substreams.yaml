@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/native-stake.proto
+    - v1/native/native-stake.proto
   importPaths:
     - ../../proto
 

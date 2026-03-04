@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/metaplex.proto
+    - v1/metadata/metaplex.proto
   importPaths:
     - ../proto
 

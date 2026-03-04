@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/aldrin.proto
+    - v1/dex/aldrin.proto
   importPaths:
     - ../../proto
 

@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/magiceden-m3.proto
+    - v1/nft/magiceden-m3.proto
   importPaths:
     - ../../../proto
 

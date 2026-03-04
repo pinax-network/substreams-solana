@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/boop.proto
+    - v1/dex/boop.proto
   importPaths:
     - ../../proto
 

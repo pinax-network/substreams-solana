@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/raydium-launchpad.proto
+    - v1/dex/raydium-launchpad.proto
   importPaths:
     - ../../../proto
 

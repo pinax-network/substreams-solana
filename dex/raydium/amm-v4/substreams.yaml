@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/raydium-amm.proto
+    - v1/dex/raydium-amm.proto
   importPaths:
     - ../../../proto
 

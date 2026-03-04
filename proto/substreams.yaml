@@ -5,24 +5,28 @@ package:
 
 protobuf:
   files:
-    - v1/spl-token.proto
-    - v1/spl-token-swap.proto
-    - v1/spl-token-lending.proto
-    - v1/native-token.proto
-    - v1/native-stake.proto
-    - v1/native-vote.proto
-    - v1/pumpfun.proto
-    - v1/pumpfun-amm.proto
-    - v1/jupiter.proto
-    - v1/bonk-swap.proto
-    - v1/raydium-amm.proto
-    - v1/raydium-clmm.proto
-    - v1/raydium-cpmm.proto
-    - v1/metaplex.proto
-    - v1/raydium-launchpad.proto
-    - v1/meteora-dllm.proto
-    - v1/meteora-daam.proto
-    - v1/meteora-amm.proto
+    # spl
+    - v1/spl/spl-token.proto
+    - v1/spl/spl-token-swap.proto
+    - v1/spl/spl-token-lending.proto
+    # native
+    - v1/native/native-token.proto
+    - v1/native/native-stake.proto
+    - v1/native/native-vote.proto
+    # dex
+    - v1/dex/pumpfun.proto
+    - v1/dex/pumpfun-amm.proto
+    - v1/dex/jupiter.proto
+    - v1/dex/bonk-swap.proto
+    - v1/dex/raydium-amm.proto
+    - v1/dex/raydium-clmm.proto
+    - v1/dex/raydium-cpmm.proto
+    - v1/dex/raydium-launchpad.proto
+    - v1/dex/meteora-dllm.proto
+    - v1/dex/meteora-daam.proto
+    - v1/dex/meteora-amm.proto
+    # metadata
+    - v1/metadata/metaplex.proto
 
   excludePaths:
     - sf/substreams

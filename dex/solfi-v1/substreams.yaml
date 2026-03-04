@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/solfi-v1.proto
+    - v1/dex/solfi-v1.proto
   importPaths:
     - ../../proto
 

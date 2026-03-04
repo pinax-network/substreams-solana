@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/spl-token-lending.proto
+    - v1/spl/spl-token-lending.proto
   importPaths:
     - ../../proto
 
