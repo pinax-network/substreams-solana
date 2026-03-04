@@ -1,0 +1,16 @@
+[package]
+name = "spl-token-common"
+description = "SPL Token Common"
+edition = { workspace = true }
+version = { workspace = true }
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+substreams = { workspace = true }
+substreams-solana = { workspace = true }
+substreams-solana-program-instructions = { workspace = true }
+spl-token-metadata-interface = "0.7.0"
+proto = { path = "../../proto" }
+common = { path = "../../common" }
