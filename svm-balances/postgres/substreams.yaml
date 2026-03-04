@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: svm_balances_postgres
-  version: v0.2.0
+  version: v1.0.0
   url: https://github.com/pinax-network/substreams-svm
   description: SPL Token & Native SOL balances for Solana (PostgreSQL).
   image: ../../image.png
