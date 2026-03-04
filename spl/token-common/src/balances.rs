@@ -4,9 +4,7 @@ use substreams_solana::{
     pb::sf::solana::r#type::v1::{ConfirmedTransaction, TokenBalance},
 };
 
-use crate::is_spl_token_program;
-
-pub fn get_token_balance(tx: &ConfirmedTransaction, balance: &TokenBalance) -> Option<pb::TokenBalance> {
+pub fn get_token_balance(tx: &ConfirmedTransaction, balance: &TokenBalance, is_spl_token_program: fn(&[u8]) -> bool) -> Option<pb::TokenBalance> {
     let account = tx.account_at(balance.account_index as u8);
     let program_id = base58::decode(&balance.program_id).expect(&format!("Invalid program ID: {}", &balance.program_id));
 

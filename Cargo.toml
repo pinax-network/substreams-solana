@@ -10,6 +10,7 @@ members = [
   "svm-native",
 
   # Tokens
+  "spl/token-common",
   "spl/token",
   "spl/token-2022",
   "spl/token-swap",
