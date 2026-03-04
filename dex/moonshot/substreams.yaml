@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/moonshot.proto
+    - v1/dex/moonshot.proto
   importPaths:
     - ../../proto
 

@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/phoenix.proto
+    - v1/dex/phoenix.proto
   importPaths:
     - ../../proto
 

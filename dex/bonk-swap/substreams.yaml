@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/bonk-swap.proto
+    - v1/dex/bonk-swap.proto
   importPaths:
     - ../../proto
 

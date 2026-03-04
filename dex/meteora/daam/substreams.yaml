@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/meteora-daam.proto
+    - v1/dex/meteora-daam.proto
   importPaths:
     - ../../../proto
 

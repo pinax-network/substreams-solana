@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/plasma.proto
+    - v1/dex/plasma.proto
   importPaths:
     - ../../proto
 

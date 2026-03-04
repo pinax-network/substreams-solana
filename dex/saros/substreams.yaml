@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/saros.proto
+    - v1/dex/saros.proto
   importPaths:
     - ../../proto
 

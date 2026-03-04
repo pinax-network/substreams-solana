@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/okx-dex.proto
+    - v1/dex/okx-dex.proto
   importPaths:
     - ../../proto
 

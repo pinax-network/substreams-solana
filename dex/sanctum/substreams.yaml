@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/sanctum.proto
+    - v1/staking/sanctum.proto
   importPaths:
     - ../../proto
 

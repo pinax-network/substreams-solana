@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/dumpfun.proto
+    - v1/dex/dumpfun.proto
   importPaths:
     - ../../proto
 

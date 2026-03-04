@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/drift.proto
+    - v1/dex/drift.proto
   importPaths:
     - ../../proto
 

@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/native-token.proto
+    - v1/native/native-token.proto
   importPaths:
     - ../../proto
 
