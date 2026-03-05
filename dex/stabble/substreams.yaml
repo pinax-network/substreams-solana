@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/stabble.proto
+    - v1/dex/stabble.proto
   importPaths:
     - ../../proto
 

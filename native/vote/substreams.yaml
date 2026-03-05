@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/native-vote.proto
+    - v1/native/native-vote.proto
   importPaths:
     - ../../proto
 

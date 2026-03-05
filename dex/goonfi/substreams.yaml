@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/goonfi.proto
+    - v1/dex/goonfi.proto
   importPaths:
     - ../../proto
 

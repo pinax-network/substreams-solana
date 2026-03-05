@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/raydium-cpmm.proto
+    - v1/dex/raydium-cpmm.proto
   importPaths:
     - ../../../proto
 

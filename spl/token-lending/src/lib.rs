@@ -46,23 +46,147 @@ fn process_instruction(instruction: &InstructionView) -> Option<pb::Instruction>
         return None;
     }
 
-    // Token Lending instructions are identified by the first byte
     let data = instruction.data();
     if data.is_empty() {
         return None;
     }
 
+    let accounts = instruction.accounts();
+
     let parsed_instruction = match data[0] {
+        // InitLendingMarket
         0 => {
-            // InitLendingMarket
-            let accounts = instruction.accounts();
-            if accounts.len() < 2 {
+            if accounts.len() < 2 || data.len() < 65 {
                 return None;
             }
             Some(pb::instruction::Instruction::InitLendingMarket(pb::InitLendingMarket {
                 lending_market: accounts[0].0.to_vec(),
-                owner: accounts[1].0.to_vec(),
-                quote_currency: Vec::new(),
+                owner: data[1..33].to_vec(),
+                quote_currency: data[33..65].to_vec(),
+            }))
+        }
+        // InitReserve
+        2 => {
+            if accounts.len() < 13 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::InitReserve(pb::InitReserve {
+                lending_market: accounts[10].0.to_vec(),
+                reserve: accounts[2].0.to_vec(),
+                liquidity_mint: accounts[3].0.to_vec(),
+                liquidity_supply: accounts[4].0.to_vec(),
+                collateral_mint: accounts[6].0.to_vec(),
+                collateral_supply: accounts[7].0.to_vec(),
+                liquidity_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // DepositReserveLiquidity
+        4 => {
+            if accounts.len() < 7 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::DepositReserveLiquidity(pb::DepositReserveLiquidity {
+                reserve: accounts[2].0.to_vec(),
+                source_liquidity: accounts[0].0.to_vec(),
+                destination_collateral: accounts[1].0.to_vec(),
+                liquidity_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // RedeemReserveCollateral
+        5 => {
+            if accounts.len() < 7 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::RedeemReserveCollateral(pb::RedeemReserveCollateral {
+                reserve: accounts[2].0.to_vec(),
+                source_collateral: accounts[0].0.to_vec(),
+                destination_liquidity: accounts[1].0.to_vec(),
+                collateral_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // InitObligation
+        6 => {
+            if accounts.len() < 3 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::InitObligation(pb::InitObligation {
+                obligation: accounts[0].0.to_vec(),
+                lending_market: accounts[1].0.to_vec(),
+                owner: accounts[2].0.to_vec(),
+            }))
+        }
+        // DepositObligationCollateral
+        8 => {
+            if accounts.len() < 6 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::DepositObligationCollateral(pb::DepositObligationCollateral {
+                obligation: accounts[3].0.to_vec(),
+                source_collateral: accounts[0].0.to_vec(),
+                reserve: accounts[2].0.to_vec(),
+                collateral_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // WithdrawObligationCollateral
+        9 => {
+            if accounts.len() < 7 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::WithdrawObligationCollateral(pb::WithdrawObligationCollateral {
+                obligation: accounts[3].0.to_vec(),
+                destination_collateral: accounts[1].0.to_vec(),
+                reserve: accounts[2].0.to_vec(),
+                collateral_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // BorrowObligationLiquidity
+        10 => {
+            if accounts.len() < 8 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::BorrowObligationLiquidity(pb::BorrowObligationLiquidity {
+                obligation: accounts[4].0.to_vec(),
+                destination_liquidity: accounts[1].0.to_vec(),
+                reserve: accounts[2].0.to_vec(),
+                liquidity_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // RepayObligationLiquidity
+        11 => {
+            if accounts.len() < 6 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::RepayObligationLiquidity(pb::RepayObligationLiquidity {
+                obligation: accounts[3].0.to_vec(),
+                source_liquidity: accounts[0].0.to_vec(),
+                reserve: accounts[2].0.to_vec(),
+                liquidity_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // LiquidateObligation
+        12 => {
+            if accounts.len() < 10 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::LiquidateObligation(pb::LiquidateObligation {
+                obligation: accounts[6].0.to_vec(),
+                repay_reserve: accounts[2].0.to_vec(),
+                withdraw_reserve: accounts[4].0.to_vec(),
+                source_liquidity: accounts[0].0.to_vec(),
+                destination_collateral: accounts[1].0.to_vec(),
+                liquidity_amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
+            }))
+        }
+        // FlashLoan
+        13 => {
+            if accounts.len() < 8 || data.len() < 9 {
+                return None;
+            }
+            Some(pb::instruction::Instruction::FlashLoan(pb::FlashLoan {
+                reserve: accounts[2].0.to_vec(),
+                source_liquidity: accounts[0].0.to_vec(),
+                destination_liquidity: accounts[1].0.to_vec(),
+                amount: u64::from_le_bytes(data[1..9].try_into().ok()?),
             }))
         }
         _ => None,

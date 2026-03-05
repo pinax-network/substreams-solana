@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/orca.proto
+    - v1/dex/orca.proto
   importPaths:
     - ../../../proto
 

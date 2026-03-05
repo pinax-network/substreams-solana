@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/openbook.proto
+    - v1/dex/openbook.proto
   importPaths:
     - ../../proto
 

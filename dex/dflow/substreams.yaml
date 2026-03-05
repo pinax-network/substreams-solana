@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/dflow.proto
+    - v1/dex/dflow.proto
   importPaths:
     - ../../proto
 

@@ -2,9 +2,7 @@ use proto::pb::solana::spl::token::v1 as pb;
 use substreams_solana::block_view::InstructionView;
 use substreams_solana_program_instructions::token_instruction_2022::TokenInstruction;
 
-use crate::is_spl_token_program;
-
-pub fn unpack_permissions(instruction: &InstructionView, program_id: &[u8]) -> Option<pb::instruction::Instruction> {
+pub fn unpack_permissions(instruction: &InstructionView, program_id: &[u8], is_spl_token_program: fn(&[u8]) -> bool) -> Option<pb::instruction::Instruction> {
     if !is_spl_token_program(&program_id) {
         return None;
     }

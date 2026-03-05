@@ -16,7 +16,7 @@ binaries:
 
 protobuf:
   files:
-    - v1/marinade.proto
+    - v1/staking/marinade.proto
   importPaths:
     - ../../proto
 
