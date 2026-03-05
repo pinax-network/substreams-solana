@@ -1,30 +1,48 @@
-# Solana: `Substreams`
+# Solana `Substreams` (SVM)
 
-Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
+Substreams packages for Solana/SVM data indexing across:
 
-## Supported by Sinks
+- native and SPL token domains
+- DEX and AMM protocols
+- NFT and staking protocols
+- sink-ready `DatabaseChanges` outputs for ClickHouse/PostgreSQL
 
-- [x] [Substreams: File Sink](https://github.com/streamingfast/substreams-sink-files) - Apache Parquet (Protobuf Map modules)
-- [x] [Substreams: SQL Sink](https://github.com/streamingfast/substreams-sink-sql) - Clickhouse / ~~PostgreSQL~~
+## Repository Map
 
-## Substreams Packages
+For a practical contributor map, start here:
 
-- [x] SPL and SPL-2022 tokens
-  - [x] Transfers (Mints, Burns, Approves, Revokes)
-  - [x] Balances
-- [ ] Native tokens
-- [x] Raydium AMM v4
-- [x] Pump.fun - Bonding Curve
-- [x] Jupiter Aggregator V4
-- [x] Jupiter Aggregator V6
+- [`docs/repo-navigation.md`](docs/repo-navigation.md)
+
+## Workspace Structure
+
+- `dex/`, `spl/`, `native/`, `nft/`, `staking/`, `metaplex/`: protocol-specific decoders
+- `svm-*`: aggregate domain packages that emit `DatabaseChanges`
+- `svm-*/clickhouse`: ClickHouse sink manifests + schema files
+- `svm-*/postgres`: PostgreSQL sink manifests (and schemas where available)
+- `proto/`: shared protobuf schemas
+- `common/`: shared Rust helpers
+- `spkg/`: local SPKG dependencies used by aggregate packages
+
+## Supported Sink Targets
+
+- [x] [Substreams: File Sink](https://github.com/streamingfast/substreams-sink-files) (for map outputs)
+- [x] [Substreams: SQL Sink](https://github.com/streamingfast/substreams-sink-sql) (ClickHouse and PostgreSQL packages in `svm-*/clickhouse` and `svm-*/postgres`)
+
+## Aggregate Domain Packages (`svm-*`)
+
+- [x] `svm-transfers`
+- [x] `svm-balances`
+- [x] `svm-accounts`
+- [x] `svm-metadata`
+- [x] `svm-native`
+- [x] `svm-spl`
+- [x] `svm-dex`
+- [x] `svm-nfts`
+- [x] `svm-staking`
 
 ## Supported DEXes and AMMs
 
-### Native Support
-
-> Swaps decoded directly from on-chain program instructions
->
-> Ordered by most transactions
+Native support means swaps are decoded directly from on-chain program instructions.
 
 | Program Name | Program ID |
 |------------|--------------|
@@ -65,3 +83,11 @@ Substreams for tracking native, SPL and SPL-2022 tokens for Solana blockchains.
 | ByReal CLMM | REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2 |
 | Jupiter Aggregator V4 | JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB |
 | Jupiter Aggregator V6 | JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4 |
+
+## Quick Build
+
+```bash
+cargo build --target wasm32-unknown-unknown --release
+```
+
+Most module directories also expose `make build`, `make pack`, `make noop`, and `make gui` targets.
