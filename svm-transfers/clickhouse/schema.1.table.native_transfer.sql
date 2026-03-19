@@ -1,5 +1,5 @@
 -- System Token Transfers --
-CREATE TABLE IF NOT EXISTS system_transfer AS base_events
+CREATE TABLE IF NOT EXISTS system_transfer AS BASE_EVENTS
 COMMENT 'System token transfer';
 ALTER TABLE system_transfer
     ADD COLUMN IF NOT EXISTS source                  String,
@@ -11,7 +11,7 @@ ALTER TABLE system_transfer
     ADD INDEX IF NOT EXISTS idx_lamports (lamports) TYPE minmax GRANULARITY 1;
 
 -- TransferWithSeed --
-CREATE TABLE IF NOT EXISTS system_transfer_with_seed AS base_events
+CREATE TABLE IF NOT EXISTS system_transfer_with_seed AS BASE_EVENTS
 COMMENT 'System token transfer with seed';
 ALTER TABLE system_transfer_with_seed
     ADD COLUMN IF NOT EXISTS source                  String,
@@ -29,7 +29,7 @@ ALTER TABLE system_transfer_with_seed
     ADD INDEX IF NOT EXISTS idx_lamports (lamports) TYPE minmax GRANULARITY 1;
 
 -- WithdrawNonceAccount --
-CREATE TABLE IF NOT EXISTS system_withdraw_nonce_account AS base_events
+CREATE TABLE IF NOT EXISTS system_withdraw_nonce_account AS BASE_EVENTS
 COMMENT 'System token withdraw nonce account';
 ALTER TABLE system_withdraw_nonce_account
     ADD COLUMN IF NOT EXISTS destination             String,

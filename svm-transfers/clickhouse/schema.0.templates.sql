@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS base_events (
+CREATE TABLE IF NOT EXISTS BASE_EVENTS (
     -- block --
     block_num                   UInt32,
     block_hash                  String,
@@ -39,15 +39,15 @@ ORDER BY (
     block_hash, transaction_index, instruction_index
 );
 
-ALTER TABLE base_events
+ALTER TABLE BASE_EVENTS
   MODIFY SETTING deduplicate_merge_projection_mode = 'rebuild';
 
-ALTER TABLE base_events
+ALTER TABLE BASE_EVENTS
     ADD PROJECTION IF NOT EXISTS prj_signature (SELECT signature, timestamp, _part_offset ORDER BY (signature, timestamp)),
     ADD PROJECTION IF NOT EXISTS prj_fee_payer (SELECT fee_payer, timestamp, _part_offset ORDER BY (fee_payer, timestamp)),
     ADD PROJECTION IF NOT EXISTS prj_signer (SELECT signer, timestamp, _part_offset ORDER BY (signer, timestamp));
 
-CREATE TABLE IF NOT EXISTS base_transactions AS base_events;
+CREATE TABLE IF NOT EXISTS base_transactions AS BASE_EVENTS;
 ALTER TABLE base_transactions
     DROP PROJECTION IF EXISTS prj_part_program_id,
     DROP INDEX IF EXISTS idx_program_id,

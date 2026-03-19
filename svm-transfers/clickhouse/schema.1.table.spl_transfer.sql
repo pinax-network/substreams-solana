@@ -1,5 +1,5 @@
 -- SPL Token Transfers --
-CREATE TABLE IF NOT EXISTS spl_transfer AS base_events
+CREATE TABLE IF NOT EXISTS spl_transfer AS BASE_EVENTS
 COMMENT 'SPL Token Transfer/Burn/Mint events';
 ALTER TABLE spl_transfer
     -- authority --
