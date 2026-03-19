@@ -12,8 +12,8 @@ imports:
   sql: ../spkg/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # Substreams
-  spl_token: ../spkg/spl-token-v0.2.3.spkg
-  native_token: ../spkg/native-token-v0.2.2.spkg
+  spl_token: ../spkg/spl-token-v1.0.0.spkg
+  native_token: ../spkg/native-token-v1.0.0.spkg
 
 binaries:
   default:
