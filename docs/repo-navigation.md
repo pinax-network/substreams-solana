@@ -8,7 +8,7 @@ This guide is a quick map for contributors and coding agents working in this mon
 
 - protocol-specific decoders (DEXes, SPL/native, NFTs, staking)
 - aggregate `DatabaseChanges` modules (`svm-*` crates)
-- sink-facing packages for ClickHouse/PostgreSQL (`svm-*/clickhouse`, `svm-*/postgres`)
+- sink-facing packages for ClickHouse (`svm-*/clickhouse`)
 
 ## 2) Top-level layout
 
@@ -19,7 +19,6 @@ This guide is a quick map for contributors and coding agents working in this mon
 - `spl/`, `native/`, `nft/`, `staking/`: protocol-level non-DEX modules.
 - `svm-*`: aggregate DB modules by data domain.
 - `svm-*/clickhouse`: ClickHouse sink packages and schema DDL.
-- `svm-*/postgres`: PostgreSQL sink packages (coverage varies by domain).
 - `spkg/`: local SPKG dependencies used by aggregate manifests.
 - `scripts/`: helper scripts for generating DEX boilerplate/proto glue.
 
@@ -31,7 +30,7 @@ This guide is a quick map for contributors and coding agents working in this mon
 2. Confirm `substreams.yaml` block filter (`program:<PROGRAM_ID>`).
 3. Ensure matching protobuf in `proto/v1/*.proto`.
 4. Wire output into `svm-dex/substreams.yaml` imports + `db_out` inputs.
-5. Update SQL sink schemas in `svm-dex/clickhouse/` or `svm-dex/postgres/`.
+5. Update ClickHouse sink schemas in `svm-dex/clickhouse/`.
 
 ### Add or edit aggregate database mapping logic
 
@@ -41,7 +40,6 @@ This guide is a quick map for contributors and coding agents working in this mon
 ### Work on sink schemas
 
 - ClickHouse: `svm-*/clickhouse/schema.*.sql` and `Makefile`.
-- PostgreSQL: `svm-*/postgres/schema.sql` where present.
 
 ## 4) Workspace module inventory
 
@@ -68,7 +66,7 @@ This guide is a quick map for contributors and coding agents working in this mon
 
 - Program ID filters: each module's `substreams.yaml` under `blockFilter.query.string`.
 - Aggregate DEX wiring: `svm-dex/substreams.yaml`.
-- SQL schema outputs: `svm-*/clickhouse/schema.*.sql` and `svm-*/postgres/schema.sql`.
+- SQL schema outputs: `svm-*/clickhouse/schema.*.sql`.
 - Shared protobuf contracts: `proto/v1/*.proto`.
 - Shared transform helpers: `common/src/solana.rs`, `common/src/db.rs`.
 

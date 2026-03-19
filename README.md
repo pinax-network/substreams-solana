@@ -5,7 +5,7 @@ Substreams packages for Solana/SVM data indexing across:
 - native and SPL token domains
 - DEX and AMM protocols
 - NFT and staking protocols
-- sink-ready `DatabaseChanges` outputs for ClickHouse/PostgreSQL
+- sink-ready `DatabaseChanges` outputs for ClickHouse
 
 ## Repository Map
 
@@ -18,7 +18,6 @@ For a practical contributor map, start here:
 - `dex/`, `spl/`, `native/`, `nft/`, `staking/`, `metaplex/`: protocol-specific decoders
 - `svm-*`: aggregate domain packages that emit `DatabaseChanges`
 - `svm-*/clickhouse`: ClickHouse sink manifests + schema files
-- `svm-*/postgres`: PostgreSQL sink manifests (and schemas where available)
 - `proto/`: shared protobuf schemas
 - `common/`: shared Rust helpers
 - `spkg/`: local SPKG dependencies used by aggregate packages
@@ -26,7 +25,7 @@ For a practical contributor map, start here:
 ## Supported Sink Targets
 
 - [x] [Substreams: File Sink](https://github.com/streamingfast/substreams-sink-files) (for map outputs)
-- [x] [Substreams: SQL Sink](https://github.com/streamingfast/substreams-sink-sql) (ClickHouse and PostgreSQL packages in `svm-*/clickhouse` and `svm-*/postgres`)
+- [x] [Substreams: SQL Sink](https://github.com/streamingfast/substreams-sink-sql) (ClickHouse packages in `svm-*/clickhouse`)
 
 ## Aggregate Domain Packages (`svm-*`)
 
