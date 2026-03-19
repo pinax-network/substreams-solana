@@ -1,7 +1,7 @@
 use common::db::{common_key_v2, set_clock};
 use proto::pb::aldrin::v1 as pb;
 use substreams::pb::substreams::Clock;
-use substreams_database_change::tables::{Row, Tables};
+use substreams_database_change::tables::Tables;
 use substreams_solana::base58;
 
 pub fn process_events(tables: &mut Tables, clock: &Clock, events: &pb::Events) {
