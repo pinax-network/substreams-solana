@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: raydium_launchpad
-  version: v1.0.0
+  version: v0.4.0
   url: https://github.com/pinax-network/substreams-solana
   description: Raydium Launchpad events for Solana.
   image: ../../../image.png
@@ -33,4 +33,3 @@ modules:
       type: proto:raydium.launchpad.v1.Events
 
 network: solana
-

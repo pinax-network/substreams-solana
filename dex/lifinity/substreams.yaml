@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: lifinity
-  version: v1.0.0
+  version: v0.4.0
   url: https://github.com/pinax-network/substreams-solana
   description: Lifinity DEX events for Solana.
   image: ../../image.png

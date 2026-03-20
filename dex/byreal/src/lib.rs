@@ -1,4 +1,4 @@
-use common::solana::{get_fee_payer, get_signers, is_failed, is_invoke, is_success, parse_invoke_depth, parse_program_data, parse_program_id};
+use common::solana::{get_fee_payer, get_signers, is_failed, is_invoke, is_success, parse_invoke_depth, parse_program_id};
 use proto::pb::byreal::v1 as pb;
 use substreams::errors::Error;
 use substreams_solana::{
@@ -35,7 +35,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
     if program_id != &byreal::PROGRAM_ID { return None; }
 
     match byreal::clmm::instructions::unpack(ix.data()) {
-        Ok(byreal::clmm::instructions::ByRealInstruction::Swap(event)) => Some(pb::Instruction {
+        Ok(byreal::clmm::instructions::ByrealClmmInstruction::Swap(event)) => Some(pb::Instruction {
             program_id: program_id.to_vec(),
             stack_height: ix.stack_height(),
             instruction: Some(pb::instruction::Instruction::Swap(pb::SwapInstruction {
@@ -48,7 +48,7 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
 }
 
 fn process_logs(tx_meta: &TransactionStatusMeta, program_id_bytes: &[u8]) -> Vec<pb::Log> {
-    let mut logs = Vec::new();
+    let logs = Vec::new();
     let mut is_invoked = false;
     for log_message in tx_meta.log_messages.iter() {
         let match_program_id = parse_program_id(log_message).map_or(false, |id| id == program_id_bytes.to_vec());

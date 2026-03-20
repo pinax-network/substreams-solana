@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: svm_dex
-  version: v1.0.0
+  version: v0.4.0
   url: https://github.com/pinax-network/substreams-svm
   description: DEXs for Solana.
   image: ../image.png
@@ -12,45 +12,44 @@ imports:
   sql: ../spkg/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # DEXs
-  pumpfun: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/pumpfun-bonding-curve-v0.2.2.spkg
-  pumpfun_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/pumpfun-amm-v0.2.0.spkg
-  raydium_amm_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/raydium-amm-v4-v0.2.0.spkg
-  raydium_cpmm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/raydium-cpmm-v0.1.0.spkg
-  raydium_clmm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/raydium-clmm-v0.1.0.spkg
-  raydium_launchpad: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/raydium-launchpad-v0.1.0.spkg
-  meteora_dllm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/meteora-dllm-v0.1.0.spkg
-  meteora_daam: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/meteora-daam-v0.1.0.spkg
-  meteora_amm: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.3.0/meteora-amm-v0.1.0.spkg
-  jupiter_v4: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v4-v0.2.0.spkg
-  jupiter_v6: https://github.com/pinax-network/substreams-solana/releases/download/solana-dex-v0.2.0/jupiter-v6-v0.2.0.spkg
-
-  # New DEXs (local paths until first release)
-  orca: ../dex/orca/whirlpool/substreams.yaml
-  phoenix: ../dex/phoenix/substreams.yaml
-  openbook: ../dex/openbook/substreams.yaml
-  pumpswap: ../dex/pumpswap/substreams.yaml
-  darklake: ../dex/darklake/substreams.yaml
-  lifinity: ../dex/lifinity/substreams.yaml
-  moonshot: ../dex/moonshot/substreams.yaml
-  pancakeswap: ../dex/pancakeswap/substreams.yaml
-  stabble: ../dex/stabble/substreams.yaml
-  dumpfun: ../dex/dumpfun/substreams.yaml
-  goonfi: ../dex/goonfi/substreams.yaml
-  heaven: ../dex/heaven/substreams.yaml
-  plasma: ../dex/plasma/substreams.yaml
-  saros: ../dex/saros/substreams.yaml
-  aldrin: ../dex/aldrin/substreams.yaml
-  boop: ../dex/boop/substreams.yaml
-  byreal: ../dex/byreal/substreams.yaml
-  dflow: ../dex/dflow/substreams.yaml
-  drift: ../dex/drift/substreams.yaml
-  obric_v2: ../dex/obric-v2/substreams.yaml
-  obric_v3: ../dex/obric-v3/substreams.yaml
-  okx_dex: ../dex/okx-dex/substreams.yaml
-  sanctum: ../dex/sanctum/substreams.yaml
-  serum: ../dex/serum/substreams.yaml
-  solfi_v1: ../dex/solfi-v1/substreams.yaml
-  solfi_v2: ../dex/solfi-v2/substreams.yaml
+  pumpfun: ../spkg/pumpfun-bonding-curve-v0.4.0.spkg
+  pumpfun_amm: ../spkg/pumpfun-amm-v0.4.0.spkg
+  raydium_amm_v4: ../spkg/raydium-amm-v4-v0.4.0.spkg
+  raydium_cpmm: ../spkg/raydium-cpmm-v0.4.0.spkg
+  raydium_clmm: ../spkg/raydium-clmm-v0.4.0.spkg
+  raydium_launchpad: ../spkg/raydium-launchpad-v0.4.0.spkg
+  meteora_dllm: ../spkg/meteora-dllm-v0.4.0.spkg
+  meteora_daam: ../spkg/meteora-daam-v0.4.0.spkg
+  meteora_amm: ../spkg/meteora-amm-v0.4.0.spkg
+  jupiter_v4: ../spkg/jupiter-v4-v0.4.0.spkg
+  jupiter_v6: ../spkg/jupiter-v6-v0.4.0.spkg
+  orca: ../spkg/orca-whirlpool-v0.4.0.spkg
+  phoenix: ../spkg/phoenix-v0.4.0.spkg
+  openbook: ../spkg/openbook-v0.4.0.spkg
+  pumpswap: ../spkg/pumpswap-v0.4.0.spkg
+  darklake: ../spkg/darklake-v0.4.0.spkg
+  lifinity: ../spkg/lifinity-v0.4.0.spkg
+  moonshot: ../spkg/moonshot-v0.4.0.spkg
+  pancakeswap: ../spkg/pancakeswap-v0.4.0.spkg
+  stabble: ../spkg/stabble-v0.4.0.spkg
+  dumpfun: ../spkg/dumpfun-v0.4.0.spkg
+  goonfi: ../spkg/goonfi-v0.4.0.spkg
+  heaven: ../spkg/heaven-v0.4.0.spkg
+  plasma: ../spkg/plasma-v0.4.0.spkg
+  saros: ../spkg/saros-v0.4.0.spkg
+  aldrin: ../spkg/aldrin-v0.4.0.spkg
+  boop: ../spkg/boop-v0.4.0.spkg
+  byreal: ../spkg/byreal-v0.4.0.spkg
+  dflow: ../spkg/dflow-v0.4.0.spkg
+  drift: ../spkg/drift-v0.4.0.spkg
+  obric_v2: ../spkg/obric-v2-v0.4.0.spkg
+  obric_v3: ../spkg/obric-v3-v0.4.0.spkg
+  okx_dex: ../spkg/okx-dex-v0.4.0.spkg
+  sanctum: ../spkg/sanctum-v0.4.0.spkg
+  serum: ../spkg/serum-v0.4.0.spkg
+  solfi_v1: ../spkg/solfi-v1-v0.4.0.spkg
+  solfi_v2: ../spkg/solfi-v2-v0.4.0.spkg
+  bonk_swap: ../spkg/bonk-swap-v0.4.0.spkg
 
 binaries:
   default:
@@ -103,6 +102,7 @@ modules:
       - map: serum:map_events
       - map: solfi_v1:map_events
       - map: solfi_v2:map_events
+      - map: bonk_swap:map_events
 
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges

@@ -34,12 +34,12 @@ fn process_instruction(ix: &InstructionView) -> Option<pb::Instruction> {
     if program_id != &okx::v2::PROGRAM_ID { return None; }
 
     match okx::v2::instructions::unpack(ix.data()) {
-        Ok(okx::v2::instructions::OkxInstruction::Swap(event)) => Some(pb::Instruction {
+        Ok(okx::v2::instructions::OkxV2Instruction::SwapV3(event)) => Some(pb::Instruction {
             program_id: program_id.to_vec(),
             stack_height: ix.stack_height(),
             instruction: Some(pb::instruction::Instruction::Swap(pb::SwapInstruction {
-                amount_in: event.amount_in,
-                minimum_amount_out: event.minimum_amount_out,
+                amount_in: event.args.amount_in,
+                minimum_amount_out: event.args.min_return,
             })),
         }),
         _ => None,
