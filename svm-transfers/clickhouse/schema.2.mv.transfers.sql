@@ -36,13 +36,11 @@ WHERE lamports > 0;
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_system_transfer_with_seed
 TO transfers AS
 SELECT
-    * EXCEPT (lamports, source, destination, source_base, source_seed, source_owner),
+    * EXCEPT (lamports, source_base, source_seed, source_owner),
     lamports AS amount,
     'So11111111111111111111111111111111111111111' AS mint, -- native
     toUInt8(9) AS decimals,
-    source_base AS authority,
-    source_seed AS source,
-    destination AS destination
+    source_base AS authority
 FROM system_transfer_with_seed
 -- ignore 0 transfers
 WHERE lamports > 0;
