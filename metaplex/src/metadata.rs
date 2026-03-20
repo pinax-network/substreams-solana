@@ -6,6 +6,11 @@ use substreams_solana::block_view::InstructionView;
 
 use crate::is_metaplex_program;
 
+/// Strip null bytes and trailing whitespace from Metaplex fixed-length strings.
+fn trim_null(s: &str) -> String {
+    s.trim_end_matches('\0').trim().to_string()
+}
+
 pub fn unpack_metadata(instruction: &InstructionView, program_id: &[u8]) -> Option<pb::instruction::Instruction> {
     if !is_metaplex_program(program_id) {
         return None;
@@ -28,9 +33,9 @@ pub fn unpack_metadata(instruction: &InstructionView, program_id: &[u8]) -> Opti
                 mint_authority: instruction.accounts().get(2)?.0.to_vec(),
                 payer: instruction.accounts().get(3)?.0.to_vec(),
                 update_authority: instruction.accounts().get(4)?.0.to_vec(),
-                name: args.data.name,
-                symbol: args.data.symbol,
-                uri: args.data.uri,
+                name: trim_null(&args.data.name),
+                symbol: trim_null(&args.data.symbol),
+                uri: trim_null(&args.data.uri),
             }))
         }
         16 => {
@@ -46,9 +51,9 @@ pub fn unpack_metadata(instruction: &InstructionView, program_id: &[u8]) -> Opti
                 mint_authority: instruction.accounts().get(2)?.0.to_vec(),
                 payer: instruction.accounts().get(3)?.0.to_vec(),
                 update_authority: instruction.accounts().get(4)?.0.to_vec(),
-                name: args.data.name,
-                symbol: args.data.symbol,
-                uri: args.data.uri,
+                name: trim_null(&args.data.name),
+                symbol: trim_null(&args.data.symbol),
+                uri: trim_null(&args.data.uri),
             }))
         }
         33 => {
@@ -60,9 +65,9 @@ pub fn unpack_metadata(instruction: &InstructionView, program_id: &[u8]) -> Opti
                 mint_authority: instruction.accounts().get(2)?.0.to_vec(),
                 payer: instruction.accounts().get(3)?.0.to_vec(),
                 update_authority: instruction.accounts().get(4)?.0.to_vec(),
-                name: data.name,
-                symbol: data.symbol,
-                uri: data.uri,
+                name: trim_null(&data.name),
+                symbol: trim_null(&data.symbol),
+                uri: trim_null(&data.uri),
             }))
         }
         1 => {
@@ -74,7 +79,7 @@ pub fn unpack_metadata(instruction: &InstructionView, program_id: &[u8]) -> Opti
             }
             let args: Args = Args::deserialize(&mut rest).ok()?;
             let (name, symbol, uri) = if let Some(data) = args.data {
-                (Some(data.name), Some(data.symbol), Some(data.uri))
+                (Some(trim_null(&data.name)), Some(trim_null(&data.symbol)), Some(trim_null(&data.uri)))
             } else {
                 (None, None, None)
             };
@@ -89,7 +94,7 @@ pub fn unpack_metadata(instruction: &InstructionView, program_id: &[u8]) -> Opti
         15 => {
             let args = UpdateMetadataAccountV2InstructionArgs::deserialize(&mut rest).ok()?;
             let (name, symbol, uri) = if let Some(data) = args.data {
-                (Some(data.name), Some(data.symbol), Some(data.uri))
+                (Some(trim_null(&data.name)), Some(trim_null(&data.symbol)), Some(trim_null(&data.uri)))
             } else {
                 (None, None, None)
             };
