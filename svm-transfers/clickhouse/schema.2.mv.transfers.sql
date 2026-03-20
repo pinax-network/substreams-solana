@@ -1,5 +1,7 @@
 CREATE TABLE IF NOT EXISTS transfers AS spl_transfer
 COMMENT 'SPL 2022 & Native token transfers';
+ALTER TABLE transfers MODIFY TTL timestamp + INTERVAL 100 YEAR;
+ALTER TABLE transfers REMOVE TTL;
 
 -- SPL Token Transfers --
 ALTER TABLE transfers
