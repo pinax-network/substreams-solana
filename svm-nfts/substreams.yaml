@@ -19,7 +19,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/db_svm_nfts.wasm
+    file: ../target/wasm32-unknown-unknown/release/svm_nfts.wasm
 
 modules:
   - name: db_out

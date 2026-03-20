@@ -507,95 +507,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "db-svm-accounts"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "db-svm-balances"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "db-svm-dex"
-version = "0.0.0"
-dependencies = [
- "common",
- "num_enum",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "db-svm-metadata"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "db-svm-nfts"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "db-svm-spl"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "db-svm-staking"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
-name = "db-svm-transfers"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
 name = "derivation-path"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3175,6 +3086,95 @@ name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
+
+[[package]]
+name = "svm-accounts"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "svm-balances"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "svm-dex"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "num_enum",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "svm-metadata"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "svm-nfts"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "svm-spl"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "svm-staking"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
+
+[[package]]
+name = "svm-transfers"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "proto",
+ "substreams 0.7.3",
+ "substreams-database-change",
+ "substreams-solana",
+]
 
 [[package]]
 name = "syn"

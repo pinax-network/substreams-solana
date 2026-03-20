@@ -1,5 +1,5 @@
 [package]
-name = "db-svm-balances"
+name = "svm-balances"
 description = { workspace = true }
 edition = { workspace = true }
 version = { workspace = true }

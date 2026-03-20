@@ -1,5 +1,5 @@
 [package]
-name = "db-svm-nfts"
+name = "svm-nfts"
 description = { workspace = true }
 edition = { workspace = true }
 version = { workspace = true }

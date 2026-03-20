@@ -1,5 +1,5 @@
 [package]
-name = "db-svm-accounts"
+name = "svm-accounts"
 description = { workspace = true }
 edition = { workspace = true }
 version = { workspace = true }

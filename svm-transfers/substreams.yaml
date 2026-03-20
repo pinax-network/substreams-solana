@@ -18,7 +18,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/db_svm_transfers.wasm
+    file: ../target/wasm32-unknown-unknown/release/svm_transfers.wasm
 
 modules:
   - name: db_out

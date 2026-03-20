@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: svm_accounts
-  version: v1.0.0
+  version: v0.3.0
   url: https://github.com/pinax-network/substreams-svm
   description: SPL & SPL-2022 token account events for Solana blockchains.
   image: ../image.png
@@ -12,13 +12,13 @@ imports:
   sql: ../spkg/substreams-sink-sql-protodefs-v1.0.7.spkg
 
   # Substreams
-  spl_token: ../spkg/spl-token-v0.2.3.spkg
-  native_token: ../spkg/native-token-v0.2.2.spkg
+  spl_token: ../spkg/spl-token-v0.3.0.spkg
+  native_token: ../spkg/native-token-v0.3.0.spkg
 
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../target/wasm32-unknown-unknown/release/db_svm_accounts.wasm
+    file: ../target/wasm32-unknown-unknown/release/svm_accounts.wasm
 
 modules:
   - name: db_out
