@@ -55,6 +55,19 @@ SELECT
 FROM immutable_owner_state AS a
 GROUP BY account;
 
+CREATE OR REPLACE VIEW funded_by_view AS
+SELECT
+  account,
+  any(program_id) AS program_id,
+  max(version)   AS version,
+  max(block_num) AS block_num,
+  max(timestamp) AS timestamp,
+  argMax(a.funded_by, a.version) AS funded_by,
+  argMax(a.space, a.version) AS space,
+  argMax(a.lamports, a.version) AS initial_lamports
+FROM funded_by_state AS a
+GROUP BY account;
+
 -- Ideal for general account lookups
 CREATE OR REPLACE VIEW accounts_view AS
 SELECT
@@ -66,13 +79,16 @@ SELECT
   if(empty(m.mint), NULL, m.mint) AS mint,
   c.closed AS closed,
   f.frozen AS frozen,
-  i.immutable AS immutable
+  i.immutable AS immutable,
+  if(empty(fb.funded_by), NULL, fb.funded_by) AS funded_by,
+  fb.space AS allocated_data_size
 FROM account_state AS a
 LEFT JOIN account_mint_view AS m USING (account)
 LEFT JOIN owner_view AS o USING (account)
 LEFT JOIN close_account_view AS c USING (account)
 LEFT JOIN freeze_account_view AS f USING (account)
-LEFT JOIN immutable_owner_view AS i USING (account);
+LEFT JOIN immutable_owner_view AS i USING (account)
+LEFT JOIN funded_by_view AS fb USING (account);
 
 -- Ideal for owner lookups (get all accounts of an owner)
 CREATE OR REPLACE VIEW accounts_from_owner_view AS
@@ -140,8 +156,10 @@ SELECT
   if(empty(m.authority), NULL, m.authority) AS mint_authority, -- can be null (non-mintable)
   if(empty(f.authority), NULL, f.authority) AS freeze_authority, -- can be null (non-freezable)
   d.decimals AS decimals,
-  i.immutable AS immutable
+  i.immutable AS immutable,
+  if(empty(fb.funded_by), NULL, fb.funded_by) AS funded_by -- who funded mint account creation
 FROM decimals_state AS d
 LEFT JOIN mint_authority_view AS m USING (mint)
 LEFT JOIN freeze_authority_view AS f USING (mint)
-LEFT JOIN immutable_owner_view  AS i ON i.account = d.mint;
+LEFT JOIN immutable_owner_view  AS i ON i.account = d.mint
+LEFT JOIN funded_by_view AS fb ON fb.account = d.mint;
