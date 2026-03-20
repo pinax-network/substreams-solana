@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: svm_nfts_clickhouse
+  name: svm_clickhouse_nfts
   version: v1.0.0
   url: https://github.com/pinax-network/substreams-svm
   description: NFT Marketplaces for Solana (ClickHouse).
