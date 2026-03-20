@@ -3,7 +3,7 @@ package:
   name: svm_staking
   version: v1.0.0
   url: https://github.com/pinax-network/substreams-svm
-  description: Liquid staking protocols for Solana.
+  description: Native & Liquid staking protocols for Solana.
   image: ../image.png
 
 imports:
@@ -13,6 +13,7 @@ imports:
 
   # Staking
   marinade: ../staking/marinade/substreams.yaml
+  native_stake: ../native/stake/substreams.yaml
 
 binaries:
   default:
@@ -25,6 +26,7 @@ modules:
     inputs:
       - source: sf.substreams.v1.Clock
       - map: marinade:map_events
+      - map: native_stake:map_events
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 
