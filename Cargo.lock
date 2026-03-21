@@ -3144,17 +3144,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "svm-spl"
-version = "0.0.0"
-dependencies = [
- "common",
- "proto",
- "substreams 0.7.3",
- "substreams-database-change",
- "substreams-solana",
-]
-
-[[package]]
 name = "svm-staking"
 version = "0.0.0"
 dependencies = [

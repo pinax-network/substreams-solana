@@ -6,7 +6,8 @@ members = [
   "svm-transfers",
   "svm-accounts",
   "svm-metadata",
-  "svm-spl",
+  "svm-staking",
+  "svm-nfts",
 
   # Tokens
   "spl/token-common",
@@ -66,10 +67,6 @@ members = [
 
   # Staking
   "staking/marinade",
-
-  # NFT & Staking DatabaseChanges
-  "svm-nfts",
-  "svm-staking",
 
   # Common
   "proto",
