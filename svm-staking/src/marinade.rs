@@ -179,5 +179,6 @@ fn set_transaction(tx: &pb::Transaction, row: &mut Row) {
         .set("fee_payer", base58::encode(&tx.fee_payer))
         .set("signers_raw", tx.signers.iter().map(base58::encode).collect::<Vec<_>>().join(","))
         .set("fee", tx.fee)
-        .set("compute_units_consumed", tx.compute_units_consumed);
+        .set("compute_units_consumed", tx.compute_units_consumed)
+        .set("stack_height", 0u32);
 }
